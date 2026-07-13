@@ -8,7 +8,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "dist",
-    "types": ["node", "@cloudflare/workers-types"]
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"]
 }

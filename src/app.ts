@@ -9,17 +9,31 @@ type CreateAppOptions = {
 
 export const createApp = (options: CreateAppOptions = {}) => {
   const app = new OpenAPIHono();
+  const version = process.env.OVO_RELEASE_VERSION || process.env.APP_VERSION || "dev";
+  const commit = process.env.OVO_RELEASE_COMMIT || process.env.GITHUB_SHA || "";
 
   app.get("/", (c) =>
     c.json({
       name: "Codia",
       slogan: "Beautiful Code Images for Humans and APIs.",
+      version,
+      commit,
       example: "/example",
       llms: "/llms.txt",
       docs: "/docs",
       openapi: "/openapi.json",
       repository: "https://github.com/AaronConlon/codia",
       author: "https://x.com/intent/follow?screen_name=aaronconlondev",
+    }),
+  );
+
+  app.get("/api/health", (c) =>
+    c.json({
+      status: "ok",
+      name: "Codia",
+      version,
+      commit,
+      checkedAt: new Date().toISOString(),
     }),
   );
 

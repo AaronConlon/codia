@@ -1,0 +1,29 @@
+services:
+  codia:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${OVO_CONTAINER_NAME:-codia}:${APP_VERSION:-local}
+    container_name: ${OVO_CONTAINER_NAME:-codia}
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "${CODIA_HOST_PORT:-3000}:3000"
+    networks:
+      - ovo_web
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+networks:
+  ovo_web:
+    external: true
+    name: ${OVO_DOCKER_NETWORK:-web}

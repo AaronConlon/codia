@@ -1,0 +1,105 @@
+name: Deploy To OVO
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "OVO release tag, for example v1.0.0"
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      APP_VERSION: ${{ github.event.inputs.release_tag || github.ref_name }}
+      OVO_RELEASE_VERSION: ${{ github.event.inputs.release_tag || github.ref_name }}
+      OVO_RELEASE_COMMIT: ${{ github.sha }}
+      OVO_DEPLOY_URL: ${{ vars.OVO_DEPLOY_URL || 'https://ovo.i5lin.top' }}
+      OVO_DEPLOY_TOKEN: ${{ secrets.OVO_DEPLOY_TOKEN }}
+      OVO_TARGET_CLIENT_ID: ${{ vars.OVO_TARGET_CLIENT_ID || '3' }}
+      OVO_TARGET_SERVICE_ID: ${{ vars.OVO_TARGET_SERVICE_ID || '9' }}
+      OVO_DEPLOY_TARGET_ROOT: ${{ vars.OVO_DEPLOY_TARGET_ROOT || '/opt/codia' }}
+      OVO_DOCKER_NETWORK: ${{ vars.OVO_DOCKER_NETWORK || 'web' }}
+      OVO_COMPOSE_PROJECT_NAME: ${{ vars.OVO_COMPOSE_PROJECT_NAME || 'codia' }}
+      OVO_CONTAINER_NAME: ${{ vars.OVO_CONTAINER_NAME || 'codia' }}
+      OVO_HEALTHCHECK_URL: ${{ vars.OVO_HEALTHCHECK_URL || 'http://127.0.0.1:3000/api/health' }}
+      OVO_HEALTHCHECK_TIMEOUT_SECONDS: ${{ vars.OVO_HEALTHCHECK_TIMEOUT_SECONDS || '60' }}
+      BUNDLE_ZIP_PASSWORD: ${{ secrets.BUNDLE_ZIP_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build app
+        run: npm run build
+
+      - name: Build OVO release bundle
+        run: npm run build:release
+
+      - name: Install ovo-ci
+        run: |
+          curl -fsSL -H "Authorization: Bearer $OVO_DEPLOY_TOKEN" "$OVO_DEPLOY_URL/install/ovo-ci.sh" \
+            | bash -s -- --server "$OVO_DEPLOY_URL" --token "$OVO_DEPLOY_TOKEN"
+
+      - name: Publish to OVO
+        run: |
+          ovo-ci publish \
+            --server "$OVO_DEPLOY_URL" \
+            --token "$OVO_DEPLOY_TOKEN" \
+            --client-id "$OVO_TARGET_CLIENT_ID" \
+            --service-id "$OVO_TARGET_SERVICE_ID" \
+            --container-name "$OVO_CONTAINER_NAME" \
+            --artifact "$BUNDLE_ZIP_PATH" \
+            --bundle-version "$BUNDLE_RELEASE_TAG" \
+            --manifest-json "$BUNDLE_MANIFEST_JSON"
+
+      - name: Report failure to OVO
+        if: failure()
+        continue-on-error: true
+        run: |
+          node - <<'NODE' > /tmp/ovo-failure.json
+          const payload = {
+            release_id: process.env.OVO_RELEASE_COMMIT || process.env.GITHUB_SHA || "",
+            service_id: process.env.OVO_TARGET_SERVICE_ID || "9",
+            target_client_id: process.env.OVO_TARGET_CLIENT_ID || "3",
+            bundle_name: process.env.BUNDLE_NAME || "",
+            stage: "github-actions",
+            status: "failed",
+            message: `Codia deploy workflow failed: ${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+          };
+          process.stdout.write(JSON.stringify(payload));
+          NODE
+          curl -fsSL \
+            -H "Authorization: Bearer $OVO_DEPLOY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -X POST "$OVO_DEPLOY_URL/api/ci/activities" \
+            --data-binary @/tmp/ovo-failure.json
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Codia OVO Deploy"
+            echo ""
+            echo "- Release: ${BUNDLE_RELEASE_TAG:-$OVO_RELEASE_VERSION}"
+            echo "- Target client: $OVO_TARGET_CLIENT_ID"
+            echo "- Target service: $OVO_TARGET_SERVICE_ID"
+            echo "- Bundle: ${BUNDLE_ZIP_PATH:-not-built}"
+            echo "- SHA256: ${BUNDLE_SHA256:-not-built}"
+          } >> "$GITHUB_STEP_SUMMARY"
