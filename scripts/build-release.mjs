@@ -58,6 +58,8 @@ const runtimeEnv = {
   PORT: env.PORT || "3000",
   CODIA_HOST_PORT: env.CODIA_HOST_PORT || env.PORT || "3000",
   CODIA_DB_PATH: env.CODIA_DB_PATH || "/app/data/codia.sqlite",
+  CODIA_DATA_ROOT:
+    env.CODIA_DATA_ROOT || `${env.OVO_DEPLOY_TARGET_ROOT || "/opt/codia"}/data`,
   APP_VERSION: releaseTag,
   OVO_RELEASE_VERSION: releaseTag,
   OVO_RELEASE_COMMIT: commitSha,

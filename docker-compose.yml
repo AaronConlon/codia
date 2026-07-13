@@ -16,7 +16,7 @@ services:
     ports:
       - "${CODIA_HOST_PORT:-3000}:3000"
     volumes:
-      - codia_data:/app/data
+      - ${CODIA_DATA_ROOT:-./data}:/app/data
     networks:
       - ovo_web
     healthcheck:
@@ -30,7 +30,3 @@ networks:
   ovo_web:
     external: true
     name: ${OVO_DOCKER_NETWORK:-web}
-
-volumes:
-  codia_data:
-    name: ${OVO_COMPOSE_PROJECT_NAME:-codia}_data
