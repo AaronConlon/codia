@@ -19,16 +19,16 @@ jobs:
       APP_VERSION: ${{ github.event.inputs.release_tag || github.ref_name }}
       OVO_RELEASE_VERSION: ${{ github.event.inputs.release_tag || github.ref_name }}
       OVO_RELEASE_COMMIT: ${{ github.sha }}
-      OVO_DEPLOY_URL: ${{ vars.OVO_DEPLOY_URL || 'https://ovo.i5lin.top' }}
+      OVO_DEPLOY_URL: ${{ secrets.OVO_DEPLOY_URL || vars.OVO_DEPLOY_URL || 'https://ovo.i5lin.top' }}
       OVO_DEPLOY_TOKEN: ${{ secrets.OVO_DEPLOY_TOKEN }}
-      OVO_TARGET_CLIENT_ID: ${{ vars.OVO_TARGET_CLIENT_ID || '3' }}
-      OVO_TARGET_SERVICE_ID: ${{ vars.OVO_TARGET_SERVICE_ID || '9' }}
-      OVO_DEPLOY_TARGET_ROOT: ${{ vars.OVO_DEPLOY_TARGET_ROOT || '/opt/codia' }}
-      OVO_DOCKER_NETWORK: ${{ vars.OVO_DOCKER_NETWORK || 'web' }}
-      OVO_COMPOSE_PROJECT_NAME: ${{ vars.OVO_COMPOSE_PROJECT_NAME || 'codia' }}
-      OVO_CONTAINER_NAME: ${{ vars.OVO_CONTAINER_NAME || 'codia' }}
-      OVO_HEALTHCHECK_URL: ${{ vars.OVO_HEALTHCHECK_URL || 'http://127.0.0.1:3000/api/health' }}
-      OVO_HEALTHCHECK_TIMEOUT_SECONDS: ${{ vars.OVO_HEALTHCHECK_TIMEOUT_SECONDS || '60' }}
+      OVO_TARGET_CLIENT_ID: ${{ secrets.OVO_TARGET_CLIENT_ID || vars.OVO_TARGET_CLIENT_ID || '3' }}
+      OVO_TARGET_SERVICE_ID: ${{ secrets.OVO_TARGET_SERVICE_ID || vars.OVO_TARGET_SERVICE_ID || '9' }}
+      OVO_DEPLOY_TARGET_ROOT: ${{ secrets.OVO_DEPLOY_TARGET_ROOT || vars.OVO_DEPLOY_TARGET_ROOT || '/opt/codia' }}
+      OVO_DOCKER_NETWORK: ${{ secrets.OVO_DOCKER_NETWORK || vars.OVO_DOCKER_NETWORK || 'web' }}
+      OVO_COMPOSE_PROJECT_NAME: ${{ secrets.OVO_COMPOSE_PROJECT_NAME || vars.OVO_COMPOSE_PROJECT_NAME || 'codia' }}
+      OVO_CONTAINER_NAME: ${{ secrets.OVO_CONTAINER_NAME || vars.OVO_CONTAINER_NAME || 'codia' }}
+      OVO_HEALTHCHECK_URL: ${{ secrets.OVO_HEALTHCHECK_URL || vars.OVO_HEALTHCHECK_URL || 'http://127.0.0.1:3000/api/health' }}
+      OVO_HEALTHCHECK_TIMEOUT_SECONDS: ${{ secrets.OVO_HEALTHCHECK_TIMEOUT_SECONDS || vars.OVO_HEALTHCHECK_TIMEOUT_SECONDS || '60' }}
       BUNDLE_ZIP_PASSWORD: ${{ secrets.BUNDLE_ZIP_PASSWORD }}
     steps:
       - name: Checkout

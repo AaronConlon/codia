@@ -8,7 +8,9 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "build:release": "bash scripts/build-release.sh"
+    "build:release": "bash scripts/build-release.sh",
+    "sync:github-env": "bash scripts/sync-github-env.sh",
+    "sync:github-production-env": "bash scripts/sync-github-env.sh --env-file .env.production --env production"
   },
   "dependencies": {
     "@fontsource/fira-code": "^5.2.7",
