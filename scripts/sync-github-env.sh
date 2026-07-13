@@ -97,7 +97,7 @@ sync_one_file() {
     if [ "$DRY_RUN" = "1" ]; then
       echo "plan ${target}: ${key}"
     elif [ "$target" = "secret" ]; then
-      printf '%s' "$value" | gh secret set "$key" --env "$env_name" --body-file - >/dev/null
+      printf '%s' "$value" | gh secret set "$key" --env "$env_name" >/dev/null
     else
       gh variable set "$key" --env "$env_name" --body "$value" >/dev/null
     fi
