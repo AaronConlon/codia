@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "code-inspector-plugin": "^2.0.1",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0"
   }

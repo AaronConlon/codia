@@ -5,6 +5,7 @@ import { createCodeController } from "./routes/code/code-controller.js";
 
 type CreateAppOptions = {
   sendPublicAsset?: (filename: string, c: Context) => Response | Promise<Response>;
+  codeInspectorScript?: string;
 };
 
 export const createApp = (options: CreateAppOptions = {}) => {
@@ -49,7 +50,9 @@ export const createApp = (options: CreateAppOptions = {}) => {
     app.get("/og-image.png", (c) => options.sendPublicAsset?.("codia-og.png", c) ?? c.notFound());
   }
 
-  createCodeController(app);
+  createCodeController(app, {
+    codeInspectorScript: options.codeInspectorScript,
+  });
 
   app.doc("/openapi.json", {
     openapi: "3.1.0",

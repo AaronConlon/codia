@@ -9,6 +9,10 @@ type ExampleInitialState = {
   htmlLang: "zh-Hans" | "en" | "ja";
 };
 
+type CodeExampleRouteOptions = {
+  codeInspectorScript?: string;
+};
+
 const localeLabels = {
   zh: "中文",
   en: "English",
@@ -145,7 +149,14 @@ const defaultExampleCode = `function quickSort(values: number[]): number[] {
 const result = quickSort([8, 3, 5, 4, 7, 6, 1, 2]);
 console.log(result);`;
 
-const exampleHtml = (initialState: ExampleInitialState, origin: string) => {
+const inspectorPath = (line: number, column: number, node: string) =>
+  `src/routes/code/get-code-example.route.ts:${line}:${column}:${node}`;
+
+const exampleHtml = (
+  initialState: ExampleInitialState,
+  origin: string,
+  options: CodeExampleRouteOptions = {},
+) => {
   const canonicalUrl = `${origin}/example`;
   const logoUrl = `${origin}/assets/codia-logo.webp`;
   const faviconUrl = `${origin}/favicon.png`;
@@ -1176,8 +1187,8 @@ const exampleHtml = (initialState: ExampleInitialState, origin: string) => {
       theme="light">
     </ol>
     <template id="appTemplate">
-    <main class="app-shell">
-      <header>
+    <main class="app-shell" data-insp-path="${inspectorPath(1179, 5, "main")}">
+      <header data-insp-path="${inspectorPath(1180, 7, "header")}">
         <div>
           <div class="brand-lockup">
             <img class="brand-logo" src="/assets/codia-logo.webp" alt="Codia logo" width="52" height="52" />
@@ -1201,8 +1212,8 @@ const exampleHtml = (initialState: ExampleInitialState, origin: string) => {
         </div>
       </header>
 
-      <div class="app-layout" id="appLayout">
-        <section class="editor-section">
+      <div class="app-layout" id="appLayout" data-insp-path="${inspectorPath(1204, 7, "div")}">
+        <section class="editor-section" data-insp-path="${inspectorPath(1205, 9, "section")}">
           <div class="panel-header">
             <div class="tabs" role="tablist" aria-label="Preview mode">
               <button class="tab-button" id="editorTab" type="button" role="tab" aria-selected="true" aria-controls="editorView" data-view="editor" data-i18n="editor">${text.editor}</button>
@@ -1239,7 +1250,7 @@ const exampleHtml = (initialState: ExampleInitialState, origin: string) => {
             </swiper-slide>
           </swiper-container>
         </section>
-        <aside class="settings-panel" id="settingsPanel">
+        <aside class="settings-panel" id="settingsPanel" data-insp-path="${inspectorPath(1242, 9, "aside")}">
           <div class="panel-header" data-i18n="settings">${text.settings}</div>
           <form id="form">
             <div class="settings-grid">
@@ -1288,7 +1299,7 @@ const exampleHtml = (initialState: ExampleInitialState, origin: string) => {
           </form>
         </aside>
       </div>
-      <footer class="site-footer">
+      <footer class="site-footer" data-insp-path="${inspectorPath(1291, 7, "footer")}">
         <span>Codia · Beautiful Code Images for Humans and APIs.</span>
         <nav aria-label="Footer links">
           <a href="/llms.txt">llms.txt</a>
@@ -1300,6 +1311,7 @@ const exampleHtml = (initialState: ExampleInitialState, origin: string) => {
     </template>
     <div id="root"></div>
 
+    ${options.codeInspectorScript ? `<script>${options.codeInspectorScript}</script>` : ""}
     <script type="module">
       import React from "https://esm.sh/react@18.3.1";
       import { flushSync } from "https://esm.sh/react-dom@18.3.1";
@@ -2000,7 +2012,7 @@ const exampleHtml = (initialState: ExampleInitialState, origin: string) => {
 </html>`;
 };
 
-export const route_GET_code_example = (app: AppInstance) => {
+export const route_GET_code_example = (app: AppInstance, options: CodeExampleRouteOptions = {}) => {
   app.get("/example", (c) => {
     const initialState = resolveInitialState(
       c.req.header("cookie") ?? "",
@@ -2013,7 +2025,7 @@ export const route_GET_code_example = (app: AppInstance) => {
       sameSite: "Lax",
     });
 
-    return c.html(exampleHtml(initialState, new URL(c.req.url).origin));
+    return c.html(exampleHtml(initialState, new URL(c.req.url).origin, options));
   });
 };
 
