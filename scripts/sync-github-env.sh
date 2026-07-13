@@ -42,6 +42,45 @@ is_secret_key() {
   [[ "$key_upper" =~ (TOKEN|PASSWORD|SECRET|PRIVATE|KEY|CREDENTIAL|AUTH|WEBHOOK|BUNDLE_ZIP_PASSWORD) ]]
 }
 
+is_required_non_empty_key() {
+  case "$1" in
+    OVO_DEPLOY_TOKEN|OVO_TARGET_CLIENT_ID|OVO_TARGET_SERVICE_ID|OVO_HEALTHCHECK_URL)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+validate_env_file() {
+  local env_file="$1"
+  local line key value
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="$(trim "$line")"
+    [ -z "$line" ] && continue
+    [[ "$line" == \#* ]] && continue
+
+    if [[ "$line" == export\ * ]]; then
+      line="$(trim "${line#export }")"
+    fi
+
+    if [[ ! "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
+      continue
+    fi
+
+    key="${line%%=*}"
+    value="${line#*=}"
+    value="$(strip_quotes "$(trim "$value")")"
+
+    if is_required_non_empty_key "$key" && [ -z "$value" ]; then
+      echo "${key} is required and cannot be empty" >&2
+      exit 1
+    fi
+  done < "$env_file"
+}
+
 sync_one_file() {
   local env_file="$1"
   local env_name="$2"
@@ -50,6 +89,8 @@ sync_one_file() {
     echo "skip missing env file: $env_file"
     return 0
   fi
+
+  validate_env_file "$env_file"
 
   local repo
   repo="$(gh repo view --json nameWithOwner --jq '.nameWithOwner')"

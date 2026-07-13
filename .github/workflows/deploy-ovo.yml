@@ -52,6 +52,13 @@ jobs:
       - name: Build OVO release bundle
         run: npm run build:release
 
+      - name: Validate OVO deploy token
+        run: |
+          if [ -z "$OVO_DEPLOY_TOKEN" ]; then
+            echo "OVO_DEPLOY_TOKEN is required. Fill .env.production, run npm run sync:github-production-env, then rerun this workflow." >&2
+            exit 1
+          fi
+
       - name: Install ovo-ci
         run: |
           curl -fsSL -H "Authorization: Bearer $OVO_DEPLOY_TOKEN" "$OVO_DEPLOY_URL/install/ovo-ci.sh" \
