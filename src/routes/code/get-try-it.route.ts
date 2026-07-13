@@ -1,6 +1,7 @@
 import { setCookie } from "hono/cookie";
 import { bundledThemes } from "shiki";
 import type { AppInstance } from "../../types.js";
+import { renderSiteFooter } from "../site/site-layout.js";
 
 const shikiThemes = Object.keys(bundledThemes).sort();
 
@@ -150,14 +151,14 @@ const result = quickSort([8, 3, 5, 4, 7, 6, 1, 2]);
 console.log(result);`;
 
 const inspectorPath = (line: number, column: number, node: string) =>
-  `src/routes/code/get-code-example.route.ts:${line}:${column}:${node}`;
+  `src/routes/code/get-try-it.route.ts:${line}:${column}:${node}`;
 
 const exampleHtml = (
   initialState: ExampleInitialState,
   origin: string,
   options: CodeExampleRouteOptions = {},
 ) => {
-  const canonicalUrl = `${origin}/example`;
+  const canonicalUrl = `${origin}/try-it`;
   const logoUrl = `${origin}/assets/codia-logo.webp`;
   const faviconUrl = `${origin}/favicon.png`;
   const ogImageUrl = `${origin}/og-image.png`;
@@ -170,7 +171,7 @@ const exampleHtml = (
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Codia</title>
+    <title>Try Codia · Beautiful Code Images</title>
     <meta name="description" content="Beautiful Code Images for Humans and APIs." />
     <link rel="canonical" href="${canonicalUrl}" />
     <link rel="icon" type="image/png" href="${faviconUrl}" />
@@ -756,8 +757,8 @@ const exampleHtml = (
       .background-stepper {
         position: absolute;
         z-index: 2;
-        top: 10px;
-        right: 10px;
+        top: 8px;
+        right: 8px;
         height: 34px;
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -856,13 +857,16 @@ const exampleHtml = (
         align-items: center;
         justify-content: center;
         gap: 6px;
+        background: #111827;
+        color: #ffffff;
+        box-shadow: none;
       }
 
       .copy-button:hover,
       .download-button:hover {
-        background: transparent;
-        color: var(--text);
-        box-shadow: inset 0 0 0 1px currentColor;
+        background: #020617;
+        color: #ffffff;
+        box-shadow: 0 10px 24px rgb(15 23 42 / 22%);
       }
 
       .color-control {
@@ -890,30 +894,44 @@ const exampleHtml = (
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--error) 18%, transparent);
       }
 
+      .background-picker {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        max-height: 150px;
+        min-height: 0;
+        overflow: hidden;
+        border-radius: 12px;
+      }
+
       .background-swiper {
         width: 100%;
+        height: 100%;
         max-width: 100%;
         min-width: 0;
-        padding: 2px 0 0;
+        padding: 0;
         overflow: hidden;
       }
 
       .background-swiper::part(container) {
+        height: 100%;
         overflow: hidden;
       }
 
       .background-swiper::part(wrapper) {
+        height: 100%;
         min-width: 0;
       }
 
       .background-swiper swiper-slide {
+        height: 100%;
         min-width: 0;
       }
 
       .background-card {
         position: relative;
         width: 100%;
-        aspect-ratio: 16 / 9;
+        height: 100%;
         min-height: 0;
         display: grid;
         align-content: end;
@@ -1281,7 +1299,17 @@ const exampleHtml = (
               <label>
                 <span data-i18n="backgroundColor">${text.backgroundColor}</span>
                 <input id="bgColor" name="bgColor" type="hidden" value="${defaultBgColor}" />
-                <swiper-container class="background-swiper" id="backgroundSwiper" init="false"></swiper-container>
+                <div class="background-picker">
+                  <swiper-container class="background-swiper" id="backgroundSwiper" init="false"></swiper-container>
+                  <div class="background-stepper" aria-label="Background stepper">
+                    <button class="background-step-button" id="backgroundPrev" type="button" aria-label="Previous background" data-background-step="-1">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                    </button>
+                    <button class="background-step-button" id="backgroundNext" type="button" aria-label="Next background" data-background-step="1">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </button>
+                  </div>
+                </div>
               </label>
               <label>
                 <span data-i18n="borderSize">${text.borderSize}</span>
@@ -1299,14 +1327,7 @@ const exampleHtml = (
           </form>
         </aside>
       </div>
-      <footer class="site-footer" data-insp-path="${inspectorPath(1291, 7, "footer")}">
-        <span>Codia · Beautiful Code Images for Humans and APIs.</span>
-        <nav aria-label="Footer links">
-          <a href="/llms.txt">llms.txt</a>
-          <a href="https://x.com/intent/follow?screen_name=aaronconlondev" target="_blank" rel="noreferrer">Aaron on X</a>
-          <a href="https://github.com/AaronConlon/codia" target="_blank" rel="noreferrer">GitHub</a>
-        </nav>
-      </footer>
+      ${renderSiteFooter()}
     </main>
     </template>
     <div id="root"></div>
@@ -1464,21 +1485,7 @@ const exampleHtml = (
           button.tabIndex = 0;
           button.dataset.id = item.id;
           button.style.setProperty("--preset-bg", item.bgColor);
-          button.innerHTML = '<div class="background-stepper" aria-label="Background stepper">' +
-            '<button class="background-step-button" type="button" aria-label="Previous background" data-background-step="-1">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>' +
-            '</button>' +
-            '<button class="background-step-button" type="button" aria-label="Next background" data-background-step="1">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>' +
-            '</button>' +
-            '</div><span>' + item.label + "</span>";
-          button.querySelectorAll(".background-step-button").forEach((stepButton) => {
-            stepButton.addEventListener("click", (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              stepBackground(Number(stepButton.dataset.backgroundStep));
-            });
-          });
+          button.innerHTML = "<span>" + item.label + "</span>";
           button.addEventListener("click", () => {
             selectBackground(item);
           });
@@ -1516,6 +1523,12 @@ const exampleHtml = (
         const nextIndex = (currentIndex + delta + backgroundPresets.length) % backgroundPresets.length;
         selectBackground(backgroundPresets[nextIndex]);
       };
+
+      document.querySelectorAll(".background-step-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          stepBackground(Number(button.dataset.backgroundStep));
+        });
+      });
 
       const setSettingsOpen = (isOpen) => {
         document.body.classList.toggle("settings-open", isOpen);
@@ -1821,7 +1834,7 @@ const exampleHtml = (
         viewSwiper.swiper?.update();
       };
 
-      const requestImage = async ({ silent = false } = {}) => {
+      const requestImage = async ({ silent = false, source = "try-it-preview" } = {}) => {
         if (!silent) setStatus(t("rendering"));
         const response = await fetch("/v1/code/render", {
           method: "POST",
@@ -1834,6 +1847,7 @@ const exampleHtml = (
             containerWidth: Number(containerWidth.value || 600),
             showLineNumbers: showLineNumbers.checked,
             code: code.value,
+            source,
           }),
         });
         if (!response.ok) throw new Error(await response.text());
@@ -1868,7 +1882,7 @@ const exampleHtml = (
 
       const copyImage = async () => {
         try {
-          const data = await requestImage();
+          const data = await requestImage({ source: "try-it-copy" });
           const blob = await (await fetch(data.dataUrl)).blob();
           await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
           setStatus(t("copied"));
@@ -1879,7 +1893,7 @@ const exampleHtml = (
 
       const downloadImage = async () => {
         try {
-          const data = await requestImage();
+          const data = await requestImage({ source: "try-it-download" });
           const link = document.createElement("a");
           link.href = data.dataUrl;
           link.download = "code-snip.png";
@@ -2012,8 +2026,10 @@ const exampleHtml = (
 </html>`;
 };
 
-export const route_GET_code_example = (app: AppInstance, options: CodeExampleRouteOptions = {}) => {
-  app.get("/example", (c) => {
+export const route_GET_try_it = (app: AppInstance, options: CodeExampleRouteOptions = {}) => {
+  app.get("/example", (c) => c.redirect("/try-it", 302));
+
+  app.get("/try-it", (c) => {
     const initialState = resolveInitialState(
       c.req.header("cookie") ?? "",
       c.req.header("accept-language") ?? "",

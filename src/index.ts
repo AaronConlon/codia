@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { serve } from "@hono/node-server";
 import type { Context } from "hono";
 import { createApp } from "./app.js";
+import { migrateDatabase } from "./db/migrate.js";
 
 const publicAsset = (filename: string) => new URL(`../public/${filename}`, import.meta.url);
 const isProduction = process.env.NODE_ENV === "production";
@@ -45,6 +46,8 @@ const createCodeInspectorScript = async () => {
 
   return getWebComponentCode(options, record.port);
 };
+
+migrateDatabase();
 
 const app = createApp({
   sendPublicAsset,

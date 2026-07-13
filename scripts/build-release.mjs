@@ -57,6 +57,7 @@ await cp(join(rootDir, "scripts", "ovo"), join(releaseDir, "scripts", "ovo"), {
 const runtimeEnv = {
   PORT: env.PORT || "3000",
   CODIA_HOST_PORT: env.CODIA_HOST_PORT || env.PORT || "3000",
+  CODIA_DB_PATH: env.CODIA_DB_PATH || "/app/data/codia.sqlite",
   APP_VERSION: releaseTag,
   OVO_RELEASE_VERSION: releaseTag,
   OVO_RELEASE_COMMIT: commitSha,

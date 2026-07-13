@@ -9,4 +9,5 @@ dist/
 .DS_Store
 .playwright-cli/
 output/
+data/
 *.log

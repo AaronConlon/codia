@@ -5,7 +5,7 @@ import { codeToTokens, bundledLanguages, bundledThemes } from "shiki";
 import type { BundledLanguage, BundledTheme, SpecialLanguage } from "shiki";
 import { formatCodeForRendering } from "./code-formatter.js";
 
-type RenderCodeImageInput = {
+export type RenderCodeImageInput = {
   code: string;
   language: string;
   theme?: string;
@@ -16,7 +16,7 @@ type RenderCodeImageInput = {
   showLineNumbers?: boolean;
 };
 
-type RenderCodeImageOutput = {
+export type RenderCodeImageResult = {
   imageBase64: string;
   dataUrl: string;
   mimeType: "image/png";
@@ -52,7 +52,7 @@ let firaCodeFonts: Promise<Font[]> | null = null;
 
 export const renderCodeImage = async (
   input: RenderCodeImageInput,
-): Promise<RenderCodeImageOutput> => {
+): Promise<RenderCodeImageResult> => {
   const language = normalizeLanguage(input.language);
   const theme = normalizeTheme(input.theme);
   const bgColor = normalizeBgColor(input.bgColor ?? input.backgroundColor);

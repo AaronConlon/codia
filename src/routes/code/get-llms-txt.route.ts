@@ -28,6 +28,8 @@ The optional bgColor field controls the outer area behind the code window. It su
 linear-gradient(...), and radial-gradient(...). The legacy backgroundColor field is still accepted
 for compatibility.
 The optional showLineNumbers field controls whether rendered images include line numbers.
+Every successful render is recorded in SQLite. The PNG base64 payload is stored together with
+render metadata such as language, theme, dimensions, line count, and source.
 
 ### Request
 
@@ -46,6 +48,8 @@ Fields:
 - containerWidth: number, optional. Code window width in pixels. Default: 600. Minimum: 400.
   Maximum: 1920. The actual value may be raised to minContainerWidth.
 - showLineNumbers: boolean, optional. Whether to show line numbers. Default: true.
+- source: string, optional. One of api, try-it-preview, try-it-copy, try-it-download.
+  Default: api.
 
 Example request:
 
@@ -82,6 +86,7 @@ Fields:
 - containerWidth: number. Actual code window width used for the render.
 - width: number. Final image width in pixels. Equal to containerWidth + borderSize * 2.
 - height: number. Image height in pixels.
+- recordId: number. SQLite render record id for this generated image.
 
 Example response shape:
 
@@ -100,16 +105,25 @@ Example response shape:
   "minContainerWidth": 400,
   "containerWidth": 600,
   "width": 624,
-  "height": 164
+  "height": 164,
+  "recordId": 42
 }
 \`\`\`
 
+## Stats Endpoint
+
+GET /v1/code/stats
+
+Returns aggregate SQLite render stats for the homepage and external tools, including total renders,
+total stored base64 payload size, total rendered lines, top languages, and recent generation records.
+
 ## Human Preview
 
-GET /example
+GET /try-it
 
-Returns an HTML page where users can choose a language, enter code, live-preview highlighted
-editing, switch to the final rendered image tab, and copy or download the generated PNG.
+Returns an HTML page where users can choose a language, enter code, switch between editor and
+final rendered image tabs, and copy or download the generated PNG. The legacy /example route
+redirects to /try-it.
 
 ## OpenAPI
 

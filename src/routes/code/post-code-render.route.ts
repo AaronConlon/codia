@@ -1,6 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import type { AppInstance } from "../../types.js";
 import { renderCodeImage } from "../../services/code-image-renderer.js";
+import { createRenderRecord } from "../../services/render-records.js";
 
 const schemaCodeRenderRequest = z
   .object({
@@ -78,6 +79,14 @@ const schemaCodeRenderRequest = z
         example: true,
         description: "是否在代码图片中展示行号。默认 true。",
       }),
+    source: z
+      .enum(["api", "try-it-preview", "try-it-copy", "try-it-download"])
+      .default("api")
+      .openapi({
+        example: "api",
+        description:
+          "生成来源。API 直接调用默认 api；/try-it 页面复制和下载会分别标记为 try-it-copy 与 try-it-download。",
+      }),
   })
   .openapi("CodeRenderRequest");
 
@@ -141,6 +150,10 @@ const schemaCodeRenderResponse = z
       example: 292,
       description: "生成图片高度，单位 px。",
     }),
+    recordId: z.number().int().positive().openapi({
+      example: 42,
+      description: "本次图片生成记录在 SQLite 中的自增 id。",
+    }),
   })
   .openapi("CodeRenderResponse");
 
@@ -177,7 +190,15 @@ export const route_POST_code_render = (app: AppInstance) => {
   app.openapi(route, async (c) => {
     const body = c.req.valid("json");
     const result = await renderCodeImage(body);
+    const record = createRenderRecord({
+      source: body.source,
+      request: body,
+      result,
+    });
 
-    return c.json(result);
+    return c.json({
+      ...result,
+      recordId: record.id,
+    });
   });
 };

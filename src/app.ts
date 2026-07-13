@@ -2,6 +2,7 @@ import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import type { Context } from "hono";
 import { createCodeController } from "./routes/code/code-controller.js";
+import { createSiteController } from "./routes/site/site-controller.js";
 
 type CreateAppOptions = {
   sendPublicAsset?: (filename: string, c: Context) => Response | Promise<Response>;
@@ -13,20 +14,7 @@ export const createApp = (options: CreateAppOptions = {}) => {
   const version = process.env.OVO_RELEASE_VERSION || process.env.APP_VERSION || "dev";
   const commit = process.env.OVO_RELEASE_COMMIT || process.env.GITHUB_SHA || "";
 
-  app.get("/", (c) =>
-    c.json({
-      name: "Codia",
-      slogan: "Beautiful Code Images for Humans and APIs.",
-      version,
-      commit,
-      example: "/example",
-      llms: "/llms.txt",
-      docs: "/docs",
-      openapi: "/openapi.json",
-      repository: "https://github.com/AaronConlon/codia",
-      author: "https://x.com/intent/follow?screen_name=aaronconlondev",
-    }),
-  );
+  createSiteController(app);
 
   app.get("/api/health", (c) =>
     c.json({
