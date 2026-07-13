@@ -147,7 +147,7 @@ console.log(result);`;
 
 const exampleHtml = (initialState: ExampleInitialState, origin: string) => {
   const canonicalUrl = `${origin}/example`;
-  const logoUrl = `${origin}/assets/codia-logo.png`;
+  const logoUrl = `${origin}/assets/codia-logo.webp`;
   const faviconUrl = `${origin}/favicon.png`;
   const ogImageUrl = `${origin}/og-image.png`;
   const text = exampleTranslations[initialState.locale];
@@ -1180,7 +1180,7 @@ const exampleHtml = (initialState: ExampleInitialState, origin: string) => {
       <header>
         <div>
           <div class="brand-lockup">
-            <img class="brand-logo" src="/assets/codia-logo.png" alt="Codia logo" width="52" height="52" />
+            <img class="brand-logo" src="/assets/codia-logo.webp" alt="Codia logo" width="52" height="52" />
             <h1>Codia</h1>
           </div>
           <p data-i18n="subtitle"><strong>${text.subtitle}</strong></p>

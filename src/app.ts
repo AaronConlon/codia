@@ -4,7 +4,7 @@ import type { Context } from "hono";
 import { createCodeController } from "./routes/code/code-controller.js";
 
 type CreateAppOptions = {
-  sendPngAsset?: (filename: string, c: Context) => Response | Promise<Response>;
+  sendPublicAsset?: (filename: string, c: Context) => Response | Promise<Response>;
 };
 
 export const createApp = (options: CreateAppOptions = {}) => {
@@ -37,13 +37,16 @@ export const createApp = (options: CreateAppOptions = {}) => {
     }),
   );
 
-  if (options.sendPngAsset) {
-    app.get("/favicon.png", (c) => options.sendPngAsset?.("favicon.png", c) ?? c.notFound());
-    app.get("/favicon.ico", (c) => options.sendPngAsset?.("favicon.png", c) ?? c.notFound());
+  if (options.sendPublicAsset) {
+    app.get("/favicon.png", (c) => options.sendPublicAsset?.("favicon.png", c) ?? c.notFound());
+    app.get("/favicon.ico", (c) => options.sendPublicAsset?.("favicon.png", c) ?? c.notFound());
     app.get("/assets/codia-logo.png", (c) =>
-      options.sendPngAsset?.("codia-logo.png", c) ?? c.notFound(),
+      options.sendPublicAsset?.("codia-logo.png", c) ?? c.notFound(),
     );
-    app.get("/og-image.png", (c) => options.sendPngAsset?.("codia-og.png", c) ?? c.notFound());
+    app.get("/assets/codia-logo.webp", (c) =>
+      options.sendPublicAsset?.("codia-logo.webp", c) ?? c.notFound(),
+    );
+    app.get("/og-image.png", (c) => options.sendPublicAsset?.("codia-og.png", c) ?? c.notFound());
   }
 
   createCodeController(app);
