@@ -16,7 +16,6 @@ type CodeExampleRouteOptions = {
 
 const exampleTranslations = {
   zh: {
-    navHome: "首页",
     navTryIt: "Playground",
     navDocs: "API 文档",
     languageLabel: "语言",
@@ -36,6 +35,7 @@ const exampleTranslations = {
     showLineNumbers: "显示行号",
     copy: "复制图片",
     download: "下载",
+    clear: "清空",
     copied: "图片已复制",
     downloaded: "已下载",
     failed: "操作失败",
@@ -45,7 +45,6 @@ const exampleTranslations = {
     borderRadiusRange: "圆角必须大于等于 0 且小于边距",
   },
   en: {
-    navHome: "Home",
     navTryIt: "Playground",
     navDocs: "API Docs",
     languageLabel: "Language",
@@ -65,6 +64,7 @@ const exampleTranslations = {
     showLineNumbers: "Line numbers",
     copy: "Copy Image",
     download: "Download",
+    clear: "Clear",
     copied: "Image copied",
     downloaded: "Downloaded",
     failed: "Action failed",
@@ -74,7 +74,6 @@ const exampleTranslations = {
     borderRadiusRange: "Corner radius must be >= 0 and smaller than padding",
   },
   ja: {
-    navHome: "ホーム",
     navTryIt: "Playground",
     navDocs: "API ドキュメント",
     languageLabel: "言語",
@@ -94,6 +93,7 @@ const exampleTranslations = {
     showLineNumbers: "行番号",
     copy: "画像をコピー",
     download: "ダウンロード",
+    clear: "クリア",
     copied: "画像をコピーしました",
     downloaded: "ダウンロードしました",
     failed: "失敗しました",
@@ -407,15 +407,6 @@ const exampleHtml = (
         align-items: center;
       }
 
-      header {
-        width: 100%;
-        display: flex;
-        align-items: end;
-        justify-content: space-between;
-        gap: 20px;
-        margin-bottom: 18px;
-      }
-
       h1 {
         margin: 0;
         font-size: clamp(30px, 4vw, 48px);
@@ -523,7 +514,7 @@ const exampleHtml = (
         gap: 6px;
         padding: 0 12px;
         border: 1px solid transparent;
-        border-radius: 999px;
+        border-radius: 2px;
         background: transparent;
         color: rgb(248 250 252 / 68%);
         text-decoration: none;
@@ -1089,25 +1080,14 @@ const exampleHtml = (
         display: none !important;
       }
 
-      .view-swiper {
+      .view-stack {
         width: 100%;
         margin-top: 120px;
-        display: block;
         overflow: hidden;
       }
 
-      .view-swiper::part(container) {
-        overflow: hidden;
-      }
-
-      .view-swiper::part(wrapper) {
-        align-items: stretch;
-      }
-
-      .view-swiper swiper-slide {
-        width: 100%;
-        height: auto;
-        overflow: hidden;
+      .view-stack .view {
+        animation: view-fade-in 220ms ease-out both;
       }
 
       .editor-canvas {
@@ -1146,18 +1126,16 @@ const exampleHtml = (
       }
 
       .view.is-entering {
-        animation: view-enter 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+        animation: view-fade-in 220ms ease-out both;
       }
 
-      @keyframes view-enter {
+      @keyframes view-fade-in {
         from {
           opacity: 0;
-          transform: translateY(8px);
         }
 
         to {
           opacity: 1;
-          transform: translateY(0);
         }
       }
 
@@ -1208,17 +1186,78 @@ const exampleHtml = (
         background: rgb(0 0 0 / 28%);
       }
 
+      .clear-code-button {
+        position: absolute;
+        right: 14px;
+        bottom: 14px;
+        height: 34px;
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0 10px;
+        border-color: rgb(15 23 42 / 10%);
+        border-radius: 8px;
+        background: rgb(255 255 255 / 92%);
+        color: rgb(15 23 42 / 76%);
+        font-size: 12px;
+        font-weight: 800;
+        box-shadow: 0 10px 26px rgb(15 23 42 / 14%);
+        backdrop-filter: blur(10px);
+      }
+
+      .clear-code-button:hover {
+        background: #ffffff;
+        color: var(--text);
+        box-shadow: 0 12px 30px rgb(15 23 42 / 18%);
+      }
+
+      .clear-code-button svg {
+        width: 14px;
+        height: 14px;
+      }
+
       [hidden] {
         display: none !important;
       }
 
       @media (max-width: 860px) {
-        header {
-          display: block;
+        main,
+        main.app-shell {
+          width: min(100% - 24px, 1366px);
+          padding: 18px 0 26px;
+        }
+
+        .panel-header {
+          min-height: 0;
+          align-items: stretch;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .tabs {
+          width: 100%;
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .tab-button {
+          width: 100%;
+          min-width: 0;
         }
 
         .preview-tools {
-          justify-content: flex-start;
+          width: 100%;
+          justify-content: stretch;
+          display: grid;
+          grid-template-columns: 1fr 1fr 40px;
+        }
+
+        .copy-button,
+        .download-button {
+          width: 100%;
+          min-width: 0;
         }
 
         .app-layout {
@@ -1233,10 +1272,77 @@ const exampleHtml = (
           margin-left: 0;
           margin-top: 18px;
           padding: 14px;
+          max-height: none;
         }
 
         body.settings-open .editor-section {
           min-width: 0;
+        }
+
+        .view-stack {
+          margin-top: 52px;
+        }
+
+        .editor-body,
+        .code-input {
+          min-height: 420px;
+        }
+
+        .code-input {
+          padding: 14px 14px 60px;
+          font-size: 14px;
+          line-height: 22px;
+          border-radius: 8px;
+        }
+
+        .clear-code-button {
+          right: 10px;
+          bottom: 10px;
+        }
+
+        .image-stage {
+          min-height: 420px;
+          overflow: hidden;
+        }
+
+        .final-image {
+          max-height: 72vh;
+          object-fit: contain;
+        }
+
+        .site-footer {
+          align-items: stretch;
+          flex-direction: column;
+          padding: 22px 0 24px;
+          gap: 14px;
+        }
+
+        .site-footer-brand {
+          width: 100%;
+          align-items: flex-start;
+          flex-wrap: wrap;
+          line-height: 1.5;
+          margin: 24px 0;
+        }
+
+        .site-footer-brand span {
+          flex: 0 0 100%;
+        }
+
+        .site-footer nav {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px;
+        }
+
+        .site-footer a {
+          width: 100%;
+          justify-content: flex-start;
+          min-height: 40px;
+          padding: 0 10px;
+          border-radius: 2px;
+          border-color: rgb(255 255 255 / 8%);
+          background: rgb(255 255 255 / 4%);
         }
 
       }
@@ -1284,25 +1390,25 @@ const exampleHtml = (
               </button>
             </div>
           </div>
-          <swiper-container class="view-swiper" id="viewSwiper" init="false">
-            <swiper-slide>
-              <div class="editor-stage view" id="editorView" role="tabpanel" aria-labelledby="editorTab">
-                <div class="editor-canvas" id="editorCanvas">
-                  <div class="editor-window" id="editorWindow">
-                    <div class="editor-body" id="editorBody">
-                      <textarea class="code-input" id="code" name="code" spellcheck="false" placeholder="${text.codePlaceholder}"></textarea>
-                    </div>
+          <div class="view-stack" id="viewStack">
+            <div class="editor-stage view" id="editorView" role="tabpanel" aria-labelledby="editorTab">
+              <div class="editor-canvas" id="editorCanvas">
+                <div class="editor-window" id="editorWindow">
+                  <div class="editor-body" id="editorBody">
+                    <textarea class="code-input" id="code" name="code" spellcheck="false" placeholder="${text.codePlaceholder}"></textarea>
+                    <button class="clear-code-button" id="clearCode" type="button" aria-label="${text.clear}">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                      <span data-i18n="clear">${text.clear}</span>
+                    </button>
                   </div>
                 </div>
               </div>
-            </swiper-slide>
-            <swiper-slide>
-              <div class="image-stage view" id="imageView" role="tabpanel" aria-labelledby="imageTab">
-                <img class="final-image" id="finalImage" alt="Rendered code image" hidden />
-                <div class="image-empty" id="imageEmpty" data-i18n="imageEmpty">${text.imageEmpty}</div>
-              </div>
-            </swiper-slide>
-          </swiper-container>
+            </div>
+            <div class="image-stage view" id="imageView" role="tabpanel" aria-labelledby="imageTab" hidden>
+              <img class="final-image" id="finalImage" alt="Rendered code image" hidden />
+              <div class="image-empty" id="imageEmpty" data-i18n="imageEmpty">${text.imageEmpty}</div>
+            </div>
+          </div>
         </section>
         <aside class="settings-panel" id="settingsPanel" data-insp-path="${inspectorPath(1242, 9, "aside")}">
           <div class="panel-header" data-i18n="settings">${text.settings}</div>
@@ -1431,13 +1537,13 @@ const exampleHtml = (
       const form = $("#form");
       const copy = $("#copy");
       const download = $("#download");
+      const clearCode = $("#clearCode");
       const code = $("#code");
       code.defaultValue = defaultCode;
       code.value = defaultCode;
       const editorCanvas = $("#editorCanvas");
       const editorView = $("#editorView");
       const imageView = $("#imageView");
-      const viewSwiper = $("#viewSwiper");
       const editorTab = $("#editorTab");
       const imageTab = $("#imageTab");
       const finalImage = $("#finalImage");
@@ -1446,6 +1552,8 @@ const exampleHtml = (
       const editorBody = $("#editorBody");
       const localeTrigger = $(".site-locale-trigger");
       const localeMenu = $("#site-locale-menu");
+      const siteHeader = $(".site-header");
+      const menuTrigger = $(".site-menu-trigger");
       const settingsToggle = $("#settingsToggle");
       const maxLineLength = 84;
       let latestDataUrl = "";
@@ -1462,7 +1570,6 @@ const exampleHtml = (
       let currentLocale = initialState.locale;
       let playClickSound = () => {};
       let activeRenderRequests = 0;
-      let viewSwiperFrame = 0;
       const soundProfiles = {
         tab: { start: 420, end: 620, gain: 0.055, duration: 0.08 },
         menu: { start: 560, end: 460, gain: 0.045, duration: 0.07 },
@@ -1593,31 +1700,6 @@ const exampleHtml = (
         }
       };
 
-      const updateViewSwiperLayout = (speed = 180) => {
-        window.cancelAnimationFrame(viewSwiperFrame);
-        viewSwiperFrame = window.requestAnimationFrame(() => {
-          viewSwiper.swiper?.update();
-          viewSwiper.swiper?.updateAutoHeight(speed);
-        });
-      };
-
-      const initializeViewSwiper = () => {
-        Object.assign(viewSwiper, {
-          slidesPerView: 1,
-          speed: 240,
-          autoHeight: true,
-          observer: true,
-          observeParents: true,
-          resizeObserver: true,
-        });
-        if (!viewSwiper.swiper) {
-          viewSwiper.initialize();
-        } else {
-          viewSwiper.swiper.update();
-        }
-        updateViewSwiperLayout(0);
-      };
-
       const stepBackground = (delta) => {
         const currentIndex = Math.max(
           backgroundPresets.findIndex((item) => item.id === selectedBackground.id),
@@ -1653,21 +1735,8 @@ const exampleHtml = (
         const isImage = view === "image";
         editorTab.setAttribute("aria-selected", String(!isImage));
         imageTab.setAttribute("aria-selected", String(isImage));
-        viewSwiper.swiper?.slideTo(isImage ? 1 : 0);
-        updateViewSwiperLayout();
-        updateTabIndicator();
-        animateActiveView(isImage ? imageView : editorView);
-        if (isImage) scheduleImageRender();
-      };
-
-      const syncActiveViewFromSwiper = () => {
-        const nextView = viewSwiper.swiper?.activeIndex === 1 ? "image" : "editor";
-        if (activeView === nextView) return;
-        activeView = nextView;
-        const isImage = nextView === "image";
-        editorTab.setAttribute("aria-selected", String(!isImage));
-        imageTab.setAttribute("aria-selected", String(isImage));
-        updateViewSwiperLayout();
+        editorView.hidden = isImage;
+        imageView.hidden = !isImage;
         updateTabIndicator();
         animateActiveView(isImage ? imageView : editorView);
         if (isImage) scheduleImageRender();
@@ -1696,11 +1765,12 @@ const exampleHtml = (
         languageFilter.placeholder = t("language");
         themeFilter.placeholder = t("codeTheme");
         code.placeholder = t("codePlaceholder");
+        clearCode.setAttribute("aria-label", t("clear"));
       };
 
       const getInteractionKind = (target) => {
         if (target.closest(".tab-button")) return "tab";
-        if (target.closest("#copy, #download")) return "action";
+        if (target.closest("#copy, #download, #clearCode")) return "action";
         if (target.closest("#settingsToggle, .theme-stepper button, .background-stepper button")) return "toggle";
         if (target.closest(".site-locale-trigger, [data-site-locale], .option")) return "menu";
         if (target.closest("input, textarea, .combobox")) return "input";
@@ -1919,6 +1989,8 @@ const exampleHtml = (
         return true;
       };
 
+      const getEditorMinHeight = () => window.matchMedia("(max-width: 860px)").matches ? 420 : 520;
+
       const updateEditorFrame = () => {
         borderSize.value = normalizeBorderSize(borderSize.value);
         applyBorderRadius();
@@ -1929,12 +2001,11 @@ const exampleHtml = (
           lastValidContainerWidth = containerWidth.value;
         }
         const lineCount = Math.max(formatCode(code.value).split("\n").length, 1);
-        const editorBodyHeight = Math.max(520, lineCount * 24 + 48);
+        const editorBodyHeight = Math.max(getEditorMinHeight(), lineCount * 24 + 72);
         editorCanvas.style.padding = "0";
         editorBody.style.height = editorBodyHeight + "px";
         code.style.height = editorBodyHeight + "px";
         editorWindow.style.width = "100%";
-        updateViewSwiperLayout();
       };
 
       const requestImage = async ({ silent = false, source = "try-it-preview", format } = {}) => {
@@ -1962,7 +2033,6 @@ const exampleHtml = (
           finalImage.src = data.dataUrl;
           finalImage.hidden = false;
           imageEmpty.hidden = true;
-          updateViewSwiperLayout();
           imageDirty = false;
           currentMinContainerWidth = data.minContainerWidth;
           containerWidth.min = String(data.minContainerWidth);
@@ -2015,10 +2085,26 @@ const exampleHtml = (
         }
       };
 
+      const clearCodeInput = () => {
+        if (!code.value) {
+          code.focus();
+          return;
+        }
+        code.value = "";
+        code.dispatchEvent(new Event("input", { bubbles: true }));
+        code.focus();
+      };
+
       const closeLocaleMenu = () => {
         if (!localeTrigger || !localeMenu) return;
         localeTrigger.setAttribute("aria-expanded", "false");
         localeMenu.hidden = true;
+      };
+
+      const closeHeaderMenu = () => {
+        if (!siteHeader || !menuTrigger) return;
+        siteHeader.classList.remove("is-menu-open");
+        menuTrigger.setAttribute("aria-expanded", "false");
       };
 
       const toggleLocaleMenu = () => {
@@ -2032,6 +2118,13 @@ const exampleHtml = (
         event.stopPropagation();
         toggleLocaleMenu();
       });
+      menuTrigger?.addEventListener("click", (event) => {
+        if (!siteHeader) return;
+        event.stopPropagation();
+        const isOpen = siteHeader.classList.toggle("is-menu-open");
+        menuTrigger.setAttribute("aria-expanded", String(isOpen));
+        if (!isOpen) closeLocaleMenu();
+      });
       document.querySelectorAll("[data-site-locale]").forEach((button) => {
         button.addEventListener("click", () => {
           const locale = button.getAttribute("data-site-locale");
@@ -2042,8 +2135,6 @@ const exampleHtml = (
       });
       editorTab.addEventListener("click", () => setActiveView("editor"));
       imageTab.addEventListener("click", () => setActiveView("image"));
-      viewSwiper.addEventListener("swiperslidechange", syncActiveViewFromSwiper);
-      finalImage.addEventListener("load", () => updateViewSwiperLayout());
       backgroundSwiper.addEventListener("swiperslidechange", () => {
         const nextIndex = backgroundSwiper.swiper?.activeIndex ?? 0;
         selectBackground(backgroundPresets[nextIndex] ?? backgroundPresets[0], { slide: false });
@@ -2055,9 +2146,15 @@ const exampleHtml = (
         if (localeTrigger && localeMenu && !localeMenu.contains(event.target) && !localeTrigger.contains(event.target)) {
           closeLocaleMenu();
         }
+        if (siteHeader && !siteHeader.contains(event.target)) {
+          closeHeaderMenu();
+        }
       });
       document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") closeLocaleMenu();
+        if (event.key === "Escape") {
+          closeLocaleMenu();
+          closeHeaderMenu();
+        }
       });
 
       languageFilter.addEventListener("focus", () => openOptions(languageOptions, languageFilter, languages, activeLanguageIndex, selectLanguage));
@@ -2112,6 +2209,7 @@ const exampleHtml = (
 
       copy.addEventListener("click", copyImage);
       download.addEventListener("click", downloadImage);
+      clearCode.addEventListener("click", clearCodeInput);
       code.addEventListener("input", () => {
         invalidateImage();
         updateEditorFrame();
@@ -2144,7 +2242,10 @@ const exampleHtml = (
           invalidateImage();
         }
       });
-      window.addEventListener("resize", updateTabIndicator);
+      window.addEventListener("resize", () => {
+        updateTabIndicator();
+        updateEditorFrame();
+      });
 
       initializeSettingsPanel();
       setupAudio();
@@ -2152,7 +2253,6 @@ const exampleHtml = (
       selectedBackground = getStoredBackground();
       renderBackgroundPresets();
       initializeBackgroundSwiper();
-      initializeViewSwiper();
       selectBackground(selectedBackground, { persist: false });
       selectLanguage(selectedLanguage);
       selectCodeTheme(selectedCodeTheme);

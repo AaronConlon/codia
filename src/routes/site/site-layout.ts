@@ -1,7 +1,6 @@
 export type SiteLocale = "zh" | "en" | "ja";
 
 export type SiteCopy = {
-  navHome: string;
   navTryIt: string;
   navDocs: string;
   languageLabel: string;
@@ -12,7 +11,6 @@ export type SiteCopy = {
 };
 
 const defaultCopy: SiteCopy = {
-  navHome: "Home",
   navTryIt: "Playground",
   navDocs: "API Docs",
   languageLabel: "Language",
@@ -45,12 +43,20 @@ export const renderSiteHeader = (
       <img src="/assets/codia-logo.webp" width="38" height="38" alt="" />
       <span>Codia</span>
     </a>
-    <div class="site-header-actions">
+    <button class="site-menu-trigger" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="site-header-actions">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>
+    </button>
+    <div class="site-header-actions" id="site-header-actions">
       <nav class="site-nav" aria-label="Primary navigation">
-        <a href="/"${active === "home" ? ' aria-current="page"' : ""}>${text.navHome}</a>
         <a href="/llms.txt" class="site-nav-llms"><span class="site-nav-llms-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="10" x="3" y="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" x2="8" y1="16" y2="16"/><line x1="16" x2="16" y1="16" y2="16"/></svg></span>llms.txt</a>
       </nav>
-      <a class="site-playground-link" href="/try-it"${active === "try-it" ? ' aria-current="page"' : ""}>${text.navTryIt}</a>
+      <a class="site-playground-link" href="/try-it"${active === "try-it" ? ' aria-current="page"' : ""}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 17-5-5 5-5"/><path d="m16 7 5 5-5 5"/><path d="m14 4-4 16"/></svg>${text.navTryIt}</a>
+      <a class="site-avatar-link" href="${xFollowUrl}" target="_blank" rel="noreferrer" aria-label="Follow Aaron on X">
+        <img class="site-avatar" src="${profileImageUrl}" width="38" height="38" alt="" />
+      </a>
+      <a class="site-icon-link" href="${githubUrl}" target="_blank" rel="noreferrer" aria-label="AaronConlon/codia on GitHub">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.3-.85 2.1"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+      </a>
       <div class="site-locale" aria-label="${text.languageLabel}">
         <button type="button" class="site-locale-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="site-locale-menu">
           <span class="site-locale-trigger-icon">
@@ -76,12 +82,6 @@ export const renderSiteHeader = (
             .join("")}
         </ul>
       </div>
-      <a class="site-avatar-link" href="${xFollowUrl}" target="_blank" rel="noreferrer" aria-label="Follow Aaron on X">
-        <img class="site-avatar" src="${profileImageUrl}" width="38" height="38" alt="" />
-      </a>
-      <a class="site-icon-link" href="${githubUrl}" target="_blank" rel="noreferrer" aria-label="AaronConlon/codia on GitHub">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.3-.85 2.1"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-      </a>
     </div>
   </header>
 `;
@@ -156,6 +156,7 @@ export const siteShellStyles = `
 
   .site-header {
     min-height: 78px;
+    position: relative;
   }
 
   .site-header-actions {
@@ -165,6 +166,45 @@ export const siteShellStyles = `
     justify-content: flex-end;
     gap: 10px;
     min-width: 0;
+  }
+
+  .site-menu-trigger {
+    display: none;
+    width: 40px;
+    height: 40px;
+    margin-left: auto;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(15 23 42 / 10%);
+    border-radius: 999px;
+    background: var(--panel);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgb(15 23 42 / 10%);
+    transition-property: color, background, border-color, transform, box-shadow;
+    transition-duration: 160ms;
+  }
+
+  .site-menu-trigger:hover,
+  .site-menu-trigger[aria-expanded="true"] {
+    background: rgb(15 23 42 / 4%);
+    border-color: rgb(15 23 42 / 18%);
+    box-shadow: 0 12px 28px rgb(15 23 42 / 14%);
+  }
+
+  .site-menu-trigger:active {
+    transform: scale(0.96);
+  }
+
+  .site-menu-trigger svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   .site-brand {
@@ -276,6 +316,10 @@ export const siteShellStyles = `
     border-color: rgb(15 23 42 / 10%);
   }
 
+  .site-footer a {
+    border-radius: 2px;
+  }
+
   .site-nav a[aria-current="page"],
   .site-playground-link[aria-current="page"] {
     color: var(--text);
@@ -289,6 +333,17 @@ export const siteShellStyles = `
 
   .site-nav-llms {
     gap: 6px;
+  }
+
+  .site-playground-link svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: 0 0 auto;
   }
 
   .site-footer a svg {
@@ -509,18 +564,155 @@ export const siteShellStyles = `
   }
 
   @media (max-width: 760px) {
-    .site-header,
-    .site-footer {
-      align-items: flex-start;
-      flex-direction: column;
+    .site-header {
+      align-items: center;
       padding: 18px 0;
+      gap: 12px;
+    }
+
+    .site-menu-trigger {
+      display: inline-flex;
     }
 
     .site-header-actions {
+      position: absolute;
+      z-index: 60;
+      top: calc(100% - 8px);
+      right: 0;
+      width: min(320px, calc(100vw - 32px));
       margin-left: 0;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      border: 1px solid rgb(15 23 42 / 10%);
+      border-radius: 16px;
+      background: #ffffff;
+      color: #0f172a;
+      box-shadow: 0 22px 60px rgb(15 23 42 / 18%);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-6px);
+      pointer-events: none;
+      transition:
+        opacity 160ms ease,
+        transform 160ms ease,
+        visibility 160ms ease;
+    }
+
+    .site-header.is-menu-open .site-header-actions {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .site-nav,
+    .site-footer nav {
       width: 100%;
-      flex-wrap: wrap;
+    }
+
+    .site-nav {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .site-nav a,
+    .site-playground-link,
+    .site-locale-trigger {
+      width: 100%;
       justify-content: flex-start;
+      color: #0f172a;
+      background: transparent;
+      border-color: rgb(15 23 42 / 8%);
+    }
+
+    .site-avatar-link,
+    .site-icon-link {
+      width: 100%;
+      height: 40px;
+      border-radius: 12px;
+      justify-content: flex-start;
+      padding: 0 12px;
+      overflow: visible;
+      box-shadow: none;
+      color: #0f172a;
+    }
+
+    .site-avatar-link::after {
+      content: "Aaron on X";
+      margin-left: 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .site-icon-link::after {
+      content: "GitHub";
+      margin-left: 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .site-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+    }
+
+    .site-locale {
+      width: 100%;
+    }
+
+    .site-locale-menu {
+      position: static;
+      width: 100%;
+      min-width: 0;
+      margin-top: 6px;
+      box-shadow: none;
+    }
+
+    .site-footer {
+      align-items: stretch;
+      flex-direction: column;
+      padding: 22px 0 24px;
+      gap: 14px;
+    }
+
+    .site-footer-brand {
+      width: 100%;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      line-height: 1.5;
+      margin: 24px 0;
+    }
+
+    .site-footer-brand span {
+      flex: 0 0 100%;
+    }
+
+    .site-footer nav {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .site-footer a {
+      width: 100%;
+      justify-content: flex-start;
+      min-height: 40px;
+      padding: 0 10px;
+      border-radius: 2px;
+      border-color: rgb(255 255 255 / 8%);
+      background: rgb(255 255 255 / 4%);
+    }
+
+    .site-footer a:hover {
+      background: rgb(255 255 255 / 10%);
+    }
+
+    .site-footer::before {
+      left: 50%;
     }
   }
 `;

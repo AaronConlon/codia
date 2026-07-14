@@ -15,7 +15,6 @@ type PrivacyInitialState = {
 const privacyCopy = {
   zh: {
     metaDescription: "Codia 隐私说明：我们不收集用户代码和生成图片，仅记录生成次数统计。",
-    navHome: "首页",
     navTryIt: "Playground",
     navDocs: "API 文档",
     languageLabel: "语言",
@@ -47,7 +46,6 @@ const privacyCopy = {
   en: {
     metaDescription:
       "Codia privacy notice: we do not collect user code or generated images, only lightweight render counts.",
-    navHome: "Home",
     navTryIt: "Playground",
     navDocs: "API Docs",
     languageLabel: "Language",
@@ -79,7 +77,6 @@ const privacyCopy = {
   ja: {
     metaDescription:
       "Codia のプライバシー説明：コードや生成画像は保存せず、軽量な生成回数統計のみを記録します。",
-    navHome: "ホーム",
     navTryIt: "Playground",
     navDocs: "API ドキュメント",
     languageLabel: "言語",
@@ -220,11 +217,19 @@ const privacyHtml = (initialState: PrivacyInitialState) => {
 
       const localeTrigger = document.querySelector(".site-locale-trigger");
       const localeMenu = document.getElementById("site-locale-menu");
+      const siteHeader = document.querySelector(".site-header");
+      const menuTrigger = document.querySelector(".site-menu-trigger");
 
       const closeLocaleMenu = () => {
         if (!localeTrigger || !localeMenu) return;
         localeTrigger.setAttribute("aria-expanded", "false");
         localeMenu.hidden = true;
+      };
+
+      const closeHeaderMenu = () => {
+        if (!siteHeader || !menuTrigger) return;
+        siteHeader.classList.remove("is-menu-open");
+        menuTrigger.setAttribute("aria-expanded", "false");
       };
 
       if (localeTrigger && localeMenu) {
@@ -236,15 +241,30 @@ const privacyHtml = (initialState: PrivacyInitialState) => {
         });
       }
 
+      if (menuTrigger && siteHeader) {
+        menuTrigger.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const isOpen = siteHeader.classList.toggle("is-menu-open");
+          menuTrigger.setAttribute("aria-expanded", String(isOpen));
+          if (!isOpen) closeLocaleMenu();
+        });
+      }
+
       document.addEventListener("click", (event) => {
         if (!localeTrigger || !localeMenu) return;
         if (!localeMenu.contains(event.target) && !localeTrigger.contains(event.target)) {
           closeLocaleMenu();
         }
+        if (siteHeader && !siteHeader.contains(event.target)) {
+          closeHeaderMenu();
+        }
       });
 
       document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") closeLocaleMenu();
+        if (event.key === "Escape") {
+          closeLocaleMenu();
+          closeHeaderMenu();
+        }
       });
 
       document.querySelectorAll("[data-site-locale]").forEach((button) => {

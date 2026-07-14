@@ -15,8 +15,7 @@ type HomeInitialState = {
 
 const homeCopy = {
   zh: {
-    metaDescription: "用友好的界面和 API 生成、定制、存储漂亮的代码图片。",
-    navHome: "首页",
+    metaDescription: "用友好的界面和 Agent 友好的 API 生成、定制漂亮的代码图片。",
     navTryIt: "Playground",
     navDocs: "API 文档",
     languageLabel: "语言",
@@ -26,7 +25,7 @@ const homeCopy = {
     footerPrivacy: "隐私",
     eyebrow: "Human-friendly UI · API-first rendering",
     slogan: "Beautiful Code Images for Humans and APIs.",
-    intro: "把代码转换成适合文档、博客、社交媒体和自动化流程的高清图片，并保留每一次生成记录。",
+    intro: "把代码转换成适合文档、博客、社交媒体和自动化流程的高清图片；不只适合人工操作，也方便 Agent 直接调用 API 生成图片。",
     tryCodia: "试试看",
     viewApi: "查看 API",
     galleryLabel: "Codia screenshot gallery",
@@ -53,8 +52,7 @@ const homeCopy = {
   },
   en: {
     metaDescription:
-      "Generate, customize, store, and integrate beautiful code images through a friendly UI and API.",
-    navHome: "Home",
+      "Generate and customize beautiful code images through a friendly UI and an agent-friendly API.",
     navTryIt: "Playground",
     navDocs: "API Docs",
     languageLabel: "Language",
@@ -65,7 +63,7 @@ const homeCopy = {
     eyebrow: "Human-friendly UI · API-first rendering",
     slogan: "Beautiful Code Images for Humans and APIs.",
     intro:
-      "Turn code into crisp images for docs, blogs, social posts, and automated workflows, with every render saved for later.",
+      "Turn code into crisp images for docs, blogs, social posts, and automated workflows. It works for humans in the UI and for agents calling the API directly.",
     tryCodia: "Try Codia",
     viewApi: "View API",
     galleryLabel: "Codia screenshot gallery",
@@ -92,8 +90,7 @@ const homeCopy = {
   },
   ja: {
     metaDescription:
-      "使いやすい UI と API で、美しいコード画像を生成、カスタマイズ、保存できます。",
-    navHome: "ホーム",
+      "使いやすい UI と Agent 向け API で、美しいコード画像を生成、カスタマイズできます。",
     navTryIt: "Playground",
     navDocs: "API ドキュメント",
     languageLabel: "言語",
@@ -104,7 +101,7 @@ const homeCopy = {
     eyebrow: "Human-friendly UI · API-first rendering",
     slogan: "Beautiful Code Images for Humans and APIs.",
     intro:
-      "ドキュメント、ブログ、SNS、ワークフロー向けにコードを鮮明な画像へ変換し、生成履歴も保存します。",
+      "ドキュメント、ブログ、SNS、ワークフロー向けにコードを鮮明な画像へ変換します。人が UI で操作するだけでなく、Agent が API を直接呼び出す用途にも向いています。",
     tryCodia: "試す",
     viewApi: "API を見る",
     galleryLabel: "Codia スクリーンショットギャラリー",
@@ -131,8 +128,24 @@ const homeCopy = {
   },
 } as const;
 
-const formatNumber = (value: number, locale: SiteLocale) =>
-  new Intl.NumberFormat(locale === "zh" ? "zh-CN" : locale).format(value);
+const getStatDisplayValue = (value: number) => {
+  if (value <= 10_000) return { value, suffix: "" };
+  const compactValue = value / 1_000;
+  return {
+    value: Number(compactValue.toFixed(compactValue >= 100 ? 0 : 1)),
+    suffix: "k",
+  };
+};
+
+const formatStatValue = (value: number, locale: SiteLocale) => {
+  const stat = getStatDisplayValue(value);
+  const hasFraction = !Number.isInteger(stat.value);
+  const formattedValue = new Intl.NumberFormat(locale === "zh" ? "zh-CN" : locale, {
+    maximumFractionDigits: hasFraction ? 1 : 0,
+    minimumFractionDigits: hasFraction ? 1 : 0,
+  }).format(stat.value);
+  return `${formattedValue}${stat.suffix}`;
+};
 
 const screenshots = [
   {
@@ -200,6 +213,19 @@ const screenshots = [
 const homeHtml = (initialState: HomeInitialState) => {
   const stats = getRenderStats();
   const text = homeCopy[initialState.locale];
+  const statItems = [
+    { value: stats.totalRenders, label: text.totalRenders },
+    { value: stats.totalImagesStored, label: text.imagesStored },
+    { value: stats.totalLinesRendered, label: text.linesRendered },
+  ].map((item) => {
+    const display = getStatDisplayValue(item.value);
+    return {
+      ...item,
+      displayValue: display.value,
+      suffix: display.suffix,
+      fallback: formatStatValue(item.value, initialState.locale),
+    };
+  });
 
   return `<!doctype html>
 <html lang="${initialState.htmlLang}">
@@ -261,6 +287,7 @@ const homeHtml = (initialState: HomeInitialState) => {
         border-color: rgb(255 255 255 / 12%);
       }
 
+      .site-menu-trigger,
       .site-avatar-link,
       .site-icon-link {
         background: rgb(255 255 255 / 7%);
@@ -271,11 +298,17 @@ const homeHtml = (initialState: HomeInitialState) => {
       .site-nav a:hover,
       .site-playground-link:hover,
       .site-locale-trigger:hover,
+      .site-menu-trigger:hover,
+      .site-menu-trigger[aria-expanded="true"],
       .site-avatar-link:hover,
       .site-icon-link:hover {
         background: rgb(255 255 255 / 13%);
         border-color: rgb(255 255 255 / 14%);
         color: #ffffff;
+      }
+
+      .site-menu-trigger {
+        color: #f8fafc;
       }
 
       .site-nav a[aria-current="page"],
@@ -289,21 +322,55 @@ const homeHtml = (initialState: HomeInitialState) => {
       }
 
       .site-locale-menu {
-        background: #18181b;
-        border-color: rgb(255 255 255 / 12%);
+        background: #ffffff;
+        border-color: rgb(15 23 42 / 10%);
       }
 
       .site-locale-menu button {
-        color: #f8fafc;
+        color: #0f172a;
       }
 
       .site-locale-menu button:hover {
-        background: rgb(255 255 255 / 10%);
+        background: rgb(15 23 42 / 6%);
       }
 
       .site-locale-menu button[aria-pressed="true"] {
-        background: #ffffff;
-        color: #09090b;
+        background: #111827;
+        color: #ffffff;
+      }
+
+      @media (max-width: 760px) {
+        .site-header-actions {
+          background: #ffffff;
+          color: #0f172a;
+        }
+
+        .site-header.is-menu-open .site-header-actions {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .site-header-actions .site-nav a,
+        .site-header-actions .site-playground-link,
+        .site-header-actions .site-locale-trigger,
+        .site-header-actions .site-avatar-link,
+        .site-header-actions .site-icon-link {
+          background: transparent;
+          border-color: rgb(15 23 42 / 8%);
+          color: #0f172a;
+          box-shadow: none;
+        }
+
+        .site-header-actions .site-nav a:hover,
+        .site-header-actions .site-playground-link:hover,
+        .site-header-actions .site-locale-trigger:hover,
+        .site-header-actions .site-avatar-link:hover,
+        .site-header-actions .site-icon-link:hover {
+          background: rgb(15 23 42 / 6%);
+          border-color: rgb(15 23 42 / 12%);
+          color: #0f172a;
+        }
       }
 
       .landing-top {
@@ -661,9 +728,12 @@ const homeHtml = (initialState: HomeInitialState) => {
       </section>
 
       <section class="home-shell stats" aria-label="Codia stats">
-        <div class="stat-card"><number-flow class="stat-value" value="0" data-value="${stats.totalRenders}" data-locale="${initialState.locale}" data-fallback="${formatNumber(stats.totalRenders, initialState.locale)}">${formatNumber(stats.totalRenders, initialState.locale)}</number-flow><span class="stat-label">${text.totalRenders}</span></div>
-        <div class="stat-card"><number-flow class="stat-value" value="0" data-value="${stats.totalImagesStored}" data-locale="${initialState.locale}" data-fallback="${formatNumber(stats.totalImagesStored, initialState.locale)}">${formatNumber(stats.totalImagesStored, initialState.locale)}</number-flow><span class="stat-label">${text.imagesStored}</span></div>
-        <div class="stat-card"><number-flow class="stat-value" value="0" data-value="${stats.totalLinesRendered}" data-locale="${initialState.locale}" data-fallback="${formatNumber(stats.totalLinesRendered, initialState.locale)}">${formatNumber(stats.totalLinesRendered, initialState.locale)}</number-flow><span class="stat-label">${text.linesRendered}</span></div>
+        ${statItems
+          .map(
+            (item) =>
+              `<div class="stat-card"><number-flow class="stat-value" value="0" data-value="${item.displayValue}" data-suffix="${item.suffix}" data-locale="${initialState.locale}" data-fallback="${item.fallback}">0${item.suffix}</number-flow><span class="stat-label">${item.label}</span></div>`,
+          )
+          .join("")}
       </section>
     </main>
     ${renderSiteFooter(text)}
@@ -676,21 +746,62 @@ const homeHtml = (initialState: HomeInitialState) => {
         ja: "ja-JP",
       };
 
-      const animateStats = () => {
-        document.querySelectorAll("number-flow[data-value]").forEach((flow) => {
-          const value = Number(flow.getAttribute("data-value") ?? "0");
-          const locale = flow.getAttribute("data-locale") ?? "en";
-          flow.locales = localeMap[locale] ?? localeMap.en;
-          flow.trend = 1;
-          flow.transformTiming = { duration: 720, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
-          flow.spinTiming = { duration: 760, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
-          flow.opacityTiming = { duration: 220, easing: "ease-out" };
-          requestAnimationFrame(() => flow.update(Number.isFinite(value) ? value : 0));
+      const getStatFlows = () => [...document.querySelectorAll("number-flow[data-value]")];
+
+      const setupStatFlow = (flow) => {
+        const value = Number(flow.getAttribute("data-value") ?? "0");
+        const locale = flow.getAttribute("data-locale") ?? "en";
+        const suffix = flow.getAttribute("data-suffix") ?? "";
+        const hasFraction = !Number.isInteger(value);
+        flow.locales = localeMap[locale] ?? localeMap.en;
+        flow.numberSuffix = suffix;
+        flow.format = {
+          maximumFractionDigits: hasFraction ? 1 : 0,
+          minimumFractionDigits: hasFraction ? 1 : 0,
+        };
+        flow.trend = 1;
+        flow.transformTiming = { duration: 720, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
+        flow.spinTiming = { duration: 760, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
+        flow.opacityTiming = { duration: 220, easing: "ease-out" };
+      };
+
+      const setStatsValue = (isActive) => {
+        getStatFlows().forEach((flow) => {
+          const target = Number(flow.getAttribute("data-value") ?? "0");
+          flow.update(isActive && Number.isFinite(target) ? target : 0);
         });
       };
 
-      customElements.whenDefined("number-flow").then(animateStats).catch(() => {
-        document.querySelectorAll("number-flow[data-fallback]").forEach((flow) => {
+      const initializeStatsObserver = () => {
+        const statsSection = document.querySelector(".stats");
+        if (!statsSection) return;
+        getStatFlows().forEach((flow) => {
+          setupStatFlow(flow);
+          flow.update(0);
+        });
+        if (!("IntersectionObserver" in window)) {
+          requestAnimationFrame(() => setStatsValue(true));
+          return;
+        }
+        const observer = new IntersectionObserver((entries) => {
+          const entry = entries[0];
+          if (!entry) return;
+          if (entry.intersectionRatio >= 0.34) {
+            setStatsValue(false);
+            requestAnimationFrame(() => setStatsValue(true));
+            return;
+          }
+          setStatsValue(false);
+        }, {
+          root: null,
+          threshold: 0.34,
+          rootMargin: "-8% 0px -8% 0px",
+        });
+        observer.observe(statsSection);
+      };
+
+      customElements.whenDefined("number-flow").then(initializeStatsObserver).catch(() => {
+        getStatFlows().forEach((flow) => {
           flow.textContent = flow.getAttribute("data-fallback") ?? "";
         });
       });
@@ -702,11 +813,19 @@ const homeHtml = (initialState: HomeInitialState) => {
 
       const localeTrigger = document.querySelector(".site-locale-trigger");
       const localeMenu = document.getElementById("site-locale-menu");
+      const siteHeader = document.querySelector(".site-header");
+      const menuTrigger = document.querySelector(".site-menu-trigger");
 
       const closeLocaleMenu = () => {
         if (!localeTrigger || !localeMenu) return;
         localeTrigger.setAttribute("aria-expanded", "false");
         localeMenu.hidden = true;
+      };
+
+      const closeHeaderMenu = () => {
+        if (!siteHeader || !menuTrigger) return;
+        siteHeader.classList.remove("is-menu-open");
+        menuTrigger.setAttribute("aria-expanded", "false");
       };
 
       const toggleLocaleMenu = () => {
@@ -723,15 +842,30 @@ const homeHtml = (initialState: HomeInitialState) => {
         });
       }
 
+      if (menuTrigger && siteHeader) {
+        menuTrigger.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const isOpen = siteHeader.classList.toggle("is-menu-open");
+          menuTrigger.setAttribute("aria-expanded", String(isOpen));
+          if (!isOpen) closeLocaleMenu();
+        });
+      }
+
       document.addEventListener("click", (event) => {
         if (!localeTrigger || !localeMenu) return;
         if (!localeMenu.contains(event.target) && !localeTrigger.contains(event.target)) {
           closeLocaleMenu();
         }
+        if (siteHeader && !siteHeader.contains(event.target)) {
+          closeHeaderMenu();
+        }
       });
 
       document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") closeLocaleMenu();
+        if (event.key === "Escape") {
+          closeLocaleMenu();
+          closeHeaderMenu();
+        }
       });
 
       document.querySelectorAll("[data-site-locale]").forEach((button) => {
