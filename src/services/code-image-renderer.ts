@@ -44,9 +44,10 @@ const maxContainerWidth = 1920;
 const headerHeight = 48;
 const codeVerticalPadding = 22;
 const codeFontSize = 18;
-const firaCodeCharWidthRatio = 0.6;
+const firaCodeCharWidthRatio = 0.68;
 const lineNumberColumnWidth = 72;
-const codeRightPadding = 18;
+const codeLeftPadding = 18;
+const codeRightPadding = 30;
 const lineHeight = 24;
 const maxBorderSize = 120;
 const defaultCodeTheme = "dracula";
@@ -159,7 +160,7 @@ export const renderCodeImage = async (
                   whiteSpace: "pre",
                   display: "flex",
                   paddingLeft: showLineNumbers ? "0" : "18px",
-                  paddingRight: "18px",
+                  paddingRight: `${codeRightPadding}px`,
                 },
                 children: line.map(renderToken),
               }),
@@ -359,7 +360,7 @@ const estimateMinContainerWidth = (
     (showLineNumbers ? lineNumberColumnWidth : 18) +
     Math.ceil(maxLineColumns * codeFontSize * firaCodeCharWidthRatio) +
     codeRightPadding;
-  const headerWidth = 36 + 49 + Math.ceil(String(language).length * 10);
+  const headerWidth = 36 + 49 + Math.ceil(String(language).length * 11) + codeLeftPadding;
 
   return Math.min(
     Math.max(Math.max(codeWidth, headerWidth), minContainerWidth),

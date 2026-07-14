@@ -128,21 +128,21 @@ const formatBytes = (value: number) => {
 const screenshots = [
   {
     language: "typescript",
-    width: 557,
+    width: 628,
     height: 236,
-    url: "https://de4965e.webp.li/blog-images/2026/07/2eb6fd4fa727997d7bd243fd6e5aa8bc.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/86b17c183db7b09a8b9b04cf4a3ba438.webp",
   },
   {
     language: "javascript",
-    width: 904,
+    width: 1020,
     height: 224,
-    url: "https://de4965e.webp.li/blog-images/2026/07/1e953d4e9036b73d64fda7df6d2229bb.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/d57e6d2c91b1788e300b222bd42afacc.webp",
   },
   {
     language: "python",
-    width: 668,
+    width: 714,
     height: 236,
-    url: "https://de4965e.webp.li/blog-images/2026/07/341fa66ba0908186179a1d7f0eb49ca4.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/7044733bed583bdda0d20f928bbb7cbe.webp",
   },
   {
     language: "go",
@@ -158,21 +158,21 @@ const screenshots = [
   },
   {
     language: "java",
-    width: 645,
+    width: 726,
     height: 248,
-    url: "https://de4965e.webp.li/blog-images/2026/07/2810f74aababc251b14fdc1164fcf080.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/2f1bb046f9c8522816b8208c667a3b39.webp",
   },
   {
     language: "kotlin",
-    width: 668,
+    width: 750,
     height: 260,
-    url: "https://de4965e.webp.li/blog-images/2026/07/772a4048a8aa4f22c03edbec20c18c72.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/7b004df1ed798da7d1676a529c2f0055.webp",
   },
   {
     language: "swift",
-    width: 680,
+    width: 689,
     height: 296,
-    url: "https://de4965e.webp.li/blog-images/2026/07/43b5a854a124b501615bba4ffb86337f.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/51595f4a592473827267c04820222b09.webp",
   },
   {
     language: "ruby",

@@ -1785,8 +1785,8 @@ const exampleHtml = (
 
       const estimateMinContainerWidth = () => {
         const maxLineColumns = Math.max(...formatCode(code.value).split("\n").map(countColumns), 0);
-        const headerWidth = 36 + 49 + selectedLanguage.id.length * 10;
-        const codeWidth = (showLineNumbers.checked ? 72 : 18) + Math.ceil(maxLineColumns * 18 * 0.6) + 18;
+        const headerWidth = 36 + 49 + Math.ceil(selectedLanguage.id.length * 11) + 18;
+        const codeWidth = (showLineNumbers.checked ? 72 : 18) + Math.ceil(maxLineColumns * 18 * 0.68) + 30;
         return Math.min(Math.max(Math.max(headerWidth, codeWidth), 400), 1920);
       };
 
