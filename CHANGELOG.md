@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.17](https://github.com/AaronConlon/codia/compare/v0.1.16...v0.1.17) (2026-07-14)
+
+
+### Bug Fixes
+
+* repair try-it carousel and copy image ([019ccf3](https://github.com/AaronConlon/codia/commit/019ccf3031e2da771ee23afdba6d3a05f47449ce))
+
 ### [0.1.16](https://github.com/AaronConlon/codia/compare/v0.1.15...v0.1.16) (2026-07-14)
 
 
