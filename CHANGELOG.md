@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.12](https://github.com/AaronConlon/codia/compare/v0.1.11...v0.1.12) (2026-07-14)
+
+
+### Bug Fixes
+
+* load ovo env from release scripts ([8b04d61](https://github.com/AaronConlon/codia/commit/8b04d612be5d38fc890ad74a13824e12600a1af6))
+
 ### [0.1.11](https://github.com/AaronConlon/codia/compare/v0.1.10...v0.1.11) (2026-07-14)
 
 ### [0.1.10](https://github.com/AaronConlon/codia/compare/v0.1.9...v0.1.10) (2026-07-14)
