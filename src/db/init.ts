@@ -1,7 +1,8 @@
 import { existsSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname } from "node:path";
+import { resolveCodiaDbPath } from "./path.js";
 
-const codiaDbPath = resolve(process.env.CODIA_DB_PATH || "data/codia.sqlite");
+const codiaDbPath = resolveCodiaDbPath();
 const existed = existsSync(codiaDbPath);
 
 if (existed) {

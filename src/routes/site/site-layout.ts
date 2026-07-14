@@ -394,8 +394,10 @@ export const siteShellStyles = `
 
   .site-footer {
     position: relative;
+    z-index: 0;
     min-height: 96px;
-    color: var(--muted);
+    padding: 18px 0;
+    color: rgb(248 250 252 / 62%);
     font-size: 13px;
   }
 
@@ -403,12 +405,24 @@ export const siteShellStyles = `
     content: "";
     position: absolute;
     top: 0;
+    bottom: 0;
     left: 50%;
     width: 100vw;
-    height: 1px;
+    z-index: -1;
     transform: translateX(-50%);
-    background: var(--footer-rule);
+    background: #09090b;
+    box-shadow: 0 -1px 0 var(--footer-rule);
     pointer-events: none;
+  }
+
+  .site-footer a {
+    color: rgb(248 250 252 / 68%);
+  }
+
+  .site-footer a:hover {
+    color: #ffffff;
+    background: rgb(255 255 255 / 10%);
+    border-color: rgb(255 255 255 / 12%);
   }
 
   .site-footer-brand {
@@ -422,7 +436,7 @@ export const siteShellStyles = `
     width: 30px;
     height: 30px;
     border-radius: 8px;
-    box-shadow: 0 10px 24px rgb(15 23 42 / 12%);
+    box-shadow: 0 10px 24px rgb(0 0 0 / 28%);
     flex: 0 0 auto;
   }
 

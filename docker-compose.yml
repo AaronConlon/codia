@@ -12,11 +12,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      CODIA_DB_PATH: ${CODIA_DB_PATH:-/app/data/codia.sqlite}
+      DATABASE_DIR: /app/databases
     ports:
       - "${CODIA_HOST_PORT:-3000}:3000"
     volumes:
-      - ${CODIA_DATA_ROOT:-./data}:/app/data
+      - ${DATABASE_DIR:-./data}:/app/databases
     networks:
       - ovo_web
     healthcheck:

@@ -27,6 +27,7 @@ const exampleTranslations = {
     editor: "编辑器",
     image: "图片",
     imageEmpty: "切换到图片模式时生成最终图片。",
+    codePlaceholder: "在这里粘贴或输入代码...",
     loading: "正在加载 Codia...",
     language: "语言",
     codeTheme: "代码主题",
@@ -40,7 +41,6 @@ const exampleTranslations = {
     downloaded: "已下载",
     failed: "操作失败",
     ready: "Ready",
-    rendering: "生成中...",
     noMatch: "没有匹配项",
     containerRange: "容器宽度必须是 {min}-1920",
   },
@@ -50,6 +50,7 @@ const exampleTranslations = {
     editor: "Editor",
     image: "Image",
     imageEmpty: "Switch to image mode to render the final image.",
+    codePlaceholder: "Paste or type code here...",
     loading: "Loading Codia...",
     language: "Language",
     codeTheme: "Code theme",
@@ -63,7 +64,6 @@ const exampleTranslations = {
     downloaded: "Downloaded",
     failed: "Action failed",
     ready: "Ready",
-    rendering: "Rendering...",
     noMatch: "No matches",
     containerRange: "Container width must be {min}-1920",
   },
@@ -73,6 +73,7 @@ const exampleTranslations = {
     editor: "エディター",
     image: "画像",
     imageEmpty: "画像モードに切り替えると最終画像を生成します。",
+    codePlaceholder: "ここにコードを貼り付けるか入力してください...",
     loading: "Codia を読み込み中...",
     language: "言語",
     codeTheme: "コードテーマ",
@@ -86,7 +87,6 @@ const exampleTranslations = {
     downloaded: "ダウンロードしました",
     failed: "失敗しました",
     ready: "Ready",
-    rendering: "生成中...",
     noMatch: "一致する項目がありません",
     containerRange: "コンテナ幅は {min}-1920 です",
   },
@@ -253,6 +253,71 @@ const exampleHtml = (
         width: 100%;
       }
 
+      .render-progress {
+        position: fixed;
+        z-index: 90;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        overflow: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-100%);
+        transition:
+          opacity 140ms ease,
+          transform 140ms ease;
+      }
+
+      .render-progress::before,
+      .render-progress::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform-origin: left center;
+      }
+
+      .render-progress::before {
+        background: linear-gradient(90deg, #e2e8f0, #f8fafc, #cbd5e1);
+        box-shadow: 0 0 14px rgb(148 163 184 / 42%);
+        transform: scaleX(0.18);
+        animation: render-progress-grow 1200ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
+      }
+
+      .render-progress::after {
+        width: 36%;
+        background: linear-gradient(90deg, transparent, rgb(255 255 255 / 88%), transparent);
+        filter: drop-shadow(0 0 8px rgb(255 255 255 / 64%));
+        transform: translateX(-110%);
+        animation: render-progress-glint 820ms ease-in-out infinite;
+      }
+
+      body.is-rendering .render-progress {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @keyframes render-progress-grow {
+        0% {
+          transform: scaleX(0.12);
+        }
+        45% {
+          transform: scaleX(0.72);
+        }
+        100% {
+          transform: scaleX(0.96);
+        }
+      }
+
+      @keyframes render-progress-glint {
+        0% {
+          transform: translateX(-110%);
+        }
+        100% {
+          transform: translateX(320%);
+        }
+      }
+
       .react-root-shell {
         display: contents;
       }
@@ -315,6 +380,14 @@ const exampleHtml = (
         padding: 34px 0;
         display: grid;
         justify-items: center;
+      }
+
+      main.app-shell {
+        min-height: 100vh;
+        padding: 34px 0 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
 
       header {
@@ -380,36 +453,97 @@ const exampleHtml = (
       }
 
       .site-footer {
+        position: relative;
+        z-index: 0;
+        width: min(1366px, calc(100% - 32px));
+        min-height: 96px;
+        margin-top: auto;
+        padding: 18px 0;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-        margin-top: 22px;
-        padding: 18px 0 0;
-        color: var(--muted);
+        gap: 18px;
+        color: rgb(248 250 252 / 62%);
         font-size: 13px;
+      }
+
+      .site-footer::before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 100vw;
+        transform: translateX(-50%);
+        background: #09090b;
+        box-shadow: 0 -1px 0 rgb(255 255 255 / 8%);
+        pointer-events: none;
+      }
+
+      .site-footer-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        min-width: 0;
+      }
+
+      .site-footer-brand img {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        box-shadow: 0 10px 24px rgb(0 0 0 / 28%);
+        flex: 0 0 auto;
       }
 
       .site-footer nav {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
       }
 
       .site-footer a {
+        min-height: 38px;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        color: var(--text);
+        padding: 0 12px;
+        border: 1px solid transparent;
+        border-radius: 999px;
+        background: transparent;
+        color: rgb(248 250 252 / 68%);
         text-decoration: none;
-        font-weight: 700;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 800;
+        transition-property: color, background, border-color, transform;
+        transition-duration: 160ms;
       }
 
       .site-footer a:hover {
-        text-decoration: underline;
-        text-underline-offset: 3px;
+        color: #ffffff;
+        background: rgb(255 255 255 / 10%);
+        border-color: rgb(255 255 255 / 12%);
+      }
+
+      .site-footer a:active {
+        transform: scale(0.96);
+      }
+
+      .site-footer a svg {
+        width: 15px;
+        height: 15px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex: 0 0 auto;
+      }
+
+      .app-layout {
+        margin-bottom: 22px;
       }
 
       .top-controls,
@@ -1193,6 +1327,7 @@ const exampleHtml = (
     </style>
   </head>
   <body>
+    <div class="render-progress" aria-hidden="true"></div>
     <div class="initial-loader" id="initialLoader" role="status" aria-live="polite">
       <div class="loader-content">
         <span class="loader-dot" aria-hidden="true"></span>
@@ -1258,7 +1393,7 @@ const exampleHtml = (
                 <div class="editor-canvas" id="editorCanvas">
                   <div class="editor-window" id="editorWindow">
                     <div class="editor-body" id="editorBody">
-                      <textarea class="code-input" id="code" name="code" spellcheck="false"></textarea>
+                      <textarea class="code-input" id="code" name="code" spellcheck="false" placeholder="${text.codePlaceholder}"></textarea>
                     </div>
                   </div>
                 </div>
@@ -1369,8 +1504,8 @@ const exampleHtml = (
           .replaceAll("<", "&lt;")
           .replaceAll(">", "&gt;");
       appTemplate.innerHTML = appTemplate.innerHTML.replace(
-        '<textarea class="code-input" id="code" name="code" spellcheck="false"></textarea>',
-        '<textarea class="code-input" id="code" name="code" spellcheck="false">' + escapeTemplateText(defaultCode) + '</textarea>',
+        '<textarea class="code-input" id="code" name="code" spellcheck="false" placeholder="${text.codePlaceholder}"></textarea>',
+        '<textarea class="code-input" id="code" name="code" spellcheck="false" placeholder="${text.codePlaceholder}">' + escapeTemplateText(defaultCode) + '</textarea>',
       );
       const ExampleApp = () =>
         React.createElement("div", {
@@ -1428,6 +1563,7 @@ const exampleHtml = (
       let lastValidContainerWidth = "600";
       let currentLocale = initialState.locale;
       let playClickSound = () => {};
+      let activeRenderRequests = 0;
       const soundProfiles = {
         tab: { start: 420, end: 620, gain: 0.055, duration: 0.08 },
         menu: { start: 560, end: 460, gain: 0.045, duration: 0.07 },
@@ -1459,6 +1595,18 @@ const exampleHtml = (
           return;
         }
         toast(message);
+      };
+
+      const startRenderProgress = () => {
+        activeRenderRequests += 1;
+        document.body.classList.add("is-rendering");
+      };
+
+      const finishRenderProgress = () => {
+        activeRenderRequests = Math.max(activeRenderRequests - 1, 0);
+        if (activeRenderRequests === 0) {
+          document.body.classList.remove("is-rendering");
+        }
       };
 
       const finishInitialLoad = () => {
@@ -1594,6 +1742,7 @@ const exampleHtml = (
         });
         languageFilter.placeholder = t("language");
         themeFilter.placeholder = t("codeTheme");
+        code.placeholder = t("codePlaceholder");
         uiLanguageLabel.textContent = locales.find((item) => item.id === currentLocale).label;
       };
 
@@ -1839,33 +1988,37 @@ const exampleHtml = (
       };
 
       const requestImage = async ({ silent = false, source = "try-it-preview" } = {}) => {
-        if (!silent) setStatus(t("rendering"));
-        const response = await fetch("/v1/code/render", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({
-            language: selectedLanguage.id,
-            theme: selectedCodeTheme.id,
-            bgColor: bgColor.value,
-            borderSize: Number(borderSize.value || 0),
-            containerWidth: Number(containerWidth.value || 600),
-            showLineNumbers: showLineNumbers.checked,
-            code: code.value,
-            source,
-          }),
-        });
-        if (!response.ok) throw new Error(await response.text());
-        const data = await response.json();
-        latestDataUrl = data.dataUrl;
-        finalImage.src = data.dataUrl;
-        finalImage.hidden = false;
-        imageEmpty.hidden = true;
-        imageDirty = false;
-        currentMinContainerWidth = data.minContainerWidth;
-        containerWidth.min = String(data.minContainerWidth);
-        containerWidth.value = String(data.containerWidth);
-        lastValidContainerWidth = String(data.containerWidth);
-        return data;
+        if (!silent) startRenderProgress();
+        try {
+          const response = await fetch("/v1/code/render", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              language: selectedLanguage.id,
+              theme: selectedCodeTheme.id,
+              bgColor: bgColor.value,
+              borderSize: Number(borderSize.value || 0),
+              containerWidth: Number(containerWidth.value || 600),
+              showLineNumbers: showLineNumbers.checked,
+              code: code.value,
+              source,
+            }),
+          });
+          if (!response.ok) throw new Error(await response.text());
+          const data = await response.json();
+          latestDataUrl = data.dataUrl;
+          finalImage.src = data.dataUrl;
+          finalImage.hidden = false;
+          imageEmpty.hidden = true;
+          imageDirty = false;
+          currentMinContainerWidth = data.minContainerWidth;
+          containerWidth.min = String(data.minContainerWidth);
+          containerWidth.value = String(data.containerWidth);
+          lastValidContainerWidth = String(data.containerWidth);
+          return data;
+        } finally {
+          if (!silent) finishRenderProgress();
+        }
       };
 
       const renderFinalImage = async () => {

@@ -22,6 +22,7 @@ jobs:
       OVO_DOCKER_NETWORK: ${{ secrets.OVO_DOCKER_NETWORK || vars.OVO_DOCKER_NETWORK || 'web' }}
       OVO_COMPOSE_PROJECT_NAME: ${{ secrets.OVO_COMPOSE_PROJECT_NAME || vars.OVO_COMPOSE_PROJECT_NAME || 'codia' }}
       OVO_CONTAINER_NAME: ${{ secrets.OVO_CONTAINER_NAME || vars.OVO_CONTAINER_NAME || 'codia' }}
+      DATABASE_DIR: ${{ secrets.DATABASE_DIR || vars.DATABASE_DIR || '/root/apps/codia/databases' }}
       OVO_HEALTHCHECK_URL: ${{ secrets.OVO_HEALTHCHECK_URL || vars.OVO_HEALTHCHECK_URL || 'http://127.0.0.1:3000/api/health' }}
       OVO_HEALTHCHECK_TIMEOUT_SECONDS: ${{ secrets.OVO_HEALTHCHECK_TIMEOUT_SECONDS || vars.OVO_HEALTHCHECK_TIMEOUT_SECONDS || '60' }}
       BUNDLE_ZIP_PASSWORD: ${{ secrets.BUNDLE_ZIP_PASSWORD }}
@@ -71,6 +72,7 @@ jobs:
           echo "OVO_DOCKER_NETWORK=$OVO_DOCKER_NETWORK"
           echo "OVO_COMPOSE_PROJECT_NAME=$OVO_COMPOSE_PROJECT_NAME"
           echo "OVO_CONTAINER_NAME=$OVO_CONTAINER_NAME"
+          echo "DATABASE_DIR=$DATABASE_DIR"
           echo "OVO_HEALTHCHECK_URL=$OVO_HEALTHCHECK_URL"
           echo "BUNDLE_ZIP_PATH=${BUNDLE_ZIP_PATH:-not-built}"
           echo "BUNDLE_RELEASE_TAG=${BUNDLE_RELEASE_TAG:-not-built}"

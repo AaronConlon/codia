@@ -45,13 +45,11 @@ load_env_defaults "$BUNDLE_DIR/.env"
 TARGET_ROOT="${OVO_DEPLOY_TARGET_ROOT:-/opt/codia}"
 DOCKER_NETWORK="${OVO_DOCKER_NETWORK:-web}"
 COMPOSE_PROJECT_NAME="${OVO_COMPOSE_PROJECT_NAME:-codia}"
-CODIA_DATA_ROOT="${CODIA_DATA_ROOT:-$TARGET_ROOT/data}"
-CODIA_DB_PATH="${CODIA_DB_PATH:-/app/data/codia.sqlite}"
+DATABASE_DIR="${DATABASE_DIR:-$TARGET_ROOT/databases}"
 
-export CODIA_DATA_ROOT
-export CODIA_DB_PATH
+export DATABASE_DIR
 
-echo "[codia] deploy bundle=$BUNDLE_DIR target=$TARGET_ROOT data=$CODIA_DATA_ROOT"
+echo "[codia] deploy bundle=$BUNDLE_DIR target=$TARGET_ROOT database_dir=$DATABASE_DIR"
 echo "[codia] deploy started at $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 print_debug_value APP_VERSION
 print_debug_value OVO_RELEASE_VERSION
@@ -60,8 +58,7 @@ print_debug_value OVO_DEPLOY_TARGET_ROOT
 print_debug_value OVO_DOCKER_NETWORK
 print_debug_value OVO_COMPOSE_PROJECT_NAME
 print_debug_value OVO_CONTAINER_NAME
-print_debug_value CODIA_DATA_ROOT
-print_debug_value CODIA_DB_PATH
+print_debug_value DATABASE_DIR
 print_debug_value CODIA_HOST_PORT
 print_debug_value OVO_HEALTHCHECK_URL
 
@@ -80,9 +77,9 @@ else
   echo "[codia] docker network exists: $DOCKER_NETWORK"
 fi
 
-mkdir -p "$TARGET_ROOT" "$CODIA_DATA_ROOT"
+mkdir -p "$TARGET_ROOT" "$DATABASE_DIR"
 echo "[codia] target root permissions: $(ls -ld "$TARGET_ROOT")"
-echo "[codia] sqlite data root permissions: $(ls -ld "$CODIA_DATA_ROOT")"
+echo "[codia] sqlite database dir permissions: $(ls -ld "$DATABASE_DIR")"
 
 NEXT_ROOT="${TARGET_ROOT}/.next"
 rm -rf "$NEXT_ROOT"
@@ -97,8 +94,11 @@ BACKUP_ROOT="${TARGET_ROOT}/.previous"
 rm -rf "$BACKUP_ROOT"
 mkdir -p "$BACKUP_ROOT"
 
+DATABASE_DIR_BASENAME="$(basename "$DATABASE_DIR")"
 find "$TARGET_ROOT" -mindepth 1 -maxdepth 1 \
   ! -name "data" \
+  ! -name "databases" \
+  ! -name "$DATABASE_DIR_BASENAME" \
   ! -name ".next" \
   ! -name ".previous" \
   -exec mv {} "$BACKUP_ROOT"/ \;
@@ -108,11 +108,7 @@ rm -rf "$NEXT_ROOT"
 
 cd "$TARGET_ROOT"
 
-DB_RELATIVE_PATH="${CODIA_DB_PATH#/app/data/}"
-if [ "$DB_RELATIVE_PATH" = "$CODIA_DB_PATH" ]; then
-  DB_RELATIVE_PATH="$(basename "$CODIA_DB_PATH")"
-fi
-DB_FILE="$CODIA_DATA_ROOT/$DB_RELATIVE_PATH"
+DB_FILE="$DATABASE_DIR/codia.sqlite"
 mkdir -p "$(dirname "$DB_FILE")"
 
 FIRST_DB_INIT="false"
