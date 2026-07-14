@@ -1,6 +1,6 @@
 {
   "name": "codia",
-  "version": "0.1.0",
+  "version": "0.1.9",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,6 +10,11 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "build:release": "bash scripts/build-release.sh",
+    "release": "standard-version",
+    "release:patch": "standard-version --release-as patch",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major",
+    "release:push": "git push --follow-tags origin HEAD",
     "sync:github-env": "bash scripts/sync-github-env.sh",
     "sync:github-production-env": "bash scripts/sync-github-env.sh --env-file .env.production --env production"
   },
@@ -29,6 +34,7 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.0.0",
     "code-inspector-plugin": "^2.0.1",
+    "standard-version": "^9.5.0",
     "tsx": "^4.20.0",
     "typescript": "^5.9.0"
   }
