@@ -622,22 +622,6 @@ const exampleHtml = (
         top: 16px;
       }
 
-      #sonner-toast-container [data-sonner-toast] {
-        border: 0;
-        border-radius: 8px;
-        background: #18181b;
-        color: #ffffff;
-        box-shadow: 0 12px 30px rgb(15 23 42 / 18%);
-      }
-
-      #sonner-toast-container [data-sonner-toast][data-type="success"] {
-        background: #15803d;
-      }
-
-      #sonner-toast-container [data-sonner-toast][data-type="error"] {
-        background: #dc2626;
-      }
-
       section {
         background: transparent;
         overflow: visible;

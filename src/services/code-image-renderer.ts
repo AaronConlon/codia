@@ -5,10 +5,14 @@ import { codeToTokens, bundledLanguages, bundledThemes } from "shiki";
 import type { BundledLanguage, BundledTheme, SpecialLanguage } from "shiki";
 import { formatCodeForRendering } from "./code-formatter.js";
 
+export type RenderCodeImageFormat = "png" | "webp" | "jpeg";
+export type RenderCodeImageInputFormat = RenderCodeImageFormat | "jpg";
+export type RenderCodeImageMimeType = "image/png" | "image/webp" | "image/jpeg";
+
 export type RenderCodeImageInput = {
   code: string;
   language: string;
-  format?: string;
+  format?: RenderCodeImageInputFormat;
   theme?: string;
   bgColor?: string;
   backgroundColor?: string;
@@ -36,9 +40,6 @@ export type RenderCodeImageResult = {
   width: number;
   height: number;
 };
-
-export type RenderCodeImageFormat = "png" | "webp" | "jpeg";
-export type RenderCodeImageMimeType = "image/png" | "image/webp" | "image/jpeg";
 
 const defaultContainerWidth = 600;
 const minContainerWidth = 400;
@@ -258,7 +259,7 @@ const renderRasterImage = (
   });
 };
 
-const normalizeImageFormat = (format: string | undefined): RenderCodeImageFormat => {
+const normalizeImageFormat = (format: RenderCodeImageInputFormat | undefined): RenderCodeImageFormat => {
   const normalized = (format ?? "webp").trim().toLowerCase();
   if (normalized === "png" || normalized === "webp") return normalized;
   if (normalized === "jpg" || normalized === "jpeg") return "jpeg";
