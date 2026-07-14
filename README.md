@@ -91,3 +91,5 @@ DATABASE_DIR=/root/apps/codia/databases
 ```
 
 The application always creates the directory if needed and stores the SQLite file as `codia.sqlite`.
+
+`npm run build:release` creates a minimal OVO runtime bundle: it installs dependencies, builds `dist`, installs production-only `node_modules`, and writes a runtime Dockerfile into the release archive. The target server's Docker build only copies those runtime files into the image; it does not run `npm install` or compile TypeScript.

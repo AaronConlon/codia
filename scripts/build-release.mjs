@@ -7,6 +7,17 @@ import { spawnSync } from "node:child_process";
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const packageJson = JSON.parse(await readFile(join(rootDir, "package.json"), "utf8"));
+const run = (command, args, options = {}) => {
+  const result = spawnSync(command, args, {
+    cwd: rootDir,
+    stdio: "inherit",
+    ...options,
+  });
+
+  if (result.status !== 0) {
+    throw new Error(`command failed: ${command} ${args.join(" ")}`);
+  }
+};
 
 const env = process.env;
 const releaseTag =
@@ -36,18 +47,43 @@ await rm(releaseDir, { recursive: true, force: true });
 await rm(zipPath, { force: true });
 await mkdir(releaseDir, { recursive: true });
 
-for (const entry of [
-  "package.json",
-  "package-lock.json",
-  "tsconfig.json",
-  "Dockerfile",
-  "docker-compose.yml",
-  ".dockerignore",
-  "src",
-  "public",
-]) {
+run("npm", ["ci"]);
+run("npm", ["run", "build"]);
+
+for (const entry of ["package.json", "package-lock.json", "docker-compose.yml", "public", "dist"]) {
   await cp(join(rootDir, entry), join(releaseDir, entry), { recursive: true });
 }
+
+run("npm", ["ci", "--omit=dev"], { cwd: releaseDir });
+
+await writeFile(
+  join(releaseDir, "Dockerfile"),
+  `FROM node:24-bookworm-slim
+
+ENV NODE_ENV=production
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+COPY node_modules ./node_modules
+COPY dist ./dist
+COPY public ./public
+
+EXPOSE 3000
+
+CMD ["node", "dist/index.js"]
+`,
+);
+
+await writeFile(
+  join(releaseDir, ".dockerignore"),
+  `.git
+.github
+.release
+.DS_Store
+*.log
+output
+`,
+);
 
 await mkdir(join(releaseDir, "scripts"), { recursive: true });
 await cp(join(rootDir, "scripts", "ovo"), join(releaseDir, "scripts", "ovo"), {
@@ -96,7 +132,7 @@ const meta = {
     password: zipPassword,
   },
   runtime: {
-    kind: "docker-compose-build",
+    kind: "docker-compose-runtime-bundle",
     compose_file: "docker-compose.yml",
     container_name: runtimeEnv.OVO_CONTAINER_NAME,
   },
@@ -133,7 +169,7 @@ if (
   throw new Error("invalid OVO meta.json");
 }
 
-const zipResult = spawnSync("zip", ["-r", "-9", "-P", zipPassword, zipPath, "."], {
+const zipResult = spawnSync("zip", ["-r", "-q", "-9", "-P", zipPassword, zipPath, "."], {
   cwd: releaseDir,
   stdio: "inherit",
 });

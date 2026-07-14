@@ -48,15 +48,6 @@ jobs:
           node-version: 24
           cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Build app
-        run: npm run build
-
       - name: Build OVO release bundle
         run: npm run build:release
 

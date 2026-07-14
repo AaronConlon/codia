@@ -125,7 +125,7 @@ docker compose -p "$COMPOSE_PROJECT_NAME" build codia
 
 if [ "$FIRST_DB_INIT" = "true" ]; then
   echo "[codia] first sqlite init: $DB_FILE"
-  docker compose -p "$COMPOSE_PROJECT_NAME" run --rm --no-deps codia npm run db:init
+  docker compose -p "$COMPOSE_PROJECT_NAME" run --rm --no-deps codia node dist/db/init.js
 else
   echo "[codia] sqlite already exists, skip first init: $DB_FILE"
 fi
