@@ -1,28 +1,76 @@
-export const renderSiteHeader = (active: "home" | "try-it" = "home") => `
+export type SiteLocale = "zh" | "en" | "ja";
+
+export type SiteCopy = {
+  navHome: string;
+  navTryIt: string;
+  navDocs: string;
+  languageLabel: string;
+  footerSlogan: string;
+  footerX: string;
+};
+
+const defaultCopy: SiteCopy = {
+  navHome: "Home",
+  navTryIt: "Try It",
+  navDocs: "API Docs",
+  languageLabel: "Language",
+  footerSlogan: "Beautiful Code Images for Humans and APIs.",
+  footerX: "Aaron on X",
+};
+
+export const siteLocaleLabels: Record<SiteLocale, string> = {
+  zh: "中文",
+  en: "English",
+  ja: "日本語",
+};
+
+export const renderSiteHeader = (
+  active: "home" | "try-it" = "home",
+  locale: SiteLocale = "en",
+  copy: Partial<SiteCopy> = {},
+) => {
+  const text = { ...defaultCopy, ...copy };
+
+  return `
   <header class="site-header">
     <a class="site-brand" href="/" aria-label="Codia home">
       <img src="/assets/codia-logo.webp" width="38" height="38" alt="" />
       <span>Codia</span>
     </a>
     <nav class="site-nav" aria-label="Primary navigation">
-      <a href="/"${active === "home" ? ' aria-current="page"' : ""}>Home</a>
-      <a href="/try-it"${active === "try-it" ? ' aria-current="page"' : ""}>Try It</a>
-      <a href="/docs">API Docs</a>
+      <a href="/"${active === "home" ? ' aria-current="page"' : ""}>${text.navHome}</a>
+      <a href="/try-it"${active === "try-it" ? ' aria-current="page"' : ""}>${text.navTryIt}</a>
+      <a href="/docs">${text.navDocs}</a>
       <a href="/llms.txt">llms.txt</a>
     </nav>
+    <div class="site-locale" aria-label="${text.languageLabel}">
+      ${(["zh", "en", "ja"] as SiteLocale[])
+        .map(
+          (item) =>
+            `<button type="button" data-site-locale="${item}"${
+              item === locale ? ' aria-pressed="true"' : ""
+            }>${siteLocaleLabels[item]}</button>`,
+        )
+        .join("")}
+    </div>
   </header>
 `;
+};
 
-export const renderSiteFooter = () => `
+export const renderSiteFooter = (copy: Partial<SiteCopy> = {}) => {
+  const text = { ...defaultCopy, ...copy };
+
+  return `
   <footer class="site-footer">
-    <span>Codia · Beautiful Code Images for Humans and APIs.</span>
+    <span>Codia · ${text.footerSlogan}</span>
     <nav aria-label="Footer links">
       <a href="/llms.txt">llms.txt</a>
-      <a href="https://x.com/intent/follow?screen_name=aaronconlondev" target="_blank" rel="noreferrer">Aaron on X</a>
+      <a href="https://x.com/intent/follow?screen_name=aaronconlondev" target="_blank" rel="noreferrer">${text.footerX}</a>
       <a href="https://github.com/AaronConlon/codia" target="_blank" rel="noreferrer">GitHub</a>
     </nav>
   </footer>
 `;
+};
 
 export const siteShellStyles = `
   :root {
@@ -88,6 +136,7 @@ export const siteShellStyles = `
   }
 
   .site-nav,
+  .site-locale,
   .site-footer nav {
     display: flex;
     align-items: center;
@@ -96,27 +145,35 @@ export const siteShellStyles = `
   }
 
   .site-nav a,
+  .site-locale button,
   .site-footer a {
     min-height: 38px;
     display: inline-flex;
     align-items: center;
     padding: 0 12px;
+    border: 0;
     border-radius: 999px;
+    background: transparent;
     color: var(--muted);
+    font: inherit;
     font-size: 14px;
     font-weight: 800;
+    cursor: pointer;
     transition-property: color, background, transform;
     transition-duration: 160ms;
   }
 
   .site-nav a:hover,
   .site-nav a[aria-current="page"],
+  .site-locale button:hover,
+  .site-locale button[aria-pressed="true"],
   .site-footer a:hover {
     color: var(--text);
     background: rgb(15 23 42 / 6%);
   }
 
   .site-nav a:active,
+  .site-locale button:active,
   .site-footer a:active {
     transform: scale(0.96);
   }
