@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.19](https://github.com/AaronConlon/codia/compare/v0.1.18...v0.1.19) (2026-07-14)
+
+
+### Features
+
+* refine mobile layout and css icon ([63a0415](https://github.com/AaronConlon/codia/commit/63a0415c8d4831c528cd2f8cce44e818f0076be5))
+
 ### [0.1.18](https://github.com/AaronConlon/codia/compare/v0.1.17...v0.1.18) (2026-07-14)
 
 
