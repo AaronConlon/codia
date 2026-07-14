@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.20](https://github.com/AaronConlon/codia/compare/v0.1.19...v0.1.20) (2026-07-14)
+
+
+### Features
+
+* polish social metadata and try-it preview ([c574ae8](https://github.com/AaronConlon/codia/commit/c574ae87956a20a356e84eef148fd4aa3ad90eb2))
+
 ### [0.1.19](https://github.com/AaronConlon/codia/compare/v0.1.18...v0.1.19) (2026-07-14)
 
 
