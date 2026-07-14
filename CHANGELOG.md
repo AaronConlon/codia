@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.18](https://github.com/AaronConlon/codia/compare/v0.1.17...v0.1.18) (2026-07-14)
+
+
+### Bug Fixes
+
+* simplify try-it toast styling ([cd72eef](https://github.com/AaronConlon/codia/commit/cd72eef11726bfc8b1b9e18267aed21b55b1d437))
+
 ### [0.1.17](https://github.com/AaronConlon/codia/compare/v0.1.16...v0.1.17) (2026-07-14)
 
 
