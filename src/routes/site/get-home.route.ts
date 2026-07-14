@@ -202,10 +202,11 @@ const homeHtml = (initialState: HomeInitialState) => {
           #050505;
         background-size: 28px 28px;
         color: #f8fafc;
+        overflow-x: clip;
       }
 
       .home-shell {
-        width: min(1366px, calc(100vw - 32px));
+        width: min(1366px, calc(100% - 32px));
         margin: 0 auto;
       }
 
@@ -258,8 +259,7 @@ const homeHtml = (initialState: HomeInitialState) => {
 
       .landing-top {
         position: relative;
-        width: 100vw;
-        margin-left: calc(50% - 50vw);
+        width: 100%;
         margin-top: -78px;
         padding: 78px 0 74px;
         overflow: hidden;
@@ -282,7 +282,7 @@ const homeHtml = (initialState: HomeInitialState) => {
       .landing-inner {
         position: relative;
         z-index: 1;
-        width: min(1366px, calc(100vw - 32px));
+        width: min(1366px, calc(100% - 32px));
         margin: 0 auto;
       }
 

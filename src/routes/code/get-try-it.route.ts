@@ -240,6 +240,7 @@ const exampleHtml = (
       body {
         margin: 0;
         min-height: 100vh;
+        overflow-x: clip;
         background-color: var(--page-bg);
         background-image:
           linear-gradient(rgb(15 23 42 / 5%) 1px, transparent 1px),
@@ -309,7 +310,7 @@ const exampleHtml = (
       }
 
       main {
-        width: min(1366px, calc(100vw - 32px));
+        width: min(1366px, calc(100% - 32px));
         margin: 0 auto;
         padding: 34px 0;
         display: grid;

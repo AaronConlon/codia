@@ -105,6 +105,7 @@ export const siteShellStyles = `
   body {
     margin: 0;
     min-height: 100vh;
+    overflow-x: clip;
     color: var(--text);
     background:
       linear-gradient(rgb(15 23 42 / 4%) 1px, transparent 1px),
@@ -122,7 +123,7 @@ export const siteShellStyles = `
 
   .site-header,
   .site-footer {
-    width: min(1366px, calc(100vw - 32px));
+    width: min(1366px, calc(100% - 32px));
     margin: 0 auto;
     display: flex;
     align-items: center;
