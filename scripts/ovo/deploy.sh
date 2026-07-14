@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BUNDLE_DIR="${OVO_BUNDLE_DIR:-$(pwd)}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_BUNDLE_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+BUNDLE_DIR="${OVO_BUNDLE_DIR:-$SCRIPT_BUNDLE_DIR}"
 
 load_env_defaults() {
   local env_file="$1"
 
   if [ ! -f "$env_file" ]; then
-    echo "[codia] bundle env not found: $env_file"
+    echo "[codia] env file not found: $env_file"
     return
   fi
 
