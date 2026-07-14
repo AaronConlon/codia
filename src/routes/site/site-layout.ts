@@ -203,7 +203,8 @@ export const siteShellStyles = `
     align-items: center;
     justify-content: center;
     transform-origin: 50% 50%;
-    color: var(--muted);
+    color: #ffffff;
+    filter: drop-shadow(0 0 8px rgb(255 255 255 / 36%));
     transition: transform 320ms cubic-bezier(0.34, 1.56, 0.64 1), color 160ms ease;
   }
 
@@ -215,7 +216,7 @@ export const siteShellStyles = `
 
   .site-nav-llms:hover .site-nav-llms-icon {
     transform: rotate(-18deg) translateY(-1px);
-    color: var(--text);
+    color: #ffffff;
   }
 
   @media (prefers-reduced-motion: reduce) {

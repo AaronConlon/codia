@@ -32,7 +32,6 @@ const homeCopy = {
     imagesStored: "已存图片",
     linesRendered: "已渲染行数",
     base64Stored: "Base64 存储",
-    galleryTitle: "最新代码图片",
     screenshotLabels: [
       "TypeScript",
       "JavaScript",
@@ -65,7 +64,6 @@ const homeCopy = {
     imagesStored: "Images stored",
     linesRendered: "Lines rendered",
     base64Stored: "Base64 stored",
-    galleryTitle: "Latest code images",
     screenshotLabels: [
       "TypeScript",
       "JavaScript",
@@ -98,7 +96,6 @@ const homeCopy = {
     imagesStored: "保存画像",
     linesRendered: "描画行数",
     base64Stored: "Base64 保存量",
-    galleryTitle: "最新のコード画像",
     screenshotLabels: [
       "TypeScript",
       "JavaScript",
@@ -377,20 +374,6 @@ const homeHtml = (initialState: HomeInitialState) => {
         box-shadow: inset 0 0 0 1px rgb(255 255 255 / 12%);
       }
 
-      .gallery-intro {
-        max-width: 760px;
-        margin: 200px auto 18px;
-        text-align: center;
-      }
-
-      .gallery-intro h2 {
-        margin: 0;
-        color: #ffffff;
-        font-size: clamp(34px, 4vw, 58px);
-        line-height: 1.02;
-        letter-spacing: 0;
-      }
-
       .stats {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -426,30 +409,28 @@ const homeHtml = (initialState: HomeInitialState) => {
 
       .masonry {
         width: min(1160px, 100%);
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        grid-auto-rows: 6px;
-        gap: 10px;
-        align-items: start;
+        margin: 200px auto 0;
+        columns: 3 320px;
+        column-gap: 10px;
       }
 
       .masonry-card {
         position: relative;
         display: block;
-        min-height: 132px;
+        margin: 0 0 10px;
         padding: 0;
         border: 1px solid rgb(255 255 255 / 12%);
-        border-radius: 16px;
+        border-radius: 0;
         background: #18181b;
         box-shadow: 0 14px 34px rgb(0 0 0 / 34%);
         overflow: hidden;
+        break-inside: avoid;
       }
 
       .masonry-card img {
         display: block;
         width: 100%;
-        height: 100%;
+        height: auto;
         object-fit: contain;
         opacity: 0.94;
       }
@@ -468,17 +449,10 @@ const homeHtml = (initialState: HomeInitialState) => {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .masonry {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
       }
 
       @media (max-width: 560px) {
         .stats {
-          grid-template-columns: 1fr;
-        }
-
-        .masonry {
           grid-template-columns: 1fr;
         }
       }
@@ -497,23 +471,17 @@ const homeHtml = (initialState: HomeInitialState) => {
               <p class="intro">${text.intro}</p>
               <div class="actions">
                 <a class="button primary" href="/try-it">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.064a2 2 0 0 0-1.437 1.436l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                   ${text.tryCodia}
                 </a>
               </div>
             </div>
           </div>
 
-          <div class="gallery-intro">
-            <h2>${text.galleryTitle}</h2>
-          </div>
-
           <div class="masonry" aria-label="${text.galleryLabel}">
             ${screenshots
               .map(
-                (item, index) => `<article class="masonry-card" style="--image-ratio: ${
-                  item.height / item.width
-                };" data-width="${item.width}" data-height="${item.height}">
+                (item, index) => `<article class="masonry-card">
                   <img src="${item.url}" width="${item.width}" height="${item.height}" alt="${text.screenshotLabels[index]} code image" loading="${
                     index < 3 ? "eager" : "lazy"
                   }" decoding="async" />
@@ -536,32 +504,6 @@ const homeHtml = (initialState: HomeInitialState) => {
       const setCookie = (name, value) => {
         document.cookie = name + "=" + encodeURIComponent(value) + "; path=/; max-age=31536000; samesite=lax";
       };
-
-      const resizeMasonry = () => {
-        const grid = document.querySelector(".masonry");
-        if (!grid) return;
-        const styles = window.getComputedStyle(grid);
-        const rowHeight = Number.parseFloat(styles.getPropertyValue("grid-auto-rows")) || 8;
-        const gap = Number.parseFloat(styles.getPropertyValue("row-gap")) || 16;
-
-        grid.querySelectorAll(".masonry-card").forEach((card) => {
-          const width = Number(card.dataset.width || 1);
-          const height = Number(card.dataset.height || 1);
-          const renderedWidth = card.getBoundingClientRect().width;
-          const renderedHeight = Math.max(132, renderedWidth * (height / width));
-          const rows = Math.ceil((renderedHeight + gap) / (rowHeight + gap));
-          card.style.height = renderedHeight + "px";
-          card.style.gridRowEnd = "span " + rows;
-        });
-      };
-
-      const masonryImages = document.querySelectorAll(".masonry-card img");
-      masonryImages.forEach((image) => {
-        if (image.complete) return;
-        image.addEventListener("load", resizeMasonry, { once: true });
-      });
-      window.addEventListener("resize", resizeMasonry);
-      resizeMasonry();
 
       const localeTrigger = document.querySelector(".site-locale-trigger");
       const localeMenu = document.getElementById("site-locale-menu");
