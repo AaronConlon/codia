@@ -33,7 +33,6 @@ const homeCopy = {
     linesRendered: "已渲染行数",
     base64Stored: "Base64 存储",
     galleryTitle: "最新代码图片",
-    gallerySubtitle: "通过 Codia API 生成的九种语言示例，并以 WebP 格式发布。",
     screenshotLabels: [
       "TypeScript",
       "JavaScript",
@@ -67,7 +66,6 @@ const homeCopy = {
     linesRendered: "Lines rendered",
     base64Stored: "Base64 stored",
     galleryTitle: "Latest code images",
-    gallerySubtitle: "Nine language samples generated through the Codia API and published as WebP.",
     screenshotLabels: [
       "TypeScript",
       "JavaScript",
@@ -101,7 +99,6 @@ const homeCopy = {
     linesRendered: "描画行数",
     base64Stored: "Base64 保存量",
     galleryTitle: "最新のコード画像",
-    gallerySubtitle: "Codia API で生成した 9 言語のサンプルを WebP で公開しています。",
     screenshotLabels: [
       "TypeScript",
       "JavaScript",
@@ -130,55 +127,55 @@ const screenshots = [
     language: "typescript",
     width: 628,
     height: 236,
-    url: "https://de4965e.webp.li/blog-images/2026/07/86b17c183db7b09a8b9b04cf4a3ba438.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/5fa36dbaad07e39ea75495903f40e20b.webp",
   },
   {
     language: "javascript",
     width: 1020,
     height: 224,
-    url: "https://de4965e.webp.li/blog-images/2026/07/d57e6d2c91b1788e300b222bd42afacc.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/1cc4305bbd610d6de72dd41543c9e911.webp",
   },
   {
     language: "python",
     width: 714,
     height: 236,
-    url: "https://de4965e.webp.li/blog-images/2026/07/7044733bed583bdda0d20f928bbb7cbe.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/8ea99733c2c0ce9c227a05451a94c6b5.webp",
   },
   {
     language: "go",
     width: 740,
     height: 320,
-    url: "https://de4965e.webp.li/blog-images/2026/07/8351f9726b7538e1e56fe2e3bd3cb26c.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/834dde8c604a0946fab221f974f6da5b.webp",
   },
   {
     language: "rust",
     width: 764,
     height: 236,
-    url: "https://de4965e.webp.li/blog-images/2026/07/a48e2683111079bfd89599c05db2329d.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/5664656304704be9f1374d22fb6b0581.webp",
   },
   {
     language: "java",
     width: 726,
     height: 248,
-    url: "https://de4965e.webp.li/blog-images/2026/07/2f1bb046f9c8522816b8208c667a3b39.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/3bd53282a53519d9a3e81201d3fa316c.webp",
   },
   {
     language: "kotlin",
     width: 750,
     height: 260,
-    url: "https://de4965e.webp.li/blog-images/2026/07/7b004df1ed798da7d1676a529c2f0055.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/a1ad3a2ca37849d6092efd5e4e1d79c4.webp",
   },
   {
     language: "swift",
     width: 689,
     height: 296,
-    url: "https://de4965e.webp.li/blog-images/2026/07/51595f4a592473827267c04820222b09.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/70ba14d556446b453e3e55ffb01b4890.webp",
   },
   {
     language: "ruby",
     width: 704,
     height: 284,
-    url: "https://de4965e.webp.li/blog-images/2026/07/6b1a5ab7f96b03a8a4e17faf8d771105.webp",
+    url: "https://de4965e.webp.li/blog-images/2026/07/d66ecd222278fbcc355c3dac3b7fbfb8.webp",
   },
 ];
 
@@ -382,7 +379,7 @@ const homeHtml = (initialState: HomeInitialState) => {
 
       .gallery-intro {
         max-width: 760px;
-        margin: 0 auto 26px;
+        margin: 200px auto 18px;
         text-align: center;
       }
 
@@ -392,16 +389,6 @@ const homeHtml = (initialState: HomeInitialState) => {
         font-size: clamp(34px, 4vw, 58px);
         line-height: 1.02;
         letter-spacing: 0;
-      }
-
-      .gallery-intro p {
-        max-width: 680px;
-        margin: 16px auto 0;
-        color: rgb(248 250 252 / 62%);
-        font-size: 17px;
-        line-height: 1.7;
-        font-weight: 650;
-        text-wrap: pretty;
       }
 
       .stats {
@@ -438,12 +425,12 @@ const homeHtml = (initialState: HomeInitialState) => {
       }
 
       .masonry {
-        width: min(1216px, 100%);
+        width: min(1160px, 100%);
         margin: 0 auto;
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        grid-auto-rows: 8px;
-        gap: 16px;
+        grid-auto-rows: 6px;
+        gap: 10px;
         align-items: start;
       }
 
@@ -453,9 +440,9 @@ const homeHtml = (initialState: HomeInitialState) => {
         min-height: 132px;
         padding: 0;
         border: 1px solid rgb(255 255 255 / 12%);
-        border-radius: 20px;
+        border-radius: 16px;
         background: #18181b;
-        box-shadow: 0 18px 46px rgb(0 0 0 / 38%);
+        box-shadow: 0 14px 34px rgb(0 0 0 / 34%);
         overflow: hidden;
       }
 
@@ -465,20 +452,6 @@ const homeHtml = (initialState: HomeInitialState) => {
         height: 100%;
         object-fit: contain;
         opacity: 0.94;
-      }
-
-      .masonry-card-label {
-        position: absolute;
-        left: 12px;
-        top: 12px;
-        z-index: 2;
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: rgb(0 0 0 / 54%);
-        color: #ffffff;
-        font-size: 13px;
-        font-weight: 850;
-        backdrop-filter: blur(12px);
       }
 
       .site-footer {
@@ -523,15 +496,16 @@ const homeHtml = (initialState: HomeInitialState) => {
               <p class="slogan">${text.slogan}</p>
               <p class="intro">${text.intro}</p>
               <div class="actions">
-                <a class="button primary" href="/try-it">${text.tryCodia}</a>
-                <a class="button secondary" href="/docs">${text.viewApi}</a>
+                <a class="button primary" href="/try-it">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.064a2 2 0 0 0-1.437 1.436l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>
+                  ${text.tryCodia}
+                </a>
               </div>
             </div>
           </div>
 
           <div class="gallery-intro">
             <h2>${text.galleryTitle}</h2>
-            <p>${text.gallerySubtitle}</p>
           </div>
 
           <div class="masonry" aria-label="${text.galleryLabel}">
@@ -539,10 +513,7 @@ const homeHtml = (initialState: HomeInitialState) => {
               .map(
                 (item, index) => `<article class="masonry-card" style="--image-ratio: ${
                   item.height / item.width
-                };" data-width="${item.width}" data-height="${item.height}" data-depth="${
-                  1 + (index % 4) * 0.12
-                }">
-                  <span class="masonry-card-label">${text.screenshotLabels[index]}</span>
+                };" data-width="${item.width}" data-height="${item.height}">
                   <img src="${item.url}" width="${item.width}" height="${item.height}" alt="${text.screenshotLabels[index]} code image" loading="${
                     index < 3 ? "eager" : "lazy"
                   }" decoding="async" />
@@ -576,9 +547,8 @@ const homeHtml = (initialState: HomeInitialState) => {
         grid.querySelectorAll(".masonry-card").forEach((card) => {
           const width = Number(card.dataset.width || 1);
           const height = Number(card.dataset.height || 1);
-          const depth = Number(card.dataset.depth || 1);
           const renderedWidth = card.getBoundingClientRect().width;
-          const renderedHeight = Math.max(132, renderedWidth * (height / width) * 1.72 * depth);
+          const renderedHeight = Math.max(132, renderedWidth * (height / width));
           const rows = Math.ceil((renderedHeight + gap) / (rowHeight + gap));
           card.style.height = renderedHeight + "px";
           card.style.gridRowEnd = "span " + rows;

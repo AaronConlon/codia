@@ -1,6 +1,6 @@
 import { render } from "takumi-js";
 import type { Font } from "takumi-js";
-import { container, text } from "takumi-js/helpers";
+import { container, image, text } from "takumi-js/helpers";
 import { codeToTokens, bundledLanguages, bundledThemes } from "shiki";
 import type { BundledLanguage, BundledTheme, SpecialLanguage } from "shiki";
 import { formatCodeForRendering } from "./code-formatter.js";
@@ -48,6 +48,7 @@ const firaCodeCharWidthRatio = 0.68;
 const lineNumberColumnWidth = 72;
 const codeLeftPadding = 18;
 const codeRightPadding = 30;
+const languageLogoSize = 26;
 const lineHeight = 24;
 const maxBorderSize = 120;
 const defaultCodeTheme = "dracula";
@@ -123,11 +124,7 @@ export const renderCodeImage = async (
               }),
             ),
           }),
-          text(language, {
-            color: tokens.fg,
-            fontSize: "17px",
-            fontWeight: 600,
-          }),
+          renderLanguageLogo(language),
         ],
       }),
       container({
@@ -253,6 +250,45 @@ const mimeTypeFromFormat = (format: RenderCodeImageFormat): RenderCodeImageMimeT
   return "image/webp";
 };
 
+const renderLanguageLogo = (language: BundledLanguage | SpecialLanguage) =>
+  image({
+    src: languageLogoDataUrl(String(language)),
+    width: languageLogoSize,
+    height: languageLogoSize,
+    style: {
+      borderRadius: "6px",
+      objectFit: "contain",
+    },
+  });
+
+const languageLogoDataUrl = (language: string) => {
+  const logo = languageLogos[language] ?? languageLogos[languageLogoAliases[language] ?? ""] ?? codeLogo;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(logo)}`;
+};
+
+const languageLogoAliases: Record<string, string> = {
+  ts: "typescript",
+  js: "javascript",
+  py: "python",
+  golang: "go",
+  rs: "rust",
+  rb: "ruby",
+};
+
+const languageLogos: Record<string, string> = {
+  typescript: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#3178c6"/><path fill="#fff" d="M15 31h25v6h-9v21h-7V37h-9v-6Zm28 25c2 1 4 2 8 2 6 0 10-3 10-8 0-4-2-6-7-8l-2-1c-3-1-4-2-4-4s2-3 4-3c3 0 5 1 7 2l2-5c-2-1-5-3-9-3-6 0-10 4-10 9 0 4 2 7 8 9l2 1c3 1 4 2 4 4s-2 3-5 3c-3 0-6-1-8-3l-2 5Z"/></svg>`,
+  javascript: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#f7df1e"/><path fill="#111" d="M17 50c1 2 3 4 7 4 4 0 7-2 7-7V29h-6v18c0 2-1 3-3 3s-3-1-4-3l-1 3Zm18-1c2 3 5 5 10 5 5 0 9-3 9-8 0-4-2-7-8-9l-2-1c-3-1-4-2-4-4s1-3 4-3c2 0 4 1 5 3l4-3c-2-3-5-5-9-5-6 0-9 4-9 8 0 5 3 7 8 9l2 1c3 1 4 2 4 4s-2 3-4 3c-3 0-5-1-6-4l-4 4Z"/></svg>`,
+  python: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#3776ab" d="M32 4c-14 0-13 6-13 6v7h14v2H13S4 18 4 32s8 13 8 13h5v-8s0-8 8-8h14s8 0 8-8v-9s1-8-15-8Zm-8 6a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/><path fill="#ffd43b" d="M32 60c14 0 13-6 13-6v-7H31v-2h20s9 1 9-13-8-13-8-13h-5v8s0 8-8 8H25s-8 0-8 8v9s-1 8 15 8Zm8-6a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"/></svg>`,
+  go: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#00add8"/><path fill="#fff" d="M16 24h17c2 0 3 1 3 3s-1 3-3 3H20v4h11c2 0 3 1 3 3s-1 3-3 3H16v-4h6v-2h-9v-4h12v-2h-9v-4Zm32-1c8 0 13 5 13 12s-5 12-13 12-13-5-13-12 5-12 13-12Zm0 6c-4 0-7 2-7 6s3 6 7 6 7-2 7-6-3-6-7-6Z"/></svg>`,
+  rust: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25" fill="#000"/><circle cx="32" cy="32" r="18" fill="#f74c00"/><path fill="#fff" d="M21 21h14c6 0 9 3 9 8 0 4-2 6-5 7l7 10h-8l-6-9h-4v9h-7V21Zm7 6v5h6c2 0 3-1 3-3s-1-2-3-2h-6Z"/></svg>`,
+  java: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#fff"/><path fill="#f89820" d="M35 5c6 6-14 10-4 19 3 3-2 6-2 6s2-3 0-5C19 16 40 13 35 5Z"/><path fill="#5382a1" d="M19 36c-7 2 4 5 18 3 3 0 6-1 6-1l-2 4c-11 3-31 2-22-6Zm-2 8c-7 2 5 7 24 4l-2 4c-15 2-29-1-22-8Zm30-13s4 3-4 5c-9 3-29 2-24-1 2-1 5-2 5-2s-8 0-9 4c-2 6 25 6 35 1 10-5-3-7-3-7Z"/></svg>`,
+  kotlin: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="k" x1="0" y1="64" x2="64" y2="0"><stop stop-color="#0095d5"/><stop offset=".45" stop-color="#7f52ff"/><stop offset="1" stop-color="#ff6b00"/></linearGradient></defs><rect width="64" height="64" rx="12" fill="url(#k)"/><path fill="#fff" d="M14 14h13L14 30V14Zm0 36V31l18 19H14Zm15-18 20-18h1L31 33l20 17H37L23 36l6-4Z"/></svg>`,
+  swift: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="s" x1="8" y1="4" x2="56" y2="60"><stop stop-color="#fa7343"/><stop offset="1" stop-color="#f05138"/></linearGradient></defs><rect width="64" height="64" rx="14" fill="url(#s)"/><path fill="#fff" d="M49 42c3-8-3-18-10-24 3 6 3 11 1 15-5-4-11-9-16-15 3 7 8 14 13 19-6-4-14-10-22-19 5 10 12 20 22 27-7 4-17 3-25-1 8 9 20 12 30 7 4 2 6 5 7 8 3-6 2-12 0-17Z"/></svg>`,
+  ruby: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#111"/><path fill="#cc342d" d="m32 6 22 16-9 32-37-5 8-34L32 6Z"/><path fill="#ef5b4c" d="m32 6-8 20 21 28 9-32L32 6Z"/><path fill="#fff" opacity=".45" d="M16 15 8 49l16-23 8-20-16 9Z"/></svg>`,
+};
+
+const codeLogo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#111827"/><path fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" d="M24 22 12 32l12 10m16-20 12 10-12 10M36 16 28 48"/></svg>`;
+
 const loadFiraCodeFonts = () => {
   firaCodeFonts ??= loadNodeFiraCodeFonts();
   return firaCodeFonts;
@@ -360,7 +396,7 @@ const estimateMinContainerWidth = (
     (showLineNumbers ? lineNumberColumnWidth : 18) +
     Math.ceil(maxLineColumns * codeFontSize * firaCodeCharWidthRatio) +
     codeRightPadding;
-  const headerWidth = 36 + 49 + Math.ceil(String(language).length * 11) + codeLeftPadding;
+  const headerWidth = 36 + 49 + languageLogoSize + codeLeftPadding;
 
   return Math.min(
     Math.max(Math.max(codeWidth, headerWidth), minContainerWidth),
