@@ -3,6 +3,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import type { Context } from "hono";
 import { createCodeController } from "./routes/code/code-controller.js";
 import { createSiteController } from "./routes/site/site-controller.js";
+import { siteSlogan } from "./routes/site/site-layout.js";
 
 type CreateAppOptions = {
   sendPublicAsset?: (filename: string, c: Context) => Response | Promise<Response>;
@@ -40,6 +41,11 @@ export const createApp = (options: CreateAppOptions = {}) => {
       if (!/^[a-z0-9-]+\.webp$/i.test(file)) return c.notFound();
       return options.sendPublicAsset?.(`gallery/${file}`, c) ?? c.notFound();
     });
+    app.get("/assets/examples/:file", (c) => {
+      const file = c.req.param("file");
+      if (!/^[a-z0-9-]+\.webp$/i.test(file)) return c.notFound();
+      return options.sendPublicAsset?.(`examples/${file}`, c) ?? c.notFound();
+    });
     app.get("/og-image.png", (c) => options.sendPublicAsset?.("codia-og.png", c) ?? c.notFound());
   }
 
@@ -50,13 +56,13 @@ export const createApp = (options: CreateAppOptions = {}) => {
   app.doc("/openapi.json", {
     openapi: "3.1.0",
     info: {
-      title: "Codia API",
+      title: "Codia · Beautiful Code Images API",
       version: "0.1.0",
-      description: "Beautiful code images for humans and APIs.",
+      description: siteSlogan,
     },
   });
 
-  app.get("/docs", swaggerUI({ url: "/openapi.json" }));
+  app.get("/docs", swaggerUI({ url: "/openapi.json", title: "Codia · Beautiful Code Images API" }));
 
   return app;
 };

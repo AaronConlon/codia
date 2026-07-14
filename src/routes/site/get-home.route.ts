@@ -4,6 +4,8 @@ import { getRenderStats } from "../../services/render-records.js";
 import {
   renderSiteFooter,
   renderSiteHeader,
+  renderSiteMeta,
+  siteMetaTitle,
   siteShellStyles,
   type SiteLocale,
 } from "./site-layout.js";
@@ -210,7 +212,7 @@ const screenshots = [
   },
 ];
 
-const homeHtml = (initialState: HomeInitialState) => {
+const homeHtml = (initialState: HomeInitialState, origin: string) => {
   const stats = getRenderStats();
   const text = homeCopy[initialState.locale];
   const statItems = [
@@ -232,13 +234,12 @@ const homeHtml = (initialState: HomeInitialState) => {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Codia · ${text.slogan}</title>
-    <meta name="description" content="${text.metaDescription}" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/assets/codia-logo.webp" />
-    <meta property="og:title" content="Codia" />
-    <meta property="og:description" content="${text.slogan}" />
-    <meta property="og:image" content="/og-image.png" />
+    ${renderSiteMeta({
+      origin,
+      path: "/",
+      title: siteMetaTitle,
+      description: text.metaDescription,
+    })}
     <style>
       ${siteShellStyles}
 
@@ -894,7 +895,7 @@ export const route_GET_home = (app: AppInstance) => {
       sameSite: "Lax",
     });
 
-    return c.html(homeHtml(initialState));
+    return c.html(homeHtml(initialState, new URL(c.req.url).origin));
   });
 };
 

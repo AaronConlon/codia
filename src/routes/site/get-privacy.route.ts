@@ -3,6 +3,8 @@ import type { AppInstance } from "../../types.js";
 import {
   renderSiteFooter,
   renderSiteHeader,
+  renderSiteMeta,
+  siteSlogan,
   siteShellStyles,
   type SiteLocale,
 } from "./site-layout.js";
@@ -107,7 +109,7 @@ const privacyCopy = {
   },
 } as const;
 
-const privacyHtml = (initialState: PrivacyInitialState) => {
+const privacyHtml = (initialState: PrivacyInitialState, origin: string) => {
   const text = privacyCopy[initialState.locale];
 
   return `<!doctype html>
@@ -115,10 +117,12 @@ const privacyHtml = (initialState: PrivacyInitialState) => {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Codia · ${text.title}</title>
-    <meta name="description" content="${text.metaDescription}" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <link rel="apple-touch-icon" href="/assets/codia-logo.webp" />
+    ${renderSiteMeta({
+      origin,
+      path: "/privacy",
+      title: `Codia Privacy · ${siteSlogan}`,
+      description: text.metaDescription,
+    })}
     <style>
       ${siteShellStyles}
 
@@ -293,7 +297,7 @@ export const route_GET_privacy = (app: AppInstance) => {
       sameSite: "Lax",
     });
 
-    return c.html(privacyHtml(initialState));
+    return c.html(privacyHtml(initialState, new URL(c.req.url).origin));
   });
 };
 

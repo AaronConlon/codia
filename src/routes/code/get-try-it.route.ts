@@ -1,7 +1,13 @@
 import { setCookie } from "hono/cookie";
 import { bundledThemes } from "shiki";
 import type { AppInstance } from "../../types.js";
-import { renderSiteFooter, renderSiteHeader, siteShellStyles } from "../site/site-layout.js";
+import {
+  renderSiteFooter,
+  renderSiteHeader,
+  renderSiteMeta,
+  siteSlogan,
+  siteShellStyles,
+} from "../site/site-layout.js";
 
 const shikiThemes = Object.keys(bundledThemes).sort();
 
@@ -162,6 +168,11 @@ const defaultExampleCode = `function quickSort(values: number[]): number[] {
 const result = quickSort([8, 3, 5, 4, 7, 6, 1, 2]);
 console.log(result);`;
 
+const defaultExampleImagePath = "/assets/examples/default-quicksort.webp";
+const defaultExampleContainerWidth = 861;
+const defaultExampleBackgroundId = "sunset";
+const defaultExampleBackground = backgroundPresets.find((item) => item.id === defaultExampleBackgroundId) ?? backgroundPresets[0];
+
 const inspectorPath = (line: number, column: number, node: string) =>
   `src/routes/code/get-try-it.route.ts:${line}:${column}:${node}`;
 
@@ -170,36 +181,20 @@ const exampleHtml = (
   origin: string,
   options: CodeExampleRouteOptions = {},
 ) => {
-  const canonicalUrl = `${origin}/try-it`;
-  const logoUrl = `${origin}/assets/codia-logo.webp`;
-  const faviconUrl = `${origin}/favicon.png`;
-  const ogImageUrl = `${origin}/og-image.png`;
   const text = exampleTranslations[initialState.locale];
-  const defaultBgColor = backgroundPresets[0].bgColor;
+  const defaultBgColor = defaultExampleBackground.bgColor;
 
   return String.raw`<!doctype html>
 <html lang="${initialState.htmlLang}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Try Codia · Beautiful Code Images</title>
-    <meta name="description" content="Beautiful Code Images for Humans and APIs." />
-    <link rel="canonical" href="${canonicalUrl}" />
-    <link rel="icon" type="image/png" href="${faviconUrl}" />
-    <link rel="apple-touch-icon" href="${logoUrl}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Codia" />
-    <meta property="og:title" content="Codia" />
-    <meta property="og:description" content="Beautiful Code Images for Humans and APIs." />
-    <meta property="og:url" content="${canonicalUrl}" />
-    <meta property="og:image" content="${ogImageUrl}" />
-    <meta property="og:image:width" content="1536" />
-    <meta property="og:image:height" content="1024" />
-    <meta property="og:image:type" content="image/png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Codia" />
-    <meta name="twitter:description" content="Beautiful Code Images for Humans and APIs." />
-    <meta name="twitter:image" content="${ogImageUrl}" />
+    ${renderSiteMeta({
+      origin,
+      path: "/try-it",
+      title: `Try Codia · ${siteSlogan}`,
+      description: "Generate beautiful code images in a human-friendly playground backed by an API built for agents.",
+    })}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -514,7 +509,7 @@ const exampleHtml = (
         gap: 6px;
         padding: 0 12px;
         border: 1px solid transparent;
-        border-radius: 2px;
+        border-radius: 4px;
         background: transparent;
         color: rgb(248 250 252 / 68%);
         text-decoration: none;
@@ -561,7 +556,7 @@ const exampleHtml = (
       button {
         height: 40px;
         border: 1px solid var(--field-border);
-        border-radius: 6px;
+        border-radius: 4px;
         background: var(--button-bg);
         color: var(--button-text);
         font-size: 14px;
@@ -600,7 +595,7 @@ const exampleHtml = (
         width: 32px;
         min-width: 32px;
         height: 32px;
-        border-radius: 6px;
+        border-radius: 4px;
       }
 
       svg {
@@ -610,7 +605,15 @@ const exampleHtml = (
       }
 
       #sonner-toast-container {
+        position: fixed;
+        z-index: 100;
         top: 16px;
+        left: 50%;
+        width: min(420px, calc(100vw - 32px));
+        margin: 0;
+        padding: 0;
+        pointer-events: none;
+        transform: translateX(-50%);
       }
 
       section {
@@ -664,7 +667,7 @@ const exampleHtml = (
         transform: translateX(0);
         visibility: visible;
         pointer-events: auto;
-        max-height: 80vh;
+        max-height: min(80vh, calc(100vh - 264px));
         overflow: auto;
         margin-left: 18px;
         padding: 14px;
@@ -691,7 +694,7 @@ const exampleHtml = (
         gap: 2px;
         padding: 2px;
         border: 1px solid var(--field-border);
-        border-radius: 8px;
+        border-radius: 4px;
         background: var(--field);
       }
 
@@ -702,7 +705,7 @@ const exampleHtml = (
         bottom: 2px;
         left: 2px;
         width: var(--tab-indicator-width, 84px);
-        border-radius: 6px;
+        border-radius: 4px;
         background: var(--button-bg);
         transform: translateX(var(--tab-indicator-x, 0px));
         transition:
@@ -879,23 +882,23 @@ const exampleHtml = (
         max-height: 252px;
         overflow: auto;
         border: 1px solid var(--field-border);
-        border-radius: 10px;
+        border-radius: 7px;
         background: var(--field);
         box-shadow: 0 18px 48px var(--shadow);
       }
 
       .option {
         width: 100%;
-        height: 38px;
+        height: 35px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0 12px;
+        padding: 0 9px;
         border: 0;
         border-radius: 0;
         background: transparent;
         color: var(--text);
-        font-size: 14px;
+        font-size: 11px;
         font-weight: 700;
         text-align: left;
       }
@@ -907,13 +910,13 @@ const exampleHtml = (
 
       .option-id {
         color: var(--muted);
-        font: 12px/1.2 "Fira Code", monospace;
+        font: 9px/1.2 "Fira Code", monospace;
       }
 
       .empty {
-        padding: 10px 12px;
+        padding: 7px 9px;
         color: var(--muted);
-        font-size: 14px;
+        font-size: 11px;
       }
 
       .secondary {
@@ -966,7 +969,7 @@ const exampleHtml = (
         width: 36px;
         height: 34px;
         padding: 2px;
-        border-radius: 6px;
+        border-radius: 4px;
       }
 
       .color-control.is-invalid input[type="text"] {
@@ -1082,7 +1085,7 @@ const exampleHtml = (
 
       .view-stack {
         width: 100%;
-        margin-top: 120px;
+        margin-top: clamp(48px, calc(100vh - 842px), 120px);
         overflow: hidden;
       }
 
@@ -1198,7 +1201,7 @@ const exampleHtml = (
         gap: 6px;
         padding: 0 10px;
         border-color: rgb(15 23 42 / 10%);
-        border-radius: 8px;
+        border-radius: 4px;
         background: rgb(255 255 255 / 92%);
         color: rgb(15 23 42 / 76%);
         font-size: 12px;
@@ -1292,7 +1295,7 @@ const exampleHtml = (
           padding: 14px 14px 60px;
           font-size: 14px;
           line-height: 22px;
-          border-radius: 8px;
+          border-radius: 4px;
         }
 
         .clear-code-button {
@@ -1340,7 +1343,7 @@ const exampleHtml = (
           justify-content: flex-start;
           min-height: 40px;
           padding: 0 10px;
-          border-radius: 2px;
+          border-radius: 4px;
           border-color: rgb(255 255 255 / 8%);
           background: rgb(255 255 255 / 4%);
         }
@@ -1488,6 +1491,9 @@ const exampleHtml = (
       const shikiThemes = ${JSON.stringify(shikiThemes)};
       const initialState = ${JSON.stringify(initialState)};
       const defaultCode = ${JSON.stringify(defaultExampleCode)};
+      const defaultExampleImage = ${JSON.stringify(defaultExampleImagePath)};
+      const defaultExampleWidth = ${JSON.stringify(defaultExampleContainerWidth)};
+      const defaultExampleBgColor = ${JSON.stringify(defaultExampleBackground.bgColor)};
       const translations = ${JSON.stringify(exampleTranslations)};
       const languages = [
         ["typescript", "TypeScript"], ["javascript", "JavaScript"], ["tsx", "TSX"],
@@ -1603,7 +1609,9 @@ const exampleHtml = (
 
       const getStoredBackground = () => {
         const storedId = readLocalStorage(storageKeys.backgroundPreset);
-        return backgroundPresets.find((item) => item.id === storedId) ?? backgroundPresets[0];
+        return backgroundPresets.find((item) => item.id === storedId) ??
+          backgroundPresets.find((item) => item.id === ${JSON.stringify(defaultExampleBackgroundId)}) ??
+          backgroundPresets[0];
       };
 
       const t = (key, values = {}) => {
@@ -1727,6 +1735,24 @@ const exampleHtml = (
       const invalidateImage = () => {
         imageDirty = true;
         if (activeView === "image") scheduleImageRender();
+      };
+
+      const isDefaultPreviewState = () =>
+        code.value === defaultCode &&
+        selectedLanguage.id === "typescript" &&
+        selectedCodeTheme.id === "dracula" &&
+        bgColor.value === defaultExampleBgColor &&
+        Number(borderSize.value || 0) === 12 &&
+        Number(borderRadius.value || 0) === 4 &&
+        Number(containerWidth.value || 0) === defaultExampleWidth &&
+        showLineNumbers.checked;
+
+      const useDefaultPreviewImage = () => {
+        latestDataUrl = defaultExampleImage;
+        finalImage.src = defaultExampleImage;
+        finalImage.hidden = false;
+        imageEmpty.hidden = true;
+        imageDirty = false;
       };
 
       const setActiveView = (view) => {
@@ -2046,6 +2072,10 @@ const exampleHtml = (
 
       const renderFinalImage = async () => {
         if (!imageDirty && latestDataUrl) return;
+        if (isDefaultPreviewState()) {
+          useDefaultPreviewImage();
+          return;
+        }
         try {
           await requestImage();
         } catch (error) {
@@ -2257,9 +2287,14 @@ const exampleHtml = (
       selectLanguage(selectedLanguage);
       selectCodeTheme(selectedCodeTheme);
       updateEditorFrame();
-      requestImage({ silent: true })
-        .catch(() => setStatus(t("failed"), true))
-        .finally(finishInitialLoad);
+      if (isDefaultPreviewState()) {
+        useDefaultPreviewImage();
+        finishInitialLoad();
+      } else {
+        requestImage({ silent: true })
+          .catch(() => setStatus(t("failed"), true))
+          .finally(finishInitialLoad);
+      }
       updateTabIndicator();
     </script>
   </body>

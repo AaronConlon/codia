@@ -10,6 +10,18 @@ export type SiteCopy = {
   footerPrivacy: string;
 };
 
+type SiteMetaOptions = {
+  origin: string;
+  path: string;
+  title: string;
+  description: string;
+};
+
+export const siteSlogan = "Beautiful Code Images for Humans and APIs.";
+export const siteMetaTitle = `Codia · ${siteSlogan}`;
+export const siteOgImageWidth = 1200;
+export const siteOgImageHeight = 630;
+
 const defaultCopy: SiteCopy = {
   navTryIt: "Playground",
   navDocs: "API Docs",
@@ -29,6 +41,36 @@ export const siteLocaleLabels: Record<SiteLocale, string> = {
 const profileImageUrl = "https://pbs.twimg.com/profile_images/2069979979467890689/H3eMkyep_400x400.jpg";
 const xFollowUrl = "https://x.com/intent/follow?screen_name=aaronconlondev";
 const githubUrl = "https://github.com/AaronConlon/codia";
+
+export const renderSiteMeta = ({ origin, path, title, description }: SiteMetaOptions) => {
+  const canonicalUrl = `${origin}${path}`;
+  const logoUrl = `${origin}/assets/codia-logo.webp`;
+  const faviconUrl = `${origin}/favicon.png`;
+  const ogImageUrl = `${origin}/og-image.png`;
+
+  return `
+    <title>${title}</title>
+    <meta name="description" content="${description}" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <link rel="icon" type="image/png" href="${faviconUrl}" />
+    <link rel="apple-touch-icon" href="${logoUrl}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Codia" />
+    <meta property="og:title" content="${title}" />
+    <meta property="og:description" content="${description}" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:image:secure_url" content="${ogImageUrl}" />
+    <meta property="og:image:width" content="${siteOgImageWidth}" />
+    <meta property="og:image:height" content="${siteOgImageHeight}" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:alt" content="Codia turns code into beautiful images for humans and APIs." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${title}" />
+    <meta name="twitter:description" content="${description}" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+    <meta name="twitter:image:alt" content="Codia turns code into beautiful images for humans and APIs." />`;
+};
 
 export const renderSiteHeader = (
   active: "home" | "try-it" = "home",
@@ -176,7 +218,7 @@ export const siteShellStyles = `
     align-items: center;
     justify-content: center;
     border: 1px solid rgb(15 23 42 / 10%);
-    border-radius: 999px;
+    border-radius: 4px;
     background: var(--panel);
     color: var(--text);
     font: inherit;
@@ -249,7 +291,7 @@ export const siteShellStyles = `
     align-items: center;
     justify-content: center;
     border: 1px solid rgb(15 23 42 / 10%);
-    border-radius: 999px;
+    border-radius: 4px;
     background: var(--panel);
     color: var(--text);
     box-shadow: 0 10px 24px rgb(15 23 42 / 10%);
@@ -297,7 +339,7 @@ export const siteShellStyles = `
     gap: 6px;
     padding: 0 12px;
     border: 1px solid transparent;
-    border-radius: 999px;
+    border-radius: 4px;
     background: transparent;
     color: var(--muted);
     font: inherit;
@@ -317,7 +359,7 @@ export const siteShellStyles = `
   }
 
   .site-footer a {
-    border-radius: 2px;
+    border-radius: 4px;
   }
 
   .site-nav a[aria-current="page"],
@@ -395,7 +437,7 @@ export const siteShellStyles = `
     min-height: 38px;
     padding: 0 12px;
     border: 1px solid rgb(15 23 42 / 10%);
-    border-radius: 999px;
+    border-radius: 4px;
     background: var(--panel);
     color: var(--text);
     font: inherit;
@@ -440,9 +482,9 @@ export const siteShellStyles = `
     right: 0;
     min-width: 168px;
     margin: 0;
-    padding: 6px;
+    padding: 3px;
     list-style: none;
-    border-radius: 14px;
+    border-radius: 11px;
     background: var(--panel);
     border: 1px solid rgb(15 23 42 / 10%);
     box-shadow: 0 18px 40px rgb(15 23 42 / 16%);
@@ -454,7 +496,7 @@ export const siteShellStyles = `
   }
 
   .site-locale-menu li {
-    margin: 0 0 4px;
+    margin: 0 0 1px;
   }
 
   .site-locale-menu li:last-child {
@@ -464,16 +506,16 @@ export const siteShellStyles = `
   .site-locale-menu button {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 5px;
     width: 100%;
-    min-height: 36px;
-    padding: 0 10px;
+    min-height: 33px;
+    padding: 0 7px;
     border: 0;
-    border-radius: 10px;
+    border-radius: 7px;
     background: transparent;
     color: var(--text);
     font: inherit;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 600;
     text-align: left;
     cursor: pointer;
@@ -586,7 +628,7 @@ export const siteShellStyles = `
       grid-template-columns: 1fr;
       gap: 8px;
       border: 1px solid rgb(15 23 42 / 10%);
-      border-radius: 16px;
+      border-radius: 4px;
       background: #ffffff;
       color: #0f172a;
       box-shadow: 0 22px 60px rgb(15 23 42 / 18%);
@@ -632,7 +674,7 @@ export const siteShellStyles = `
     .site-icon-link {
       width: 100%;
       height: 40px;
-      border-radius: 12px;
+      border-radius: 4px;
       justify-content: flex-start;
       padding: 0 12px;
       overflow: visible;
@@ -702,7 +744,7 @@ export const siteShellStyles = `
       justify-content: flex-start;
       min-height: 40px;
       padding: 0 10px;
-      border-radius: 2px;
+      border-radius: 4px;
       border-color: rgb(255 255 255 / 8%);
       background: rgb(255 255 255 / 4%);
     }
