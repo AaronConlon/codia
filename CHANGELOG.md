@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.21](https://github.com/AaronConlon/codia/compare/v0.1.20...v0.1.21) (2026-07-14)
+
+
+### Features
+
+* add high quality try-it rendering ([87846bc](https://github.com/AaronConlon/codia/commit/87846bc8689c49913212444bacf1537a58050e87))
+
 ### [0.1.20](https://github.com/AaronConlon/codia/compare/v0.1.19...v0.1.20) (2026-07-14)
 
 
