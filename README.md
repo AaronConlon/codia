@@ -1,5 +1,7 @@
 # Codia
 
+English | [简体中文](README.zh-CN.md)
+
 Beautiful code images for humans and APIs.
 
 Codia turns source code into crisp images for docs, blogs, social posts, and automation. It provides a browser playground at `/try-it`, a render API, lightweight render statistics, and an `llms.txt` endpoint for agent-facing documentation.
