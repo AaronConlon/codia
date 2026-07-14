@@ -98,6 +98,17 @@ const schemaCodeRenderRequest = z
         example: true,
         description: "是否在代码图片中展示行号。默认 true。",
       }),
+    quality: z
+      .number()
+      .int()
+      .min(1)
+      .max(3)
+      .default(1)
+      .openapi({
+        example: 2,
+        description:
+          "输出像素密度倍率。1 为普通清晰度，2 为高清，3 为超清。布局尺寸不变，但实际输出像素宽高会按倍率放大。",
+      }),
     source: z
       .enum(["api", "try-it-preview", "try-it-copy", "try-it-download"])
       .default("api")
@@ -177,6 +188,18 @@ const schemaCodeRenderResponse = z
       example: 292,
       description: "生成图片高度，单位 px。",
     }),
+    logicalWidth: z.number().int().positive().openapi({
+      example: 600,
+      description: "图片逻辑宽度，单位 CSS px。高画质输出时，实际 width = logicalWidth * quality。",
+    }),
+    logicalHeight: z.number().int().positive().openapi({
+      example: 292,
+      description: "图片逻辑高度，单位 CSS px。高画质输出时，实际 height = logicalHeight * quality。",
+    }),
+    quality: z.number().int().min(1).max(3).openapi({
+      example: 2,
+      description: "本次渲染使用的输出像素密度倍率。",
+    }),
     recordId: z.number().int().positive().openapi({
       example: 42,
       description: "本次图片生成记录在 SQLite 中的自增 id。",
@@ -190,7 +213,7 @@ const route = createRoute({
   tags: ["code"],
   summary: "Render highlighted code as a WebP, PNG, or JPEG base64 string",
   description:
-    "接收代码字符串、language、format、theme、bgColor、borderSize、borderRadius、containerWidth 和 showLineNumbers，将代码按最长 84 字符自动换行，使用 Shiki 完成语法高亮，再通过 Takumi 和 Fira Code 渲染为 WebP/PNG/JPEG 图片并返回 base64。borderSize 控制代码效果到图片边界的距离，borderRadius 控制代码窗口圆角，bgColor 控制代码外层背景。外层画布保持透明，背景容器圆角按 borderRadius + borderSize 计算并按画布尺寸限制。",
+    "接收代码字符串、language、format、theme、bgColor、borderSize、borderRadius、containerWidth、showLineNumbers 和 quality，将代码按最长 84 字符自动换行，使用 Shiki 完成语法高亮，再通过 Takumi 和 Fira Code 渲染为 WebP/PNG/JPEG 图片并返回 base64。quality 控制输出像素密度倍率，适合生成更清晰的高清图片。borderSize 控制代码效果到图片边界的距离，borderRadius 控制代码窗口圆角，bgColor 控制代码外层背景。外层画布保持透明，背景容器圆角按 borderRadius + borderSize 计算并按画布尺寸限制。",
   request: {
     body: {
       required: true,

@@ -46,6 +46,11 @@ export const createApp = (options: CreateAppOptions = {}) => {
       if (!/^[a-z0-9-]+\.webp$/i.test(file)) return c.notFound();
       return options.sendPublicAsset?.(`examples/${file}`, c) ?? c.notFound();
     });
+    app.get("/assets/vendor/takumi/:file", (c) => {
+      const file = c.req.param("file");
+      if (file !== "takumi_wasm_bg.wasm") return c.notFound();
+      return options.sendPublicAsset?.(`vendor/takumi/${file}`, c) ?? c.notFound();
+    });
     app.get("/og-image.png", (c) => options.sendPublicAsset?.("codia-og.png", c) ?? c.notFound());
   }
 

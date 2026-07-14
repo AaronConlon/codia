@@ -20,6 +20,7 @@ export type RenderCodeImageInput = {
   borderRadius?: number;
   containerWidth?: number;
   showLineNumbers?: boolean;
+  quality?: number;
 };
 
 export type RenderCodeImageResult = {
@@ -37,8 +38,11 @@ export type RenderCodeImageResult = {
   borderRadius: number;
   minContainerWidth: number;
   containerWidth: number;
+  logicalWidth: number;
+  logicalHeight: number;
   width: number;
   height: number;
+  quality: number;
 };
 
 const defaultContainerWidth = 600;
@@ -59,6 +63,8 @@ const defaultBgColor =
   "radial-gradient(circle at top center, rgba(106, 196, 226, 0.9) 0%, rgba(38, 143, 184, 0.85) 28%, rgba(9, 88, 132, 0.95) 60%, #062e55 100%)";
 const defaultBorderSize = 12;
 const defaultBorderRadius = 4;
+const defaultQuality = 1;
+const maxQuality = 3;
 let firaCodeFonts: Promise<Font[]> | null = null;
 
 export const renderCodeImage = async (
@@ -70,6 +76,7 @@ export const renderCodeImage = async (
   const bgColor = normalizeBgColor(input.bgColor ?? input.backgroundColor);
   const borderSize = normalizeBorderSize(input.borderSize);
   const borderRadius = normalizeBorderRadius(input.borderRadius, borderSize);
+  const quality = normalizeQuality(input.quality);
   const showLineNumbers = input.showLineNumbers ?? true;
   const formattedCode = formatCodeForRendering(input.code);
   const minRequiredContainerWidth = estimateMinContainerWidth(
@@ -202,9 +209,11 @@ export const renderCodeImage = async (
     ],
   });
 
-  const image = await renderRasterImage(node, imageWidth, imageHeight, format, fonts);
+  const image = await renderRasterImage(node, imageWidth, imageHeight, format, fonts, quality);
   const mimeType = mimeTypeFromFormat(format);
   const imageBase64 = Buffer.from(image).toString("base64");
+  const outputWidth = imageWidth * quality;
+  const outputHeight = imageHeight * quality;
 
   return {
     imageBase64,
@@ -221,8 +230,11 @@ export const renderCodeImage = async (
     borderRadius,
     minContainerWidth: minRequiredContainerWidth,
     containerWidth,
-    width: imageWidth,
-    height: imageHeight,
+    logicalWidth: imageWidth,
+    logicalHeight: imageHeight,
+    width: outputWidth,
+    height: outputHeight,
+    quality,
   };
 };
 
@@ -232,11 +244,16 @@ const renderRasterImage = (
   height: number,
   format: RenderCodeImageFormat,
   fonts: Font[],
+  quality: number,
 ) => {
+  const outputWidth = width * quality;
+  const outputHeight = height * quality;
+
   if (format === "webp") {
     return render(node, {
-      width,
-      height,
+      width: outputWidth,
+      height: outputHeight,
+      devicePixelRatio: quality,
       format: "webp",
       fonts,
     });
@@ -244,16 +261,18 @@ const renderRasterImage = (
 
   if (format === "jpeg") {
     return render(node, {
-      width,
-      height,
+      width: outputWidth,
+      height: outputHeight,
+      devicePixelRatio: quality,
       format: "jpeg",
       fonts,
     });
   }
 
   return render(node, {
-    width,
-    height,
+    width: outputWidth,
+    height: outputHeight,
+    devicePixelRatio: quality,
     format: "png",
     fonts,
   });
@@ -400,6 +419,14 @@ const normalizeBorderRadius = (borderRadius: number | undefined, borderSize: num
   }
 
   return Math.min(Math.max(Math.trunc(borderRadius), 0), maxBorderRadius);
+};
+
+const normalizeQuality = (quality: number | undefined) => {
+  if (quality === undefined || Number.isNaN(quality)) {
+    return defaultQuality;
+  }
+
+  return Math.min(Math.max(Math.trunc(quality), 1), maxQuality);
 };
 
 const calculateOuterBackgroundRadius = (

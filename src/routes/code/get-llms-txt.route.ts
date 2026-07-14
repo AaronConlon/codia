@@ -34,6 +34,9 @@ The optional bgColor field controls the outer area behind the code window. It su
 linear-gradient(...), and radial-gradient(...). The legacy backgroundColor field is still accepted
 for compatibility.
 The optional showLineNumbers field controls whether rendered images include line numbers.
+The optional quality field controls output pixel density. It defaults to 1. Use 2 for high
+quality and 3 for ultra quality. Layout dimensions stay the same, but output pixel width and
+height are multiplied by quality.
 Every successful render is recorded in SQLite as a lightweight generation event. Codia does
 not store the submitted code, generated image base64 payload, data URL, or image file content.
 Stored metadata includes language, theme, dimensions, line count, source, and timestamp.
@@ -59,6 +62,8 @@ Fields:
 - containerWidth: number, optional. Code window width in pixels. Default: 600. Minimum: 400.
   Maximum: 1920. The actual value may be raised to minContainerWidth.
 - showLineNumbers: boolean, optional. Whether to show line numbers. Default: true.
+- quality: number, optional. Output pixel density multiplier. Default: 1. Minimum: 1.
+  Maximum: 3. Use 2 for high-quality browser previews.
 - source: string, optional. One of api, try-it-preview, try-it-copy, try-it-download.
   Default: api. Every successful call increments render statistics once.
 
@@ -74,6 +79,7 @@ Example request:
   "borderRadius": 4,
   "containerWidth": 600,
   "showLineNumbers": true,
+  "quality": 2,
   "code": "const message: string = \\"Hello, Takumi\\";\\nconsole.log(message);"
 }
 \`\`\`
@@ -99,8 +105,11 @@ Fields:
 - minContainerWidth: number. Dynamic minimum code window width estimated from the widest
   formatted code line.
 - containerWidth: number. Actual code window width used for the render.
-- width: number. Final image width in pixels. Equal to containerWidth + borderSize * 2.
-- height: number. Image height in pixels.
+- logicalWidth: number. Logical image width in CSS pixels, equal to containerWidth + borderSize * 2.
+- logicalHeight: number. Logical image height in CSS pixels.
+- width: number. Actual output image width in pixels, equal to logicalWidth * quality.
+- height: number. Actual output image height in pixels, equal to logicalHeight * quality.
+- quality: number. Output pixel density multiplier used for the render.
 - recordId: number. SQLite render record id for this generated image.
 
 Example response shape:
@@ -121,8 +130,11 @@ Example response shape:
   "borderRadius": 4,
   "minContainerWidth": 400,
   "containerWidth": 600,
-  "width": 624,
-  "height": 164,
+  "logicalWidth": 624,
+  "logicalHeight": 164,
+  "width": 1248,
+  "height": 328,
+  "quality": 2,
   "recordId": 42
 }
 \`\`\`

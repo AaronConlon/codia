@@ -10,6 +10,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const contentTypes: Record<string, string> = {
   ".ico": "image/x-icon",
   ".png": "image/png",
+  ".wasm": "application/wasm",
   ".webp": "image/webp",
 };
 
