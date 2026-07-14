@@ -5,7 +5,6 @@ export const renderRecords = sqliteTable(
   {
     id: integer("id").primaryKey({ autoIncrement: true }),
     source: text("source").notNull().default("api"),
-    imageBase64: text("image_base64").notNull(),
     mimeType: text("mime_type").notNull().default("image/png"),
     language: text("language").notNull(),
     theme: text("theme").notNull(),
@@ -17,8 +16,6 @@ export const renderRecords = sqliteTable(
     height: integer("height").notNull(),
     lineCount: integer("line_count").notNull(),
     showLineNumbers: integer("show_line_numbers", { mode: "boolean" }).notNull(),
-    codeHash: text("code_hash").notNull(),
-    codeLength: integer("code_length").notNull(),
     createdAt: text("created_at").notNull(),
   },
   (table) => [

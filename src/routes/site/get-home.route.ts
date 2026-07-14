@@ -17,11 +17,13 @@ const homeCopy = {
   zh: {
     metaDescription: "用友好的界面和 API 生成、定制、存储漂亮的代码图片。",
     navHome: "首页",
-    navTryIt: "试试看",
+    navTryIt: "Playground",
     navDocs: "API 文档",
     languageLabel: "语言",
     footerSlogan: "为人和 API 打造的漂亮代码图片。",
+    footerBlog: "博客",
     footerX: "关注 Aaron",
+    footerPrivacy: "隐私",
     eyebrow: "Human-friendly UI · API-first rendering",
     slogan: "Beautiful Code Images for Humans and APIs.",
     intro: "把代码转换成适合文档、博客、社交媒体和自动化流程的高清图片，并保留每一次生成记录。",
@@ -29,30 +31,37 @@ const homeCopy = {
     viewApi: "查看 API",
     galleryLabel: "Codia screenshot gallery",
     totalRenders: "总生成次数",
-    imagesStored: "已存图片",
+    imagesStored: "图片生成数",
     linesRendered: "已渲染行数",
-    base64Stored: "Base64 存储",
     screenshotLabels: [
       "TypeScript",
-      "JavaScript",
-      "Python",
+      "HTML",
       "Go",
+      "CSS",
+      "JavaScript",
+      "SQL",
+      "Ruby",
+      "Bash",
       "Rust",
+      "C#",
+      "Python",
+      "PHP",
       "Java",
       "Kotlin",
       "Swift",
-      "Ruby",
     ],
   },
   en: {
     metaDescription:
       "Generate, customize, store, and integrate beautiful code images through a friendly UI and API.",
     navHome: "Home",
-    navTryIt: "Try It",
+    navTryIt: "Playground",
     navDocs: "API Docs",
     languageLabel: "Language",
     footerSlogan: "Beautiful Code Images for Humans and APIs.",
+    footerBlog: "Blog",
     footerX: "Aaron on X",
+    footerPrivacy: "Privacy",
     eyebrow: "Human-friendly UI · API-first rendering",
     slogan: "Beautiful Code Images for Humans and APIs.",
     intro:
@@ -61,30 +70,37 @@ const homeCopy = {
     viewApi: "View API",
     galleryLabel: "Codia screenshot gallery",
     totalRenders: "Total renders",
-    imagesStored: "Images stored",
+    imagesStored: "Images generated",
     linesRendered: "Lines rendered",
-    base64Stored: "Base64 stored",
     screenshotLabels: [
       "TypeScript",
-      "JavaScript",
-      "Python",
+      "HTML",
       "Go",
+      "CSS",
+      "JavaScript",
+      "SQL",
+      "Ruby",
+      "Bash",
       "Rust",
+      "C#",
+      "Python",
+      "PHP",
       "Java",
       "Kotlin",
       "Swift",
-      "Ruby",
     ],
   },
   ja: {
     metaDescription:
       "使いやすい UI と API で、美しいコード画像を生成、カスタマイズ、保存できます。",
     navHome: "ホーム",
-    navTryIt: "試す",
+    navTryIt: "Playground",
     navDocs: "API ドキュメント",
     languageLabel: "言語",
     footerSlogan: "人と API のための美しいコード画像。",
+    footerBlog: "ブログ",
     footerX: "Aaron をフォロー",
+    footerPrivacy: "プライバシー",
     eyebrow: "Human-friendly UI · API-first rendering",
     slogan: "Beautiful Code Images for Humans and APIs.",
     intro:
@@ -93,31 +109,30 @@ const homeCopy = {
     viewApi: "API を見る",
     galleryLabel: "Codia スクリーンショットギャラリー",
     totalRenders: "生成回数",
-    imagesStored: "保存画像",
+    imagesStored: "画像生成数",
     linesRendered: "描画行数",
-    base64Stored: "Base64 保存量",
     screenshotLabels: [
       "TypeScript",
-      "JavaScript",
-      "Python",
+      "HTML",
       "Go",
+      "CSS",
+      "JavaScript",
+      "SQL",
+      "Ruby",
+      "Bash",
       "Rust",
+      "C#",
+      "Python",
+      "PHP",
       "Java",
       "Kotlin",
       "Swift",
-      "Ruby",
     ],
   },
 } as const;
 
 const formatNumber = (value: number, locale: SiteLocale) =>
   new Intl.NumberFormat(locale === "zh" ? "zh-CN" : locale).format(value);
-
-const formatBytes = (value: number) => {
-  if (value < 1024) return `${value} B`;
-  if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
-  return `${(value / 1024 / 1024).toFixed(1)} MB`;
-};
 
 const screenshots = [
   {
@@ -126,30 +141,42 @@ const screenshots = [
     height: 236,
     url: "https://de4965e.webp.li/blog-images/2026/07/5fa36dbaad07e39ea75495903f40e20b.webp",
   },
-  {
-    language: "javascript",
-    width: 1020,
-    height: 224,
-    url: "https://de4965e.webp.li/blog-images/2026/07/1cc4305bbd610d6de72dd41543c9e911.webp",
-  },
-  {
-    language: "python",
-    width: 714,
-    height: 236,
-    url: "https://de4965e.webp.li/blog-images/2026/07/8ea99733c2c0ce9c227a05451a94c6b5.webp",
-  },
+  { language: "html", width: 877, height: 300, url: "/assets/gallery/html-neon-form.webp" },
   {
     language: "go",
     width: 740,
     height: 320,
     url: "https://de4965e.webp.li/blog-images/2026/07/834dde8c604a0946fab221f974f6da5b.webp",
   },
+  { language: "css", width: 901, height: 348, url: "/assets/gallery/css-fluid-grid.webp" },
+  {
+    language: "javascript",
+    width: 1020,
+    height: 224,
+    url: "https://de4965e.webp.li/blog-images/2026/07/1cc4305bbd610d6de72dd41543c9e911.webp",
+  },
+  { language: "sql", width: 740, height: 324, url: "/assets/gallery/sql-usage-rollup.webp" },
+  {
+    language: "ruby",
+    width: 704,
+    height: 284,
+    url: "https://de4965e.webp.li/blog-images/2026/07/d66ecd222278fbcc355c3dac3b7fbfb8.webp",
+  },
+  { language: "bash", width: 800, height: 300, url: "/assets/gallery/bash-release-check.webp" },
   {
     language: "rust",
     width: 764,
     height: 236,
     url: "https://de4965e.webp.li/blog-images/2026/07/5664656304704be9f1374d22fb6b0581.webp",
   },
+  { language: "csharp", width: 901, height: 324, url: "/assets/gallery/csharp-render-job.webp" },
+  {
+    language: "python",
+    width: 714,
+    height: 236,
+    url: "https://de4965e.webp.li/blog-images/2026/07/8ea99733c2c0ce9c227a05451a94c6b5.webp",
+  },
+  { language: "php", width: 803, height: 372, url: "/assets/gallery/php-route-handler.webp" },
   {
     language: "java",
     width: 726,
@@ -167,12 +194,6 @@ const screenshots = [
     width: 689,
     height: 296,
     url: "https://de4965e.webp.li/blog-images/2026/07/70ba14d556446b453e3e55ffb01b4890.webp",
-  },
-  {
-    language: "ruby",
-    width: 704,
-    height: 284,
-    url: "https://de4965e.webp.li/blog-images/2026/07/d66ecd222278fbcc355c3dac3b7fbfb8.webp",
   },
 ];
 
@@ -217,6 +238,7 @@ const homeHtml = (initialState: HomeInitialState) => {
 
       .site-brand,
       .site-nav a,
+      .site-playground-link,
       .site-locale-trigger {
         color: #f8fafc;
       }
@@ -227,20 +249,33 @@ const homeHtml = (initialState: HomeInitialState) => {
       }
 
       .site-nav a,
-      .site-locale-trigger {
-        background: rgb(255 255 255 / 7%);
+      .site-playground-link {
+        background: transparent;
+        border-color: transparent;
         color: rgb(248 250 252 / 78%);
       }
 
       .site-locale-trigger {
+        background: rgb(255 255 255 / 7%);
         border-color: rgb(255 255 255 / 12%);
       }
 
       .site-nav a:hover,
-      .site-nav a[aria-current="page"],
+      .site-playground-link:hover,
       .site-locale-trigger:hover {
         background: rgb(255 255 255 / 13%);
+        border-color: rgb(255 255 255 / 14%);
         color: #ffffff;
+      }
+
+      .site-nav a[aria-current="page"],
+      .site-playground-link[aria-current="page"] {
+        color: #ffffff;
+      }
+
+      .site-nav-llms-icon {
+        color: #ffffff;
+        filter: drop-shadow(0 0 8px rgb(255 255 255 / 36%));
       }
 
       .site-locale-menu {
@@ -252,9 +287,13 @@ const homeHtml = (initialState: HomeInitialState) => {
         color: #f8fafc;
       }
 
-      .site-locale-menu button:hover,
-      .site-locale-menu button[aria-pressed="true"] {
+      .site-locale-menu button:hover {
         background: rgb(255 255 255 / 10%);
+      }
+
+      .site-locale-menu button[aria-pressed="true"] {
+        background: #ffffff;
+        color: #09090b;
       }
 
       .landing-top {
@@ -319,13 +358,40 @@ const homeHtml = (initialState: HomeInitialState) => {
       }
 
       .slogan {
-        max-width: 820px;
+        --speed: 2.8s;
+        --angle: 45deg;
+        --shine-width: 2ch;
+        --start-position: 76%;
+        --end-position: 24%;
+        max-width: 660px;
         margin: 0;
-        color: #ffffff;
+        color: transparent;
+        background-image: linear-gradient(
+          var(--angle),
+          rgb(248 250 252 / 68%) calc(50% - var(--shine-width)),
+          #ffffff 50%,
+          rgb(248 250 252 / 68%) calc(50% + var(--shine-width))
+        );
+        background-size: 400% 100%;
+        background-position: var(--start-position) 0;
+        background-clip: text;
+        -webkit-background-clip: text;
         font-size: clamp(24px, 4vw, 54px);
         line-height: 1.04;
         font-weight: 950;
         text-wrap: balance;
+        animation: shimmer var(--speed) ease-in-out infinite both;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: var(--start-position) 0;
+        }
+
+        72%,
+        100% {
+          background-position: var(--end-position) 0;
+        }
       }
 
       .intro {
@@ -363,9 +429,51 @@ const homeHtml = (initialState: HomeInitialState) => {
       }
 
       .button.primary {
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
         background: #ffffff;
         color: #09090b;
         box-shadow: 0 16px 36px rgb(255 255 255 / 14%);
+      }
+
+      .button.primary::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        z-index: -1;
+        background: linear-gradient(
+          110deg,
+          transparent 28%,
+          rgb(229 231 235 / 78%) 46%,
+          rgb(255 255 255 / 92%) 50%,
+          rgb(229 231 235 / 78%) 54%,
+          transparent 72%
+        );
+        transform: translateX(-72%) rotate(8deg);
+        opacity: 0;
+        transition:
+          transform 520ms cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 180ms ease;
+      }
+
+      .button.primary svg,
+      .button.primary span {
+        position: relative;
+        z-index: 1;
+      }
+
+      .button.primary svg {
+        transition: transform 180ms ease;
+      }
+
+      .button.primary:hover::before {
+        transform: translateX(72%) rotate(8deg);
+        opacity: 1;
+      }
+
+      .button.primary:hover svg {
+        transform: translateX(2px);
       }
 
       .button.secondary {
@@ -376,35 +484,54 @@ const homeHtml = (initialState: HomeInitialState) => {
 
       .stats {
         display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
-        padding: 58px 0 52px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: clamp(18px, 4vw, 54px);
+        padding: 72px 0 64px;
       }
 
       .stat-card {
-        padding: 18px;
-        border-radius: 16px;
-        background: #18181b;
-        border: 1px solid rgb(255 255 255 / 10%);
-        box-shadow: 0 16px 42px rgb(0 0 0 / 28%);
-        text-align: left;
+        display: grid;
+        justify-items: center;
+        gap: 12px;
+        padding: 8px 0;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(18px);
+        animation: stats-fade-in 720ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      .stat-card:nth-child(2) {
+        animation-delay: 120ms;
+      }
+
+      .stat-card:nth-child(3) {
+        animation-delay: 240ms;
       }
 
       .stat-value {
         display: block;
         color: #ffffff;
-        font-size: 30px;
+        font-size: clamp(56px, 7vw, 104px);
         line-height: 1;
         font-weight: 950;
         font-variant-numeric: tabular-nums;
+        letter-spacing: 0;
+        text-shadow: 0 18px 42px rgb(0 0 0 / 30%);
+        --number-flow-mask-height: 0.14em;
       }
 
       .stat-label {
         display: block;
-        margin-top: 8px;
         color: rgb(248 250 252 / 58%);
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 800;
+      }
+
+      @keyframes stats-fade-in {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .masonry {
@@ -425,6 +552,16 @@ const homeHtml = (initialState: HomeInitialState) => {
         box-shadow: 0 14px 34px rgb(0 0 0 / 34%);
         overflow: hidden;
         break-inside: avoid;
+        opacity: 0;
+        transform: translateY(18px);
+        animation: masonry-fade-in 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+
+      @keyframes masonry-fade-in {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .masonry-card img {
@@ -436,6 +573,7 @@ const homeHtml = (initialState: HomeInitialState) => {
       }
 
       .site-footer {
+        --footer-rule: rgb(255 255 255 / 8%);
         color: rgb(248 250 252 / 56%);
       }
 
@@ -456,6 +594,28 @@ const homeHtml = (initialState: HomeInitialState) => {
           grid-template-columns: 1fr;
         }
       }
+
+      @media (prefers-reduced-motion: reduce) {
+        .slogan {
+          color: #ffffff;
+          background-image: none;
+          animation: none;
+        }
+
+        .button.primary::before,
+        .button.primary svg,
+        .masonry-card,
+        .stat-card {
+          transition: none;
+          animation: none;
+        }
+
+        .masonry-card,
+        .stat-card {
+          opacity: 1;
+          transform: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -472,7 +632,7 @@ const homeHtml = (initialState: HomeInitialState) => {
               <div class="actions">
                 <a class="button primary" href="/try-it">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                  ${text.tryCodia}
+                  <span>${text.tryCodia}</span>
                 </a>
               </div>
             </div>
@@ -481,10 +641,8 @@ const homeHtml = (initialState: HomeInitialState) => {
           <div class="masonry" aria-label="${text.galleryLabel}">
             ${screenshots
               .map(
-                (item, index) => `<article class="masonry-card">
-                  <img src="${item.url}" width="${item.width}" height="${item.height}" alt="${text.screenshotLabels[index]} code image" loading="${
-                    index < 3 ? "eager" : "lazy"
-                  }" decoding="async" />
+                (item, index) => `<article class="masonry-card" style="animation-delay: ${Math.min(index * 25, 280)}ms">
+                  <img src="${item.url}" width="${item.width}" height="${item.height}" alt="${text.screenshotLabels[index]} code image" loading="eager" decoding="async" />
                 </article>`,
               )
               .join("")}
@@ -493,13 +651,40 @@ const homeHtml = (initialState: HomeInitialState) => {
       </section>
 
       <section class="home-shell stats" aria-label="Codia stats">
-        <div class="stat-card"><span class="stat-value">${formatNumber(stats.totalRenders, initialState.locale)}</span><span class="stat-label">${text.totalRenders}</span></div>
-        <div class="stat-card"><span class="stat-value">${formatNumber(stats.totalImagesStored, initialState.locale)}</span><span class="stat-label">${text.imagesStored}</span></div>
-        <div class="stat-card"><span class="stat-value">${formatNumber(stats.totalLinesRendered, initialState.locale)}</span><span class="stat-label">${text.linesRendered}</span></div>
-        <div class="stat-card"><span class="stat-value">${formatBytes(stats.totalBytesStored)}</span><span class="stat-label">${text.base64Stored}</span></div>
+        <div class="stat-card"><number-flow class="stat-value" value="0" data-value="${stats.totalRenders}" data-locale="${initialState.locale}" data-fallback="${formatNumber(stats.totalRenders, initialState.locale)}">${formatNumber(stats.totalRenders, initialState.locale)}</number-flow><span class="stat-label">${text.totalRenders}</span></div>
+        <div class="stat-card"><number-flow class="stat-value" value="0" data-value="${stats.totalImagesStored}" data-locale="${initialState.locale}" data-fallback="${formatNumber(stats.totalImagesStored, initialState.locale)}">${formatNumber(stats.totalImagesStored, initialState.locale)}</number-flow><span class="stat-label">${text.imagesStored}</span></div>
+        <div class="stat-card"><number-flow class="stat-value" value="0" data-value="${stats.totalLinesRendered}" data-locale="${initialState.locale}" data-fallback="${formatNumber(stats.totalLinesRendered, initialState.locale)}">${formatNumber(stats.totalLinesRendered, initialState.locale)}</number-flow><span class="stat-label">${text.linesRendered}</span></div>
       </section>
     </main>
     ${renderSiteFooter(text)}
+    <script type="module">
+      import "https://esm.sh/number-flow";
+
+      const localeMap = {
+        zh: "zh-CN",
+        en: "en-US",
+        ja: "ja-JP",
+      };
+
+      const animateStats = () => {
+        document.querySelectorAll("number-flow[data-value]").forEach((flow) => {
+          const value = Number(flow.getAttribute("data-value") ?? "0");
+          const locale = flow.getAttribute("data-locale") ?? "en";
+          flow.locales = localeMap[locale] ?? localeMap.en;
+          flow.trend = 1;
+          flow.transformTiming = { duration: 720, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
+          flow.spinTiming = { duration: 760, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
+          flow.opacityTiming = { duration: 220, easing: "ease-out" };
+          requestAnimationFrame(() => flow.update(Number.isFinite(value) ? value : 0));
+        });
+      };
+
+      customElements.whenDefined("number-flow").then(animateStats).catch(() => {
+        document.querySelectorAll("number-flow[data-fallback]").forEach((flow) => {
+          flow.textContent = flow.getAttribute("data-fallback") ?? "";
+        });
+      });
+    </script>
     <script>
       const setCookie = (name, value) => {
         document.cookie = name + "=" + encodeURIComponent(value) + "; path=/; max-age=31536000; samesite=lax";

@@ -1,21 +1,18 @@
-import { createHash } from "node:crypto";
 import { desc, sql } from "drizzle-orm";
 import { db } from "../db/client.js";
 import { renderRecords, type NewRenderRecord } from "../db/schema.js";
-import type { RenderCodeImageInput, RenderCodeImageResult } from "./code-image-renderer.js";
+import type { RenderCodeImageResult } from "./code-image-renderer.js";
 
 export type RenderRecordSource = "api" | "try-it-preview" | "try-it-copy" | "try-it-download";
 
 export type CreateRenderRecordInput = {
   source?: RenderRecordSource;
-  request: RenderCodeImageInput;
   result: RenderCodeImageResult;
 };
 
-export const createRenderRecord = ({ source = "api", request, result }: CreateRenderRecordInput) => {
+export const createRenderRecord = ({ source = "api", result }: CreateRenderRecordInput) => {
   const record: NewRenderRecord = {
     source,
-    imageBase64: result.imageBase64,
     mimeType: result.mimeType,
     language: result.language,
     theme: result.theme,
@@ -27,8 +24,6 @@ export const createRenderRecord = ({ source = "api", request, result }: CreateRe
     height: result.height,
     lineCount: result.lineCount,
     showLineNumbers: result.showLineNumbers,
-    codeHash: createHash("sha256").update(request.code).digest("hex"),
-    codeLength: request.code.length,
     createdAt: new Date().toISOString(),
   };
 
@@ -40,7 +35,6 @@ export const getRenderStats = () => {
     .select({
       totalRenders: sql<number>`count(*)`,
       totalImagesStored: sql<number>`count(*)`,
-      totalBytesStored: sql<number>`coalesce(sum(length(${renderRecords.imageBase64})), 0)`,
       totalLinesRendered: sql<number>`coalesce(sum(${renderRecords.lineCount}), 0)`,
       latestCreatedAt: sql<string | null>`max(${renderRecords.createdAt})`,
     })
@@ -77,7 +71,6 @@ export const getRenderStats = () => {
   return {
     totalRenders: Number(totals?.totalRenders ?? 0),
     totalImagesStored: Number(totals?.totalImagesStored ?? 0),
-    totalBytesStored: Number(totals?.totalBytesStored ?? 0),
     totalLinesRendered: Number(totals?.totalLinesRendered ?? 0),
     latestCreatedAt: totals?.latestCreatedAt ?? null,
     topLanguages: topLanguages.map((item) => ({

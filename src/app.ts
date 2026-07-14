@@ -35,6 +35,11 @@ export const createApp = (options: CreateAppOptions = {}) => {
     app.get("/assets/codia-logo.webp", (c) =>
       options.sendPublicAsset?.("codia-logo.webp", c) ?? c.notFound(),
     );
+    app.get("/assets/gallery/:file", (c) => {
+      const file = c.req.param("file");
+      if (!/^[a-z0-9-]+\.webp$/i.test(file)) return c.notFound();
+      return options.sendPublicAsset?.(`gallery/${file}`, c) ?? c.notFound();
+    });
     app.get("/og-image.png", (c) => options.sendPublicAsset?.("codia-og.png", c) ?? c.notFound());
   }
 

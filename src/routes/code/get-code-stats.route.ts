@@ -10,11 +10,7 @@ const schemaCodeStatsResponse = z
     }),
     totalImagesStored: z.number().int().min(0).openapi({
       example: 128,
-      description: "SQLite 中已保存 base64 图片的记录数。",
-    }),
-    totalBytesStored: z.number().int().min(0).openapi({
-      example: 7340032,
-      description: "已保存 base64 字符串的总长度，近似反映 SQLite 存储体量。",
+      description: "SQLite 中已记录的图片生成次数；不保存图片内容本身。",
     }),
     totalLinesRendered: z.number().int().min(0).openapi({
       example: 2048,
@@ -88,7 +84,8 @@ const route = createRoute({
   path: "/v1/code/stats",
   tags: ["code"],
   summary: "Get Codia render statistics",
-  description: "读取 SQLite 中的图片生成记录，返回总生成数、base64 存储量、热门语言和最近记录。",
+  description:
+    "读取 SQLite 中的图片生成统计记录，返回总生成数、图片生成次数、累计渲染行数、热门语言和最近记录。服务端不保存图片 base64 内容。",
   responses: {
     200: {
       description: "统计读取成功。",

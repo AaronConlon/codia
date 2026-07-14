@@ -204,7 +204,6 @@ export const route_POST_code_render = (app: AppInstance) => {
     const result = await renderCodeImage(body);
     const record = createRenderRecord({
       source: body.source,
-      request: body,
       result,
     });
 

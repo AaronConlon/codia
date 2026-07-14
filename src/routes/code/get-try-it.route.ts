@@ -399,6 +399,9 @@ const exampleHtml = (
       }
 
       .site-footer a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         color: var(--text);
         text-decoration: none;
         font-weight: 700;

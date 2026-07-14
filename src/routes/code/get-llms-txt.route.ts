@@ -28,8 +28,9 @@ The optional bgColor field controls the outer area behind the code window. It su
 linear-gradient(...), and radial-gradient(...). The legacy backgroundColor field is still accepted
 for compatibility.
 The optional showLineNumbers field controls whether rendered images include line numbers.
-Every successful render is recorded in SQLite. The base64 payload is stored together with
-render metadata such as language, theme, dimensions, line count, and source.
+Every successful render is recorded in SQLite as a lightweight generation event. Codia does
+not store the submitted code, generated image base64 payload, data URL, or image file content.
+Stored metadata includes language, theme, dimensions, line count, source, and timestamp.
 
 ### Request
 
@@ -50,7 +51,7 @@ Fields:
   Maximum: 1920. The actual value may be raised to minContainerWidth.
 - showLineNumbers: boolean, optional. Whether to show line numbers. Default: true.
 - source: string, optional. One of api, try-it-preview, try-it-copy, try-it-download.
-  Default: api.
+  Default: api. Every successful call increments render statistics once.
 
 Example request:
 
@@ -119,7 +120,8 @@ Example response shape:
 GET /v1/code/stats
 
 Returns aggregate SQLite render stats for the homepage and external tools, including total renders,
-total stored base64 payload size, total rendered lines, top languages, and recent generation records.
+generated image count, total rendered lines, top languages, and recent generation records. Stats do
+not include stored code or image content.
 
 ## Human Preview
 
