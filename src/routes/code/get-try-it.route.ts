@@ -1107,6 +1107,7 @@ const exampleHtml = (
 
       .view-swiper {
         width: 100%;
+        margin-top: 120px;
         display: block;
         overflow: hidden;
       }
@@ -1119,9 +1120,10 @@ const exampleHtml = (
         align-items: stretch;
       }
 
-      swiper-slide {
+      .view-swiper swiper-slide {
         width: 100%;
         height: auto;
+        overflow: hidden;
       }
 
       .editor-canvas {
@@ -1298,7 +1300,7 @@ const exampleHtml = (
               </button>
             </div>
           </div>
-          <swiper-container class="view-swiper" id="viewSwiper" speed="240" slides-per-view="1" auto-height="true">
+          <swiper-container class="view-swiper" id="viewSwiper" init="false">
             <swiper-slide>
               <div class="editor-stage view" id="editorView" role="tabpanel" aria-labelledby="editorTab">
                 <div class="editor-canvas" id="editorCanvas">
@@ -1476,6 +1478,7 @@ const exampleHtml = (
       let currentLocale = initialState.locale;
       let playClickSound = () => {};
       let activeRenderRequests = 0;
+      let viewSwiperFrame = 0;
       const soundProfiles = {
         tab: { start: 420, end: 620, gain: 0.055, duration: 0.08 },
         menu: { start: 560, end: 460, gain: 0.045, duration: 0.07 },
@@ -1606,6 +1609,31 @@ const exampleHtml = (
         }
       };
 
+      const updateViewSwiperLayout = (speed = 180) => {
+        window.cancelAnimationFrame(viewSwiperFrame);
+        viewSwiperFrame = window.requestAnimationFrame(() => {
+          viewSwiper.swiper?.update();
+          viewSwiper.swiper?.updateAutoHeight(speed);
+        });
+      };
+
+      const initializeViewSwiper = () => {
+        Object.assign(viewSwiper, {
+          slidesPerView: 1,
+          speed: 240,
+          autoHeight: true,
+          observer: true,
+          observeParents: true,
+          resizeObserver: true,
+        });
+        if (!viewSwiper.swiper) {
+          viewSwiper.initialize();
+        } else {
+          viewSwiper.swiper.update();
+        }
+        updateViewSwiperLayout(0);
+      };
+
       const stepBackground = (delta) => {
         const currentIndex = Math.max(
           backgroundPresets.findIndex((item) => item.id === selectedBackground.id),
@@ -1642,6 +1670,7 @@ const exampleHtml = (
         editorTab.setAttribute("aria-selected", String(!isImage));
         imageTab.setAttribute("aria-selected", String(isImage));
         viewSwiper.swiper?.slideTo(isImage ? 1 : 0);
+        updateViewSwiperLayout();
         updateTabIndicator();
         animateActiveView(isImage ? imageView : editorView);
         if (isImage) scheduleImageRender();
@@ -1654,6 +1683,7 @@ const exampleHtml = (
         const isImage = nextView === "image";
         editorTab.setAttribute("aria-selected", String(!isImage));
         imageTab.setAttribute("aria-selected", String(isImage));
+        updateViewSwiperLayout();
         updateTabIndicator();
         animateActiveView(isImage ? imageView : editorView);
         if (isImage) scheduleImageRender();
@@ -1920,11 +1950,10 @@ const exampleHtml = (
         editorBody.style.height = editorBodyHeight + "px";
         code.style.height = editorBodyHeight + "px";
         editorWindow.style.width = "100%";
-        viewSwiper.swiper?.updateAutoHeight(180);
-        viewSwiper.swiper?.update();
+        updateViewSwiperLayout();
       };
 
-      const requestImage = async ({ silent = false, source = "try-it-preview" } = {}) => {
+      const requestImage = async ({ silent = false, source = "try-it-preview", format } = {}) => {
         if (!silent) startRenderProgress();
         try {
           const response = await fetch("/v1/code/render", {
@@ -1938,6 +1967,7 @@ const exampleHtml = (
               borderRadius: Number(borderRadius.value || 0),
               containerWidth: Number(containerWidth.value || 600),
               showLineNumbers: showLineNumbers.checked,
+              ...(format ? { format } : {}),
               code: code.value,
               source,
             }),
@@ -1948,6 +1978,7 @@ const exampleHtml = (
           finalImage.src = data.dataUrl;
           finalImage.hidden = false;
           imageEmpty.hidden = true;
+          updateViewSwiperLayout();
           imageDirty = false;
           currentMinContainerWidth = data.minContainerWidth;
           containerWidth.min = String(data.minContainerWidth);
@@ -1977,7 +2008,7 @@ const exampleHtml = (
 
       const copyImage = async () => {
         try {
-          const data = await requestImage({ source: "try-it-copy" });
+          const data = await requestImage({ source: "try-it-copy", format: "png" });
           const blob = await (await fetch(data.dataUrl)).blob();
           await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
           setStatus(t("copied"));
@@ -2028,6 +2059,7 @@ const exampleHtml = (
       editorTab.addEventListener("click", () => setActiveView("editor"));
       imageTab.addEventListener("click", () => setActiveView("image"));
       viewSwiper.addEventListener("swiperslidechange", syncActiveViewFromSwiper);
+      finalImage.addEventListener("load", () => updateViewSwiperLayout());
       backgroundSwiper.addEventListener("swiperslidechange", () => {
         const nextIndex = backgroundSwiper.swiper?.activeIndex ?? 0;
         selectBackground(backgroundPresets[nextIndex] ?? backgroundPresets[0], { slide: false });
@@ -2136,6 +2168,7 @@ const exampleHtml = (
       selectedBackground = getStoredBackground();
       renderBackgroundPresets();
       initializeBackgroundSwiper();
+      initializeViewSwiper();
       selectBackground(selectedBackground, { persist: false });
       selectLanguage(selectedLanguage);
       selectCodeTheme(selectedCodeTheme);
