@@ -1896,7 +1896,8 @@ const exampleHtml = (
           const data = await requestImage({ source: "try-it-download" });
           const link = document.createElement("a");
           link.href = data.dataUrl;
-          link.download = "code-snip.png";
+          const extension = data.format === "jpeg" ? "jpg" : data.format || "webp";
+          link.download = "code-snip." + extension;
           link.click();
           setStatus(t("downloaded"));
         } catch (error) {

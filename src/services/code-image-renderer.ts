@@ -8,6 +8,7 @@ import { formatCodeForRendering } from "./code-formatter.js";
 export type RenderCodeImageInput = {
   code: string;
   language: string;
+  format?: string;
   theme?: string;
   bgColor?: string;
   backgroundColor?: string;
@@ -19,7 +20,8 @@ export type RenderCodeImageInput = {
 export type RenderCodeImageResult = {
   imageBase64: string;
   dataUrl: string;
-  mimeType: "image/png";
+  mimeType: RenderCodeImageMimeType;
+  format: RenderCodeImageFormat;
   language: string;
   theme: string;
   bgColor: string;
@@ -32,6 +34,9 @@ export type RenderCodeImageResult = {
   width: number;
   height: number;
 };
+
+export type RenderCodeImageFormat = "png" | "webp" | "jpeg";
+export type RenderCodeImageMimeType = "image/png" | "image/webp" | "image/jpeg";
 
 const defaultContainerWidth = 600;
 const minContainerWidth = 400;
@@ -54,6 +59,7 @@ export const renderCodeImage = async (
   input: RenderCodeImageInput,
 ): Promise<RenderCodeImageResult> => {
   const language = normalizeLanguage(input.language);
+  const format = normalizeImageFormat(input.format);
   const theme = normalizeTheme(input.theme);
   const bgColor = normalizeBgColor(input.bgColor ?? input.backgroundColor);
   const borderSize = normalizeBorderSize(input.borderSize);
@@ -177,18 +183,15 @@ export const renderCodeImage = async (
         })
       : codeWindow;
 
-  const png = await render(node, {
-    width: imageWidth,
-    height: imageHeight,
-    format: "png",
-    fonts,
-  });
-  const imageBase64 = Buffer.from(png).toString("base64");
+  const image = await renderRasterImage(node, imageWidth, imageHeight, format, fonts);
+  const mimeType = mimeTypeFromFormat(format);
+  const imageBase64 = Buffer.from(image).toString("base64");
 
   return {
     imageBase64,
-    dataUrl: `data:image/png;base64,${imageBase64}`,
-    mimeType: "image/png",
+    dataUrl: `data:${mimeType};base64,${imageBase64}`,
+    mimeType,
+    format,
     language,
     theme,
     bgColor,
@@ -201,6 +204,52 @@ export const renderCodeImage = async (
     width: imageWidth,
     height: imageHeight,
   };
+};
+
+const renderRasterImage = (
+  node: Parameters<typeof render>[0],
+  width: number,
+  height: number,
+  format: RenderCodeImageFormat,
+  fonts: Font[],
+) => {
+  if (format === "webp") {
+    return render(node, {
+      width,
+      height,
+      format: "webp",
+      fonts,
+    });
+  }
+
+  if (format === "jpeg") {
+    return render(node, {
+      width,
+      height,
+      format: "jpeg",
+      fonts,
+    });
+  }
+
+  return render(node, {
+    width,
+    height,
+    format: "png",
+    fonts,
+  });
+};
+
+const normalizeImageFormat = (format: string | undefined): RenderCodeImageFormat => {
+  const normalized = (format ?? "webp").trim().toLowerCase();
+  if (normalized === "png" || normalized === "webp") return normalized;
+  if (normalized === "jpg" || normalized === "jpeg") return "jpeg";
+  return "webp";
+};
+
+const mimeTypeFromFormat = (format: RenderCodeImageFormat): RenderCodeImageMimeType => {
+  if (format === "png") return "image/png";
+  if (format === "jpeg") return "image/jpeg";
+  return "image/webp";
 };
 
 const loadFiraCodeFonts = () => {

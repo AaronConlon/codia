@@ -32,7 +32,19 @@ const homeCopy = {
     imagesStored: "已存图片",
     linesRendered: "已渲染行数",
     base64Stored: "Base64 存储",
-    screenshotLabels: ["API 渲染", "编辑器模式", "背景定制", "移动端预览"],
+    galleryTitle: "最新代码图片",
+    gallerySubtitle: "通过 Codia API 生成的九种语言示例，并以 WebP 格式发布。",
+    screenshotLabels: [
+      "TypeScript",
+      "JavaScript",
+      "Python",
+      "Go",
+      "Rust",
+      "Java",
+      "Kotlin",
+      "Swift",
+      "Ruby",
+    ],
   },
   en: {
     metaDescription:
@@ -54,7 +66,19 @@ const homeCopy = {
     imagesStored: "Images stored",
     linesRendered: "Lines rendered",
     base64Stored: "Base64 stored",
-    screenshotLabels: ["API render", "Editor mode", "Backgrounds", "Mobile preview"],
+    galleryTitle: "Latest code images",
+    gallerySubtitle: "Nine language samples generated through the Codia API and published as WebP.",
+    screenshotLabels: [
+      "TypeScript",
+      "JavaScript",
+      "Python",
+      "Go",
+      "Rust",
+      "Java",
+      "Kotlin",
+      "Swift",
+      "Ruby",
+    ],
   },
   ja: {
     metaDescription:
@@ -76,7 +100,19 @@ const homeCopy = {
     imagesStored: "保存画像",
     linesRendered: "描画行数",
     base64Stored: "Base64 保存量",
-    screenshotLabels: ["API 生成", "エディター", "背景設定", "モバイル表示"],
+    galleryTitle: "最新のコード画像",
+    gallerySubtitle: "Codia API で生成した 9 言語のサンプルを WebP で公開しています。",
+    screenshotLabels: [
+      "TypeScript",
+      "JavaScript",
+      "Python",
+      "Go",
+      "Rust",
+      "Java",
+      "Kotlin",
+      "Swift",
+      "Ruby",
+    ],
   },
 } as const;
 
@@ -91,44 +127,58 @@ const formatBytes = (value: number) => {
 
 const screenshots = [
   {
-    tone: "sky",
-    code: `<span class="token-pink">export</span> <span class="token-cyan">async function</span> render(code) {
-  <span class="token-pink">return</span> <span class="token-green">await</span> codia.render({
-    language: <span class="token-yellow">"typescript"</span>,
-    theme: <span class="token-yellow">"dracula"</span>,
-    bgColor: <span class="token-yellow">"radial-gradient(...)"</span>
-  });
-}`,
+    language: "typescript",
+    width: 557,
+    height: 236,
+    url: "https://de4965e.webp.li/blog-images/2026/07/2eb6fd4fa727997d7bd243fd6e5aa8bc.webp",
   },
   {
-    tone: "mint",
-    code: `<span class="token-cyan">POST</span> /v1/code/render
-<span class="token-green">200</span> image/png base64
-
-{
-  recordId: <span class="token-yellow">1024</span>,
-  width: <span class="token-yellow">728</span>,
-  height: <span class="token-yellow">420</span>
-}`,
+    language: "javascript",
+    width: 904,
+    height: 224,
+    url: "https://de4965e.webp.li/blog-images/2026/07/1e953d4e9036b73d64fda7df6d2229bb.webp",
   },
   {
-    tone: "sunset",
-    code: `<span class="token-pink">const</span> image = <span class="token-green">await</span> toImage({
-  code,
-  padding: <span class="token-yellow">12</span>,
-  width: <span class="token-yellow">600</span>,
-  showLineNumbers: <span class="token-pink">true</span>
-});
-
-download(image);`,
+    language: "python",
+    width: 668,
+    height: 236,
+    url: "https://de4965e.webp.li/blog-images/2026/07/341fa66ba0908186179a1d7f0eb49ca4.webp",
   },
   {
-    tone: "paper",
-    code: `<span class="token-pink">function</span> <span class="token-cyan">quickSort</span>(items) {
-  <span class="token-pink">if</span> (items.length <= <span class="token-yellow">1</span>) <span class="token-pink">return</span> items;
-  <span class="token-pink">const</span> [pivot, ...rest] = items;
-  <span class="token-pink">return</span> [...left, pivot, ...right];
-}`,
+    language: "go",
+    width: 740,
+    height: 320,
+    url: "https://de4965e.webp.li/blog-images/2026/07/8351f9726b7538e1e56fe2e3bd3cb26c.webp",
+  },
+  {
+    language: "rust",
+    width: 764,
+    height: 236,
+    url: "https://de4965e.webp.li/blog-images/2026/07/a48e2683111079bfd89599c05db2329d.webp",
+  },
+  {
+    language: "java",
+    width: 645,
+    height: 248,
+    url: "https://de4965e.webp.li/blog-images/2026/07/2810f74aababc251b14fdc1164fcf080.webp",
+  },
+  {
+    language: "kotlin",
+    width: 668,
+    height: 260,
+    url: "https://de4965e.webp.li/blog-images/2026/07/772a4048a8aa4f22c03edbec20c18c72.webp",
+  },
+  {
+    language: "swift",
+    width: 680,
+    height: 296,
+    url: "https://de4965e.webp.li/blog-images/2026/07/43b5a854a124b501615bba4ffb86337f.webp",
+  },
+  {
+    language: "ruby",
+    width: 704,
+    height: 284,
+    url: "https://de4965e.webp.li/blog-images/2026/07/6b1a5ab7f96b03a8a4e17faf8d771105.webp",
   },
 ];
 
@@ -148,21 +198,105 @@ const homeHtml = (initialState: HomeInitialState) => {
     <meta property="og:title" content="Codia" />
     <meta property="og:description" content="${text.slogan}" />
     <meta property="og:image" content="/og-image.png" />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
     <style>
       ${siteShellStyles}
+
+      body {
+        background:
+          linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
+          linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px),
+          #050505;
+        background-size: 28px 28px;
+        color: #f8fafc;
+      }
 
       .home-shell {
         width: min(1366px, calc(100vw - 32px));
         margin: 0 auto;
       }
 
+      .site-header {
+        position: relative;
+        z-index: 10;
+      }
+
+      .site-brand,
+      .site-nav a,
+      .site-locale-trigger {
+        color: #f8fafc;
+      }
+
+      .site-brand img {
+        outline-color: rgb(255 255 255 / 16%);
+        box-shadow: 0 16px 34px rgb(0 0 0 / 32%);
+      }
+
+      .site-nav a,
+      .site-locale-trigger {
+        background: rgb(255 255 255 / 7%);
+        color: rgb(248 250 252 / 78%);
+      }
+
+      .site-locale-trigger {
+        border-color: rgb(255 255 255 / 12%);
+      }
+
+      .site-nav a:hover,
+      .site-nav a[aria-current="page"],
+      .site-locale-trigger:hover {
+        background: rgb(255 255 255 / 13%);
+        color: #ffffff;
+      }
+
+      .site-locale-menu {
+        background: #18181b;
+        border-color: rgb(255 255 255 / 12%);
+      }
+
+      .site-locale-menu button {
+        color: #f8fafc;
+      }
+
+      .site-locale-menu button:hover,
+      .site-locale-menu button[aria-pressed="true"] {
+        background: rgb(255 255 255 / 10%);
+      }
+
+      .landing-top {
+        position: relative;
+        width: 100vw;
+        margin-left: calc(50% - 50vw);
+        margin-top: -78px;
+        padding: 78px 0 74px;
+        overflow: hidden;
+        background:
+          linear-gradient(180deg, rgb(0 0 0 / 16%) 0%, #050505 86%),
+          url("https://swiperjs.com/images/home/header-bg.jpg") center top / cover no-repeat,
+          #050505;
+      }
+
+      .landing-top::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 50% 16%, rgb(255 255 255 / 14%) 0%, transparent 32%),
+          linear-gradient(180deg, transparent 0%, #050505 92%);
+        pointer-events: none;
+      }
+
+      .landing-inner {
+        position: relative;
+        z-index: 1;
+        width: min(1366px, calc(100vw - 32px));
+        margin: 0 auto;
+      }
+
       .hero {
-        min-height: calc(100vh - 220px);
         display: grid;
         align-items: center;
         gap: 26px;
-        padding: clamp(48px, 8vw, 108px) 0 28px;
+        padding: clamp(74px, 9vw, 132px) 0 42px;
         text-align: center;
       }
 
@@ -176,15 +310,15 @@ const homeHtml = (initialState: HomeInitialState) => {
         width: fit-content;
         padding: 7px 11px;
         border-radius: 999px;
-        background: rgb(15 23 42 / 7%);
-        color: var(--muted);
+        background: rgb(255 255 255 / 10%);
+        color: rgb(248 250 252 / 72%);
         font-size: 13px;
         font-weight: 900;
       }
 
       h1 {
         margin: 0;
-        color: var(--ink);
+        color: #ffffff;
         font-size: clamp(68px, 12vw, 168px);
         line-height: 0.86;
         letter-spacing: 0;
@@ -193,7 +327,7 @@ const homeHtml = (initialState: HomeInitialState) => {
       .slogan {
         max-width: 820px;
         margin: 0;
-        color: #111827;
+        color: #ffffff;
         font-size: clamp(24px, 4vw, 54px);
         line-height: 1.04;
         font-weight: 950;
@@ -203,7 +337,7 @@ const homeHtml = (initialState: HomeInitialState) => {
       .intro {
         max-width: 740px;
         margin: 0;
-        color: #475569;
+        color: rgb(248 250 252 / 68%);
         font-size: 18px;
         line-height: 1.7;
         font-weight: 650;
@@ -235,35 +369,60 @@ const homeHtml = (initialState: HomeInitialState) => {
       }
 
       .button.primary {
-        background: #111827;
-        color: white;
-        box-shadow: 0 16px 36px rgb(15 23 42 / 22%);
+        background: #ffffff;
+        color: #09090b;
+        box-shadow: 0 16px 36px rgb(255 255 255 / 14%);
       }
 
       .button.secondary {
-        background: white;
-        color: #111827;
-        box-shadow: 0 10px 28px rgb(15 23 42 / 10%);
+        background: rgb(255 255 255 / 10%);
+        color: white;
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 12%);
+      }
+
+      .gallery-intro {
+        max-width: 760px;
+        margin: 0 auto 26px;
+        text-align: center;
+      }
+
+      .gallery-intro h2 {
+        margin: 0;
+        color: #ffffff;
+        font-size: clamp(34px, 4vw, 58px);
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+
+      .gallery-intro p {
+        max-width: 680px;
+        margin: 16px auto 0;
+        color: rgb(248 250 252 / 62%);
+        font-size: 17px;
+        line-height: 1.7;
+        font-weight: 650;
+        text-wrap: pretty;
       }
 
       .stats {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 12px;
-        padding: 14px 0 52px;
+        padding: 58px 0 52px;
       }
 
       .stat-card {
         padding: 18px;
         border-radius: 16px;
-        background: rgb(255 255 255 / 84%);
-        box-shadow: 0 16px 42px var(--shadow);
+        background: #18181b;
+        border: 1px solid rgb(255 255 255 / 10%);
+        box-shadow: 0 16px 42px rgb(0 0 0 / 28%);
         text-align: left;
       }
 
       .stat-value {
         display: block;
-        color: var(--ink);
+        color: #ffffff;
         font-size: 30px;
         line-height: 1;
         font-weight: 950;
@@ -273,117 +432,71 @@ const homeHtml = (initialState: HomeInitialState) => {
       .stat-label {
         display: block;
         margin-top: 8px;
-        color: var(--muted);
+        color: rgb(248 250 252 / 58%);
         font-size: 13px;
         font-weight: 800;
       }
 
-      .gallery-band {
-        width: 100vw;
-        margin-left: calc(50% - 50vw);
-        padding: 24px 0 72px;
-        overflow: hidden;
-      }
-
-      .gallery-swiper {
-        width: 100%;
-        --swiper-wrapper-transition-timing-function: linear;
-      }
-
-      .gallery-swiper swiper-slide {
-        width: min(78vw, 960px);
-      }
-
-      .screenshot {
-        position: relative;
-        min-height: clamp(360px, 44vw, 620px);
+      .masonry {
+        width: min(1216px, 100%);
+        margin: 0 auto;
         display: grid;
-        align-items: center;
-        padding: clamp(18px, 3.2vw, 46px);
-        border-radius: 28px;
-        box-shadow: 0 30px 80px rgb(15 23 42 / 18%);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-auto-rows: 8px;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .masonry-card {
+        position: relative;
+        display: block;
+        min-height: 132px;
+        padding: 0;
+        border: 1px solid rgb(255 255 255 / 12%);
+        border-radius: 20px;
+        background: #18181b;
+        box-shadow: 0 18px 46px rgb(0 0 0 / 38%);
         overflow: hidden;
       }
 
-      .screenshot.sky {
-        background: radial-gradient(circle at top center, rgba(106, 196, 226, 0.9) 0%, rgba(38, 143, 184, 0.85) 28%, rgba(9, 88, 132, 0.95) 60%, #062e55 100%);
+      .masonry-card img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: 0.94;
       }
 
-      .screenshot.mint {
-        background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
-      }
-
-      .screenshot.sunset {
-        background: linear-gradient(135deg, #fdc830 0%, #f37335 100%);
-      }
-
-      .screenshot.paper {
-        background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 48%, #cbd5e1 100%);
-      }
-
-      .screenshot-label {
+      .masonry-card-label {
         position: absolute;
-        top: 18px;
-        right: 18px;
+        left: 12px;
+        top: 12px;
         z-index: 2;
-        padding: 7px 11px;
+        padding: 6px 10px;
         border-radius: 999px;
-        background: rgb(255 255 255 / 78%);
-        color: #111827;
+        background: rgb(0 0 0 / 54%);
+        color: #ffffff;
         font-size: 13px;
-        font-weight: 900;
+        font-weight: 850;
         backdrop-filter: blur(12px);
       }
 
-      .code-window {
-        width: 100%;
-        height: 100%;
-        min-height: 300px;
-        border-radius: 16px;
-        background: #111315;
-        box-shadow: 0 20px 54px rgb(2 6 23 / 32%);
-        color: #f8f8f2;
-        overflow: hidden;
+      .site-footer {
+        color: rgb(248 250 252 / 56%);
       }
 
-      .window-bar {
-        height: 48px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0 18px;
+      .site-footer a:hover {
+        color: #ffffff;
+        background: rgb(255 255 255 / 10%);
       }
-
-      .dot {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-      }
-
-      .dot.red { background: #ff5f56; }
-      .dot.yellow { background: #ffbd2e; }
-      .dot.green { background: #27c93f; }
-
-      pre {
-        margin: 0;
-        padding: 10px clamp(18px, 3vw, 34px) 30px;
-        font: clamp(14px, 1.6vw, 19px)/1.75 "Fira Code", ui-monospace, monospace;
-        white-space: pre-wrap;
-        text-align: left;
-      }
-
-      .token-pink { color: #ff79c6; }
-      .token-cyan { color: #8be9fd; }
-      .token-green { color: #50fa7b; }
-      .token-yellow { color: #f1fa8c; }
 
       @media (max-width: 840px) {
         .stats {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .gallery-swiper swiper-slide {
-          width: min(86vw, 760px);
+        .masonry {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
       }
 
@@ -392,51 +505,59 @@ const homeHtml = (initialState: HomeInitialState) => {
           grid-template-columns: 1fr;
         }
 
-        .gallery-swiper swiper-slide {
-          width: calc(100vw - 32px);
+        .masonry {
+          grid-template-columns: 1fr;
         }
       }
     </style>
   </head>
   <body>
     ${renderSiteHeader("home", initialState.locale, text)}
-    <main class="home-shell">
-      <section class="hero">
-        <div class="hero-copy">
-          <span class="eyebrow">${text.eyebrow}</span>
-          <h1>Codia</h1>
-          <p class="slogan">${text.slogan}</p>
-          <p class="intro">${text.intro}</p>
-          <div class="actions">
-            <a class="button primary" href="/try-it">${text.tryCodia}</a>
-            <a class="button secondary" href="/docs">${text.viewApi}</a>
+    <main>
+      <section class="landing-top">
+        <div class="landing-inner">
+          <div class="hero">
+            <div class="hero-copy">
+              <span class="eyebrow">${text.eyebrow}</span>
+              <h1>Codia</h1>
+              <p class="slogan">${text.slogan}</p>
+              <p class="intro">${text.intro}</p>
+              <div class="actions">
+                <a class="button primary" href="/try-it">${text.tryCodia}</a>
+                <a class="button secondary" href="/docs">${text.viewApi}</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-intro">
+            <h2>${text.galleryTitle}</h2>
+            <p>${text.gallerySubtitle}</p>
+          </div>
+
+          <div class="masonry" aria-label="${text.galleryLabel}">
+            ${screenshots
+              .map(
+                (item, index) => `<article class="masonry-card" style="--image-ratio: ${
+                  item.height / item.width
+                };" data-width="${item.width}" data-height="${item.height}" data-depth="${
+                  1 + (index % 4) * 0.12
+                }">
+                  <span class="masonry-card-label">${text.screenshotLabels[index]}</span>
+                  <img src="${item.url}" width="${item.width}" height="${item.height}" alt="${text.screenshotLabels[index]} code image" loading="${
+                    index < 3 ? "eager" : "lazy"
+                  }" decoding="async" />
+                </article>`,
+              )
+              .join("")}
           </div>
         </div>
       </section>
 
-      <section class="stats" aria-label="Codia stats">
+      <section class="home-shell stats" aria-label="Codia stats">
         <div class="stat-card"><span class="stat-value">${formatNumber(stats.totalRenders, initialState.locale)}</span><span class="stat-label">${text.totalRenders}</span></div>
         <div class="stat-card"><span class="stat-value">${formatNumber(stats.totalImagesStored, initialState.locale)}</span><span class="stat-label">${text.imagesStored}</span></div>
         <div class="stat-card"><span class="stat-value">${formatNumber(stats.totalLinesRendered, initialState.locale)}</span><span class="stat-label">${text.linesRendered}</span></div>
         <div class="stat-card"><span class="stat-value">${formatBytes(stats.totalBytesStored)}</span><span class="stat-label">${text.base64Stored}</span></div>
-      </section>
-
-      <section class="gallery-band" aria-label="${text.galleryLabel}">
-        <swiper-container class="gallery-swiper" slides-per-view="auto" space-between="22" centered-slides="true" loop="true" speed="6200" autoplay-delay="1" autoplay-disable-on-interaction="false" free-mode="true">
-          ${screenshots
-            .map(
-              (item, index) => `<swiper-slide>
-                <article class="screenshot ${item.tone}">
-                  <span class="screenshot-label">${text.screenshotLabels[index]}</span>
-                  <div class="code-window">
-                    <div class="window-bar"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
-                    <pre>${item.code}</pre>
-                  </div>
-                </article>
-              </swiper-slide>`,
-            )
-            .join("")}
-        </swiper-container>
       </section>
     </main>
     ${renderSiteFooter(text)}
@@ -444,6 +565,67 @@ const homeHtml = (initialState: HomeInitialState) => {
       const setCookie = (name, value) => {
         document.cookie = name + "=" + encodeURIComponent(value) + "; path=/; max-age=31536000; samesite=lax";
       };
+
+      const resizeMasonry = () => {
+        const grid = document.querySelector(".masonry");
+        if (!grid) return;
+        const styles = window.getComputedStyle(grid);
+        const rowHeight = Number.parseFloat(styles.getPropertyValue("grid-auto-rows")) || 8;
+        const gap = Number.parseFloat(styles.getPropertyValue("row-gap")) || 16;
+
+        grid.querySelectorAll(".masonry-card").forEach((card) => {
+          const width = Number(card.dataset.width || 1);
+          const height = Number(card.dataset.height || 1);
+          const depth = Number(card.dataset.depth || 1);
+          const renderedWidth = card.getBoundingClientRect().width;
+          const renderedHeight = Math.max(132, renderedWidth * (height / width) * 1.72 * depth);
+          const rows = Math.ceil((renderedHeight + gap) / (rowHeight + gap));
+          card.style.height = renderedHeight + "px";
+          card.style.gridRowEnd = "span " + rows;
+        });
+      };
+
+      const masonryImages = document.querySelectorAll(".masonry-card img");
+      masonryImages.forEach((image) => {
+        if (image.complete) return;
+        image.addEventListener("load", resizeMasonry, { once: true });
+      });
+      window.addEventListener("resize", resizeMasonry);
+      resizeMasonry();
+
+      const localeTrigger = document.querySelector(".site-locale-trigger");
+      const localeMenu = document.getElementById("site-locale-menu");
+
+      const closeLocaleMenu = () => {
+        if (!localeTrigger || !localeMenu) return;
+        localeTrigger.setAttribute("aria-expanded", "false");
+        localeMenu.hidden = true;
+      };
+
+      const toggleLocaleMenu = () => {
+        if (!localeTrigger || !localeMenu) return;
+        const expanded = localeTrigger.getAttribute("aria-expanded") === "true";
+        localeTrigger.setAttribute("aria-expanded", String(!expanded));
+        localeMenu.hidden = expanded;
+      };
+
+      if (localeTrigger) {
+        localeTrigger.addEventListener("click", (event) => {
+          event.stopPropagation();
+          toggleLocaleMenu();
+        });
+      }
+
+      document.addEventListener("click", (event) => {
+        if (!localeTrigger || !localeMenu) return;
+        if (!localeMenu.contains(event.target) && !localeTrigger.contains(event.target)) {
+          closeLocaleMenu();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeLocaleMenu();
+      });
 
       document.querySelectorAll("[data-site-locale]").forEach((button) => {
         button.addEventListener("click", () => {

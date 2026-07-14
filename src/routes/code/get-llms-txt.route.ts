@@ -2,7 +2,7 @@ import type { AppInstance } from "../../types.js";
 
 const llmsText = `# Codia
 
-Codia provides a small HTTP API for rendering source code snippets into PNG images.
+Codia provides a small HTTP API for rendering source code snippets into WebP, PNG, or JPEG images.
 Beautiful Code Images for Humans and APIs.
 It uses Shiki for syntax highlighting with a selectable bundled theme, then uses Takumi to render
 the highlighted code into an image with optional line numbers. Rendered code uses the Google Fonts Fira Code
@@ -12,13 +12,13 @@ font family.
 
 POST /v1/code/render
 
-Render a code string into a highlighted PNG image and return the image as base64.
+Render a code string into a highlighted image and return the image as base64.
 Before highlighting, code is normalized to LF line endings and each line is wrapped to a maximum
 of 84 characters. The lineCount response reflects the rendered line count after wrapping.
 The optional borderSize field controls the outer padding/border area around the rendered code
 window. It defaults to 12 pixels. Passing 0 outputs only the code window with no outer canvas.
 The optional containerWidth field controls the rendered code window width. It defaults to 600
-pixels, with a minimum of 400 pixels and maximum of 1920 pixels. The final PNG width is
+pixels, with a minimum of 400 pixels and maximum of 1920 pixels. The final image width is
 containerWidth + borderSize * 2.
 After formatting, the server estimates a dynamic minContainerWidth from the widest rendered code
 line using the Fira Code monospace metrics. The actual containerWidth is raised to at least this
@@ -28,7 +28,7 @@ The optional bgColor field controls the outer area behind the code window. It su
 linear-gradient(...), and radial-gradient(...). The legacy backgroundColor field is still accepted
 for compatibility.
 The optional showLineNumbers field controls whether rendered images include line numbers.
-Every successful render is recorded in SQLite. The PNG base64 payload is stored together with
+Every successful render is recorded in SQLite. The base64 payload is stored together with
 render metadata such as language, theme, dimensions, line count, and source.
 
 ### Request
@@ -40,6 +40,7 @@ Fields:
 - code: string, required. Source code to render. Maximum length: 50,000 characters.
 - language: string, required. Shiki language id, such as typescript, javascript, python, go,
   rust, html, css, json, markdown, bash, or text. Unknown languages fall back to text.
+- format: string, optional. Output format. Default: webp. Supports webp, png, jpg, and jpeg.
 - theme: string, optional. Bundled Shiki theme name. Default: dracula.
 - bgColor: string, optional. Outer background style. Supports #RRGGBB, linear-gradient(...),
   and radial-gradient(...). Default: sky cyan radial gradient.
@@ -56,6 +57,7 @@ Example request:
 \`\`\`json
 {
   "language": "typescript",
+  "format": "webp",
   "theme": "dracula",
   "bgColor": "radial-gradient(circle at top center, rgba(106, 196, 226, 0.9) 0%, rgba(38, 143, 184, 0.85) 28%, rgba(9, 88, 132, 0.95) 60%, #062e55 100%)",
   "borderSize": 12,
@@ -71,9 +73,10 @@ Content-Type: application/json
 
 Fields:
 
-- imageBase64: string. PNG base64 payload without a data URL prefix.
-- dataUrl: string. PNG data URL that can be assigned directly to an img src.
-- mimeType: "image/png".
+- imageBase64: string. Image base64 payload without a data URL prefix.
+- dataUrl: string. Image data URL that can be assigned directly to an img src.
+- mimeType: "image/webp", "image/png", or "image/jpeg".
+- format: "webp", "png", or "jpeg".
 - language: string. Actual language used by Shiki. Unknown languages return text.
 - theme: string. Actual Shiki theme used for rendering.
 - bgColor: string. Actual outer background style used for rendering.
@@ -92,9 +95,10 @@ Example response shape:
 
 \`\`\`json
 {
-  "imageBase64": "iVBORw0KGgoAAAANSUhEUgAA...",
-  "dataUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-  "mimeType": "image/png",
+  "imageBase64": "UklGRjIAAABXRUJQ...",
+  "dataUrl": "data:image/webp;base64,UklGRjIAAABXRUJQ...",
+  "mimeType": "image/webp",
+  "format": "webp",
   "language": "typescript",
   "theme": "dracula",
   "bgColor": "radial-gradient(circle at top center, rgba(106, 196, 226, 0.9) 0%, rgba(38, 143, 184, 0.85) 28%, rgba(9, 88, 132, 0.95) 60%, #062e55 100%)",
@@ -122,7 +126,7 @@ total stored base64 payload size, total rendered lines, top languages, and recen
 GET /try-it
 
 Returns an HTML page where users can choose a language, enter code, switch between editor and
-final rendered image tabs, and copy or download the generated PNG. The legacy /example route
+final rendered image tabs, and copy or download the generated image. The legacy /example route
 redirects to /try-it.
 
 ## OpenAPI

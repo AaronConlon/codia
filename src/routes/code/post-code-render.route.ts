@@ -21,6 +21,14 @@ const schemaCodeRenderRequest = z
         example: "typescript",
         description: "Shiki 支持的语言 id，例如 typescript、javascript、python、go。",
       }),
+    format: z
+      .enum(["webp", "png", "jpg", "jpeg"])
+      .default("webp")
+      .openapi({
+        example: "webp",
+        description:
+          "返回图片格式。默认 webp；也支持 png、jpg/jpeg。传 jpg 时响应 format 会正规化为 jpeg。",
+      }),
     theme: z
       .string()
       .min(1)
@@ -93,16 +101,20 @@ const schemaCodeRenderRequest = z
 const schemaCodeRenderResponse = z
   .object({
     imageBase64: z.string().openapi({
-      example: "iVBORw0KGgoAAAANSUhEUgAA...",
-      description: "PNG 图片的 base64 内容，不包含 data URL 前缀。",
+      example: "UklGRjIAAABXRUJQVlA4...",
+      description: "图片的 base64 内容，不包含 data URL 前缀。",
     }),
     dataUrl: z.string().openapi({
-      example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
-      description: "可直接用于 img src 的 PNG data URL。",
+      example: "data:image/webp;base64,UklGRjIAAABXRUJQVlA4...",
+      description: "可直接用于 img src 的 data URL。",
     }),
-    mimeType: z.literal("image/png").openapi({
-      example: "image/png",
+    mimeType: z.enum(["image/webp", "image/png", "image/jpeg"]).openapi({
+      example: "image/webp",
       description: "返回图片格式。",
+    }),
+    format: z.enum(["webp", "png", "jpeg"]).openapi({
+      example: "webp",
+      description: "实际输出格式。jpg 请求会正规化为 jpeg。",
     }),
     language: z.string().openapi({
       example: "typescript",
@@ -161,9 +173,9 @@ const route = createRoute({
   method: "post",
   path: "/v1/code/render",
   tags: ["code"],
-  summary: "Render highlighted code as a PNG base64 string",
+  summary: "Render highlighted code as a WebP, PNG, or JPEG base64 string",
   description:
-    "接收代码字符串、language、theme、bgColor、borderSize、containerWidth 和 showLineNumbers，将代码按最长 84 字符自动换行，使用 Shiki 完成语法高亮，再通过 Takumi 和 Fira Code 渲染为 PNG 图片并返回 base64。borderSize 控制代码效果到图片边界的距离，bgColor 控制该区域背景。",
+    "接收代码字符串、language、format、theme、bgColor、borderSize、containerWidth 和 showLineNumbers，将代码按最长 84 字符自动换行，使用 Shiki 完成语法高亮，再通过 Takumi 和 Fira Code 渲染为 WebP/PNG/JPEG 图片并返回 base64。borderSize 控制代码效果到图片边界的距离，bgColor 控制该区域背景。",
   request: {
     body: {
       required: true,
