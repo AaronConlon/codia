@@ -17,6 +17,12 @@ Before highlighting, code is normalized to LF line endings and each line is wrap
 of 84 characters. The lineCount response reflects the rendered line count after wrapping.
 The optional borderSize field controls the outer padding/border area around the rendered code
 window. It defaults to 12 pixels. Passing 0 outputs only the code window with no outer canvas.
+The optional borderRadius field controls the code window corner radius. It defaults to 4 pixels.
+When borderSize is greater than 0, borderRadius is normalized to be greater than or equal to 0
+and smaller than borderSize. When borderSize is 0, borderRadius is forced to 0.
+The outer canvas is transparent. When borderSize is greater than 0, the background container
+behind the code window receives an outer radius of borderRadius + borderSize, clamped to the
+image bounds, so the inner and outer rounded corners stay visually concentric.
 The optional containerWidth field controls the rendered code window width. It defaults to 600
 pixels, with a minimum of 400 pixels and maximum of 1920 pixels. The final image width is
 containerWidth + borderSize * 2.
@@ -47,6 +53,9 @@ Fields:
   and radial-gradient(...). Default: sky cyan radial gradient.
 - backgroundColor: string, optional. Legacy alias for bgColor.
 - borderSize: number, optional. Outer padding/border size in pixels. Default: 12. Maximum: 120.
+- borderRadius: number, optional. Code window corner radius in pixels. Default: 4. When
+  borderSize is greater than 0, the actual value is normalized to be greater than or equal to
+  0 and smaller than borderSize. When borderSize is 0, the actual value is 0.
 - containerWidth: number, optional. Code window width in pixels. Default: 600. Minimum: 400.
   Maximum: 1920. The actual value may be raised to minContainerWidth.
 - showLineNumbers: boolean, optional. Whether to show line numbers. Default: true.
@@ -62,6 +71,7 @@ Example request:
   "theme": "dracula",
   "bgColor": "radial-gradient(circle at top center, rgba(106, 196, 226, 0.9) 0%, rgba(38, 143, 184, 0.85) 28%, rgba(9, 88, 132, 0.95) 60%, #062e55 100%)",
   "borderSize": 12,
+  "borderRadius": 4,
   "containerWidth": 600,
   "showLineNumbers": true,
   "code": "const message: string = \\"Hello, Takumi\\";\\nconsole.log(message);"
@@ -85,6 +95,7 @@ Fields:
 - lineCount: number. Number of rendered code lines.
 - showLineNumbers: boolean. Whether line numbers were shown.
 - borderSize: number. Outer padding/border size used for the render.
+- borderRadius: number. Code window corner radius used for the render.
 - minContainerWidth: number. Dynamic minimum code window width estimated from the widest
   formatted code line.
 - containerWidth: number. Actual code window width used for the render.
@@ -107,6 +118,7 @@ Example response shape:
   "lineCount": 2,
   "showLineNumbers": true,
   "borderSize": 12,
+  "borderRadius": 4,
   "minContainerWidth": 400,
   "containerWidth": 600,
   "width": 624,

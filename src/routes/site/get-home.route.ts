@@ -239,7 +239,8 @@ const homeHtml = (initialState: HomeInitialState) => {
       .site-brand,
       .site-nav a,
       .site-playground-link,
-      .site-locale-trigger {
+      .site-locale-trigger,
+      .site-icon-link {
         color: #f8fafc;
       }
 
@@ -260,9 +261,18 @@ const homeHtml = (initialState: HomeInitialState) => {
         border-color: rgb(255 255 255 / 12%);
       }
 
+      .site-avatar-link,
+      .site-icon-link {
+        background: rgb(255 255 255 / 7%);
+        border-color: rgb(255 255 255 / 12%);
+        box-shadow: 0 16px 34px rgb(0 0 0 / 24%);
+      }
+
       .site-nav a:hover,
       .site-playground-link:hover,
-      .site-locale-trigger:hover {
+      .site-locale-trigger:hover,
+      .site-avatar-link:hover,
+      .site-icon-link:hover {
         background: rgb(255 255 255 / 13%);
         border-color: rgb(255 255 255 / 14%);
         color: #ffffff;

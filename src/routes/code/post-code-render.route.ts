@@ -69,6 +69,17 @@ const schemaCodeRenderRequest = z
         description:
           "图片最外层留白/边框大小，单位 px。默认 12；最大 120。传 0 时只输出代码窗口本身。",
       }),
+    borderRadius: z
+      .number()
+      .int()
+      .min(0)
+      .max(119)
+      .default(4)
+      .openapi({
+        example: 4,
+        description:
+          "代码窗口圆角，单位 px。默认 4；borderSize 大于 0 时，服务端会归一化为大于等于 0 且小于 borderSize。borderSize 为 0 时实际圆角为 0。",
+      }),
     containerWidth: z
       .number()
       .int()
@@ -146,6 +157,10 @@ const schemaCodeRenderResponse = z
       example: 12,
       description: "本次渲染使用的图片最外层留白/边框大小，单位 px。",
     }),
+    borderRadius: z.number().int().min(0).openapi({
+      example: 4,
+      description: "本次渲染实际使用的代码窗口圆角，单位 px。",
+    }),
     minContainerWidth: z.number().int().positive().openapi({
       example: 400,
       description: "根据格式化后的最宽代码行估算出的动态代码容器最小宽度，单位 px。",
@@ -175,7 +190,7 @@ const route = createRoute({
   tags: ["code"],
   summary: "Render highlighted code as a WebP, PNG, or JPEG base64 string",
   description:
-    "接收代码字符串、language、format、theme、bgColor、borderSize、containerWidth 和 showLineNumbers，将代码按最长 84 字符自动换行，使用 Shiki 完成语法高亮，再通过 Takumi 和 Fira Code 渲染为 WebP/PNG/JPEG 图片并返回 base64。borderSize 控制代码效果到图片边界的距离，bgColor 控制该区域背景。",
+    "接收代码字符串、language、format、theme、bgColor、borderSize、borderRadius、containerWidth 和 showLineNumbers，将代码按最长 84 字符自动换行，使用 Shiki 完成语法高亮，再通过 Takumi 和 Fira Code 渲染为 WebP/PNG/JPEG 图片并返回 base64。borderSize 控制代码效果到图片边界的距离，borderRadius 控制代码窗口圆角，bgColor 控制代码外层背景。外层画布保持透明，背景容器圆角按 borderRadius + borderSize 计算并按画布尺寸限制。",
   request: {
     body: {
       required: true,

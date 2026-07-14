@@ -13,6 +13,7 @@ export type RenderCodeImageInput = {
   bgColor?: string;
   backgroundColor?: string;
   borderSize?: number;
+  borderRadius?: number;
   containerWidth?: number;
   showLineNumbers?: boolean;
 };
@@ -29,6 +30,7 @@ export type RenderCodeImageResult = {
   lineCount: number;
   showLineNumbers: boolean;
   borderSize: number;
+  borderRadius: number;
   minContainerWidth: number;
   containerWidth: number;
   width: number;
@@ -55,6 +57,7 @@ const defaultCodeTheme = "dracula";
 const defaultBgColor =
   "radial-gradient(circle at top center, rgba(106, 196, 226, 0.9) 0%, rgba(38, 143, 184, 0.85) 28%, rgba(9, 88, 132, 0.95) 60%, #062e55 100%)";
 const defaultBorderSize = 12;
+const defaultBorderRadius = 4;
 let firaCodeFonts: Promise<Font[]> | null = null;
 
 export const renderCodeImage = async (
@@ -65,6 +68,7 @@ export const renderCodeImage = async (
   const theme = normalizeTheme(input.theme);
   const bgColor = normalizeBgColor(input.bgColor ?? input.backgroundColor);
   const borderSize = normalizeBorderSize(input.borderSize);
+  const borderRadius = normalizeBorderRadius(input.borderRadius, borderSize);
   const showLineNumbers = input.showLineNumbers ?? true;
   const formattedCode = formatCodeForRendering(input.code);
   const minRequiredContainerWidth = estimateMinContainerWidth(
@@ -87,13 +91,19 @@ export const renderCodeImage = async (
   const codeWindowHeight = headerHeight + codeVerticalPadding * 2 + lineCount * lineHeight;
   const imageWidth = containerWidth + borderSize * 2;
   const imageHeight = borderSize * 2 + codeWindowHeight;
+  const outerBackgroundRadius = calculateOuterBackgroundRadius(
+    borderRadius,
+    borderSize,
+    imageWidth,
+    imageHeight,
+  );
 
   const codeWindow = container({
     style: {
       width: "100%",
       height: `${codeWindowHeight}px`,
       background: tokens.bg,
-      borderRadius: "10px",
+      borderRadius: `${borderRadius}px`,
       overflow: "hidden",
       fontFamily: "Fira Code, Consolas, monospace",
     },
@@ -168,18 +178,28 @@ export const renderCodeImage = async (
     ],
   });
 
-  const node =
-    borderSize > 0
-      ? container({
-          style: {
-            width: "100%",
-            height: "100%",
-            background: bgColor,
-            padding: `${borderSize}px`,
-          },
-          children: [codeWindow],
-        })
-      : codeWindow;
+  const node = container({
+    style: {
+      width: "100%",
+      height: "100%",
+      background: "transparent",
+    },
+    children: [
+      borderSize > 0
+        ? container({
+            style: {
+              width: "100%",
+              height: "100%",
+              background: bgColor,
+              borderRadius: `${outerBackgroundRadius}px`,
+              overflow: "hidden",
+              padding: `${borderSize}px`,
+            },
+            children: [codeWindow],
+          })
+        : codeWindow,
+    ],
+  });
 
   const image = await renderRasterImage(node, imageWidth, imageHeight, format, fonts);
   const mimeType = mimeTypeFromFormat(format);
@@ -197,6 +217,7 @@ export const renderCodeImage = async (
     lineCount,
     showLineNumbers,
     borderSize,
+    borderRadius,
     minContainerWidth: minRequiredContainerWidth,
     containerWidth,
     width: imageWidth,
@@ -367,6 +388,29 @@ const normalizeBorderSize = (borderSize: number | undefined) => {
   }
 
   return Math.min(Math.max(Math.trunc(borderSize), 0), maxBorderSize);
+};
+
+const normalizeBorderRadius = (borderRadius: number | undefined, borderSize: number) => {
+  const maxBorderRadius = Math.max(borderSize - 1, 0);
+  if (borderRadius === undefined || Number.isNaN(borderRadius)) {
+    return Math.min(defaultBorderRadius, maxBorderRadius);
+  }
+
+  return Math.min(Math.max(Math.trunc(borderRadius), 0), maxBorderRadius);
+};
+
+const calculateOuterBackgroundRadius = (
+  innerRadius: number,
+  padding: number,
+  width: number,
+  height: number,
+) => {
+  // For concentric rounded rectangles with uniform padding:
+  // innerRadius = outerRadius - padding, so outerRadius = innerRadius + padding.
+  const idealRadius = innerRadius + padding;
+  const maxRadius = Math.floor(Math.min(width, height) / 2);
+
+  return Math.min(idealRadius, maxRadius);
 };
 
 const normalizeContainerWidth = (

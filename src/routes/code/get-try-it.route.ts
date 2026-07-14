@@ -1,7 +1,7 @@
 import { setCookie } from "hono/cookie";
 import { bundledThemes } from "shiki";
 import type { AppInstance } from "../../types.js";
-import { renderSiteFooter } from "../site/site-layout.js";
+import { renderSiteFooter, renderSiteHeader, siteShellStyles } from "../site/site-layout.js";
 
 const shikiThemes = Object.keys(bundledThemes).sort();
 
@@ -14,14 +14,12 @@ type CodeExampleRouteOptions = {
   codeInspectorScript?: string;
 };
 
-const localeLabels = {
-  zh: "中文",
-  en: "English",
-  ja: "日本語",
-} as const;
-
 const exampleTranslations = {
   zh: {
+    navHome: "首页",
+    navTryIt: "Playground",
+    navDocs: "API 文档",
+    languageLabel: "语言",
     subtitle: "为人和 API 打造的漂亮代码图片。",
     settings: "设置",
     editor: "编辑器",
@@ -33,6 +31,7 @@ const exampleTranslations = {
     codeTheme: "代码主题",
     backgroundColor: "背景",
     borderSize: "边距",
+    borderRadius: "圆角",
     containerWidth: "容器宽度",
     showLineNumbers: "显示行号",
     copy: "复制图片",
@@ -43,8 +42,13 @@ const exampleTranslations = {
     ready: "Ready",
     noMatch: "没有匹配项",
     containerRange: "容器宽度必须是 {min}-1920",
+    borderRadiusRange: "圆角必须大于等于 0 且小于边距",
   },
   en: {
+    navHome: "Home",
+    navTryIt: "Playground",
+    navDocs: "API Docs",
+    languageLabel: "Language",
     subtitle: "Beautiful Code Images for Humans and APIs.",
     settings: "Settings",
     editor: "Editor",
@@ -56,6 +60,7 @@ const exampleTranslations = {
     codeTheme: "Code theme",
     backgroundColor: "Background",
     borderSize: "Padding",
+    borderRadius: "Corner radius",
     containerWidth: "Container width",
     showLineNumbers: "Line numbers",
     copy: "Copy Image",
@@ -66,8 +71,13 @@ const exampleTranslations = {
     ready: "Ready",
     noMatch: "No matches",
     containerRange: "Container width must be {min}-1920",
+    borderRadiusRange: "Corner radius must be >= 0 and smaller than padding",
   },
   ja: {
+    navHome: "ホーム",
+    navTryIt: "Playground",
+    navDocs: "API ドキュメント",
+    languageLabel: "言語",
     subtitle: "人と API のための美しいコード画像。",
     settings: "設定",
     editor: "エディター",
@@ -79,6 +89,7 @@ const exampleTranslations = {
     codeTheme: "コードテーマ",
     backgroundColor: "背景",
     borderSize: "余白",
+    borderRadius: "角丸",
     containerWidth: "コンテナ幅",
     showLineNumbers: "行番号",
     copy: "画像をコピー",
@@ -89,6 +100,7 @@ const exampleTranslations = {
     ready: "Ready",
     noMatch: "一致する項目がありません",
     containerRange: "コンテナ幅は {min}-1920 です",
+    borderRadiusRange: "角丸は 0 以上、余白未満にしてください",
   },
 } as const;
 
@@ -163,7 +175,6 @@ const exampleHtml = (
   const faviconUrl = `${origin}/favicon.png`;
   const ogImageUrl = `${origin}/og-image.png`;
   const text = exampleTranslations[initialState.locale];
-  const localeLabel = localeLabels[initialState.locale];
   const defaultBgColor = backgroundPresets[0].bgColor;
 
   return String.raw`<!doctype html>
@@ -201,6 +212,8 @@ const exampleHtml = (
     />
     <script src="https://cdn.jsdelivr.net/npm/swiper@14/swiper-element-bundle.min.js"></script>
     <style>
+      ${siteShellStyles}
+
       :root {
         color-scheme: light;
         --page-bg: #f8fafc;
@@ -251,6 +264,7 @@ const exampleHtml = (
 
       #root {
         width: 100%;
+        min-height: 100vh;
       }
 
       .render-progress {
@@ -319,7 +333,9 @@ const exampleHtml = (
       }
 
       .react-root-shell {
-        display: contents;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
 
       .app-shell {
@@ -383,8 +399,9 @@ const exampleHtml = (
       }
 
       main.app-shell {
-        min-height: 100vh;
-        padding: 34px 0 0;
+        flex: 1 0 auto;
+        min-height: 0;
+        padding: 34px 0;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -397,20 +414,6 @@ const exampleHtml = (
         justify-content: space-between;
         gap: 20px;
         margin-bottom: 18px;
-      }
-
-      .brand-lockup {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .brand-logo {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
-        object-fit: cover;
-        box-shadow: 0 10px 28px rgb(15 23 42 / 12%);
       }
 
       h1 {
@@ -457,7 +460,7 @@ const exampleHtml = (
         z-index: 0;
         width: min(1366px, calc(100% - 32px));
         min-height: 96px;
-        margin-top: auto;
+        margin-top: 0;
         padding: 18px 0;
         display: flex;
         align-items: center;
@@ -488,12 +491,22 @@ const exampleHtml = (
         min-width: 0;
       }
 
-      .site-footer-brand img {
+      .site-footer-logo,
+      .site-footer-avatar {
         width: 30px;
         height: 30px;
-        border-radius: 8px;
         box-shadow: 0 10px 24px rgb(0 0 0 / 28%);
         flex: 0 0 auto;
+      }
+
+      .site-footer-logo {
+        border-radius: 8px;
+      }
+
+      .site-footer-avatar {
+        border-radius: 999px;
+        object-fit: cover;
+        outline: 1px solid rgb(255 255 255 / 18%);
       }
 
       .site-footer nav {
@@ -546,7 +559,6 @@ const exampleHtml = (
         margin-bottom: 22px;
       }
 
-      .top-controls,
       .preview-tools {
         display: flex;
         align-items: center;
@@ -555,11 +567,6 @@ const exampleHtml = (
         justify-content: flex-end;
       }
 
-      .menu {
-        position: relative;
-      }
-
-      .menu-trigger,
       button {
         height: 40px;
         border: 1px solid var(--field-border);
@@ -576,24 +583,11 @@ const exampleHtml = (
           transform 150ms ease;
       }
 
-      .menu-trigger {
-        min-width: 0;
-        width: auto;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
-        padding: 0 9px;
-        white-space: nowrap;
-      }
-
-      .menu-trigger:hover,
       button:hover {
         background: var(--button-hover);
         box-shadow: 0 1px 2px rgb(15 23 42 / 12%);
       }
 
-      .menu-trigger:active,
       button:active {
         transform: translateY(1px);
       }
@@ -611,43 +605,17 @@ const exampleHtml = (
         background: var(--button-hover);
       }
 
+      .preview-tools .icon-button {
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+        border-radius: 6px;
+      }
+
       svg {
         width: 16px;
         height: 16px;
         flex: none;
-      }
-
-      .menu-panel {
-        position: absolute;
-        z-index: 20;
-        top: calc(100% + 6px);
-        right: 0;
-        width: max-content;
-        min-width: 100%;
-        padding: 6px;
-        border: 1px solid var(--field-border);
-        border-radius: 8px;
-        background: var(--field);
-        box-shadow: 0 18px 48px var(--shadow);
-      }
-
-      .menu-item {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 8px;
-        padding: 0 8px;
-        border: 0;
-        background: transparent;
-        color: var(--text);
-        border-radius: 6px;
-        box-shadow: none;
-      }
-
-      .menu-item:hover,
-      .menu-item.is-selected {
-        background: var(--active-bg);
       }
 
       #sonner-toast-container {
@@ -831,8 +799,7 @@ const exampleHtml = (
       }
 
       input:focus,
-      .combobox:focus-within,
-      .menu-trigger:focus {
+      .combobox:focus-within {
         border-color: var(--focus);
         box-shadow: 0 0 0 3px var(--focus-soft);
       }
@@ -1122,12 +1089,11 @@ const exampleHtml = (
       }
 
       .editor-stage {
-        min-height: 560px;
         padding: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: auto;
+        overflow: hidden;
         background: transparent;
       }
 
@@ -1141,25 +1107,21 @@ const exampleHtml = (
 
       .view-swiper {
         width: 100%;
-        min-height: 560px;
         display: block;
+        overflow: hidden;
       }
 
       .view-swiper::part(container) {
-        height: 560px;
-        min-height: 560px;
         overflow: hidden;
       }
 
       .view-swiper::part(wrapper) {
         align-items: stretch;
-        height: 560px;
-        min-height: 560px;
       }
 
       swiper-slide {
         width: 100%;
-        height: 560px;
+        height: auto;
       }
 
       .editor-canvas {
@@ -1176,11 +1138,9 @@ const exampleHtml = (
         width: 100%;
         max-width: 100%;
         background: transparent;
-        box-shadow: none;
       }
 
       .image-stage {
-        min-height: 560px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1215,37 +1175,6 @@ const exampleHtml = (
         }
       }
 
-      .editor-bar {
-        display: none;
-      }
-
-      .dots {
-        display: flex;
-        gap: 8px;
-      }
-
-      .dot {
-        width: 11px;
-        height: 11px;
-        border-radius: 999px;
-      }
-
-      .dot.red {
-        background: #ff5555;
-      }
-
-      .dot.yellow {
-        background: #f1fa8c;
-      }
-
-      .dot.green {
-        background: #50fa7b;
-      }
-
-      .editor-language {
-        font: 700 15px/1 "Fira Code", monospace;
-      }
-
       .editor-body {
         position: relative;
         min-height: 520px;
@@ -1266,7 +1195,8 @@ const exampleHtml = (
         display: block;
         width: 100%;
         min-height: 520px;
-        border: 0;
+        border: 1px solid rgb(15 23 42 / 16%);
+        border-radius: 10px;
         outline: none;
         resize: none;
         overflow: auto;
@@ -1275,6 +1205,17 @@ const exampleHtml = (
         caret-color: currentColor;
         -webkit-text-fill-color: currentColor;
         padding: 16px;
+        box-shadow: 0 18px 50px rgb(15 23 42 / 10%);
+        transition:
+          border-color 150ms ease,
+          box-shadow 150ms ease;
+      }
+
+      .code-input:focus {
+        border-color: rgb(15 23 42 / 36%);
+        box-shadow:
+          0 0 0 3px rgb(24 24 27 / 8%),
+          0 18px 50px rgb(15 23 42 / 12%);
       }
 
       .code-input::selection {
@@ -1288,17 +1229,6 @@ const exampleHtml = (
       @media (max-width: 860px) {
         header {
           display: block;
-        }
-
-        .brand-logo {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-        }
-
-        .top-controls {
-          margin-top: 16px;
-          justify-content: flex-start;
         }
 
         .preview-tools {
@@ -1344,30 +1274,8 @@ const exampleHtml = (
       theme="light">
     </ol>
     <template id="appTemplate">
+    ${renderSiteHeader("try-it", initialState.locale, text)}
     <main class="app-shell" data-insp-path="${inspectorPath(1179, 5, "main")}">
-      <header data-insp-path="${inspectorPath(1180, 7, "header")}">
-        <div>
-          <div class="brand-lockup">
-            <img class="brand-logo" src="/assets/codia-logo.webp" alt="Codia logo" width="52" height="52" />
-            <h1>Codia</h1>
-          </div>
-          <p data-i18n="subtitle"><strong>${text.subtitle}</strong></p>
-        </div>
-        <div>
-          <div class="top-controls">
-            <div class="menu" data-menu>
-              <button class="menu-trigger" id="uiLanguageTrigger" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
-                <span id="uiLanguageLabel">${localeLabel}</span>
-              </button>
-              <div class="menu-panel" id="uiLanguageMenu" hidden></div>
-            </div>
-            <button class="icon-button" id="settingsToggle" type="button" aria-label="Settings" aria-expanded="false">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
-      </header>
 
       <div class="app-layout" id="appLayout" data-insp-path="${inspectorPath(1204, 7, "div")}">
         <section class="editor-section" data-insp-path="${inspectorPath(1205, 9, "section")}">
@@ -1384,6 +1292,9 @@ const exampleHtml = (
               <button class="secondary download-button" id="download" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
                 <span data-i18n="download">${text.download}</span>
+              </button>
+              <button class="icon-button" id="settingsToggle" type="button" aria-label="${text.settings}" aria-expanded="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
           </div>
@@ -1455,6 +1366,10 @@ const exampleHtml = (
                 <input id="borderSize" name="borderSize" type="number" min="0" max="120" step="1" value="12" />
               </label>
               <label>
+                <span data-i18n="borderRadius">${text.borderRadius}</span>
+                <input id="borderRadius" name="borderRadius" type="number" min="0" max="11" step="1" value="4" />
+              </label>
+              <label>
                 <span data-i18n="containerWidth">${text.containerWidth}</span>
                 <input id="containerWidth" name="containerWidth" type="number" min="400" max="1920" step="1" value="600" />
               </label>
@@ -1466,8 +1381,8 @@ const exampleHtml = (
           </form>
         </aside>
       </div>
-      ${renderSiteFooter()}
     </main>
+    ${renderSiteFooter()}
     </template>
     <div id="root"></div>
 
@@ -1482,9 +1397,6 @@ const exampleHtml = (
       const initialState = ${JSON.stringify(initialState)};
       const defaultCode = ${JSON.stringify(defaultExampleCode)};
       const translations = ${JSON.stringify(exampleTranslations)};
-      const locales = ${JSON.stringify(
-        Object.entries(localeLabels).map(([id, label]) => ({ id, label })),
-      )};
       const languages = [
         ["typescript", "TypeScript"], ["javascript", "JavaScript"], ["tsx", "TSX"],
         ["jsx", "JSX"], ["python", "Python"], ["go", "Go"], ["rust", "Rust"],
@@ -1527,6 +1439,7 @@ const exampleHtml = (
       const bgColor = $("#bgColor");
       const backgroundSwiper = $("#backgroundSwiper");
       const borderSize = $("#borderSize");
+      const borderRadius = $("#borderRadius");
       const containerWidth = $("#containerWidth");
       const showLineNumbers = $("#showLineNumbers");
       const form = $("#form");
@@ -1545,9 +1458,8 @@ const exampleHtml = (
       const imageEmpty = $("#imageEmpty");
       const editorWindow = $("#editorWindow");
       const editorBody = $("#editorBody");
-      const uiLanguageTrigger = $("#uiLanguageTrigger");
-      const uiLanguageLabel = $("#uiLanguageLabel");
-      const uiLanguageMenu = $("#uiLanguageMenu");
+      const localeTrigger = $(".site-locale-trigger");
+      const localeMenu = $("#site-locale-menu");
       const settingsToggle = $("#settingsToggle");
       const maxLineLength = 84;
       let latestDataUrl = "";
@@ -1574,6 +1486,30 @@ const exampleHtml = (
 
       const setCookie = (name, value) => {
         document.cookie = name + "=" + encodeURIComponent(value) + "; path=/; max-age=31536000; samesite=lax";
+      };
+
+      const storageKeys = {
+        backgroundPreset: "codia_try_it_background_preset",
+      };
+
+      const readLocalStorage = (key) => {
+        try {
+          return window.localStorage.getItem(key);
+        } catch (error) {
+          return null;
+        }
+      };
+
+      const writeLocalStorage = (key, value) => {
+        try {
+          window.localStorage.setItem(key, value);
+        } catch (error) {
+        }
+      };
+
+      const getStoredBackground = () => {
+        const storedId = readLocalStorage(storageKeys.backgroundPreset);
+        return backgroundPresets.find((item) => item.id === storedId) ?? backgroundPresets[0];
       };
 
       const t = (key, values = {}) => {
@@ -1617,6 +1553,9 @@ const exampleHtml = (
         if (!item) return;
         selectedBackground = item;
         bgColor.value = item.bgColor;
+        if (options.persist !== false) {
+          writeLocalStorage(storageKeys.backgroundPreset, item.id);
+        }
         backgroundSwiper.querySelectorAll(".background-card").forEach((card) => {
           card.classList.toggle("is-selected", card.dataset.id === item.id);
         });
@@ -1743,14 +1682,13 @@ const exampleHtml = (
         languageFilter.placeholder = t("language");
         themeFilter.placeholder = t("codeTheme");
         code.placeholder = t("codePlaceholder");
-        uiLanguageLabel.textContent = locales.find((item) => item.id === currentLocale).label;
       };
 
       const getInteractionKind = (target) => {
         if (target.closest(".tab-button")) return "tab";
         if (target.closest("#copy, #download")) return "action";
         if (target.closest("#settingsToggle, .theme-stepper button, .background-stepper button")) return "toggle";
-        if (target.closest(".menu-trigger, .menu-item, .option")) return "menu";
+        if (target.closest(".site-locale-trigger, [data-site-locale], .option")) return "menu";
         if (target.closest("input, textarea, .combobox")) return "input";
         return "action";
       };
@@ -1807,31 +1745,10 @@ const exampleHtml = (
       };
 
       document.addEventListener("click", (event) => {
-        if (event.target.closest("button, input, textarea, .combobox, .menu-trigger")) {
+        if (event.target.closest("button, input, textarea, .combobox")) {
           playInteractionSound(getInteractionKind(event.target));
         }
       }, true);
-
-      const renderMenu = (panel, items, selectedId, onSelect) => {
-        panel.replaceChildren(...items.map((item) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "menu-item" + (item.id === selectedId ? " is-selected" : "");
-          button.innerHTML = "<span>" + item.label + "</span>";
-          button.addEventListener("click", () => {
-            panel.hidden = true;
-            onSelect(item);
-          });
-          return button;
-        }));
-      };
-
-      const toggleMenu = (panel) => {
-        document.querySelectorAll(".menu-panel").forEach((node) => {
-          if (node !== panel) node.hidden = true;
-        });
-        panel.hidden = !panel.hidden;
-      };
 
       const renderOptions = (panel, items, query, activeIndex, onSelect) => {
         const normalizedQuery = query.trim().toLowerCase();
@@ -1948,6 +1865,25 @@ const exampleHtml = (
         return String(Number.isFinite(parsed) ? Math.min(Math.max(Math.trunc(parsed), 0), 120) : 0);
       };
 
+      const normalizeBorderRadius = (value, currentBorderSize = Number(borderSize.value || 0)) => {
+        const parsed = Number(value || 0);
+        const maxBorderRadius = Math.max(Math.trunc(currentBorderSize) - 1, 0);
+        return String(Number.isFinite(parsed) ? Math.min(Math.max(Math.trunc(parsed), 0), maxBorderRadius) : 0);
+      };
+
+      const applyBorderRadius = (shouldNotify = false) => {
+        const normalizedBorderSize = Number(normalizeBorderSize(borderSize.value));
+        borderSize.value = String(normalizedBorderSize);
+        const maxBorderRadius = Math.max(normalizedBorderSize - 1, 0);
+        borderRadius.max = String(maxBorderRadius);
+        const nextBorderRadius = normalizeBorderRadius(borderRadius.value, normalizedBorderSize);
+        if (shouldNotify && borderRadius.value !== nextBorderRadius) {
+          setStatus(t("borderRadiusRange"), true);
+        }
+        borderRadius.value = nextBorderRadius;
+        return true;
+      };
+
       const normalizeContainerWidth = (value) => {
         const parsed = Number(value);
         if (!Number.isFinite(parsed) || parsed < currentMinContainerWidth || parsed > 1920) return null;
@@ -1971,6 +1907,7 @@ const exampleHtml = (
 
       const updateEditorFrame = () => {
         borderSize.value = normalizeBorderSize(borderSize.value);
+        applyBorderRadius();
         currentMinContainerWidth = estimateMinContainerWidth();
         containerWidth.min = String(currentMinContainerWidth);
         if (Number(containerWidth.value || 600) < currentMinContainerWidth) {
@@ -1998,6 +1935,7 @@ const exampleHtml = (
               theme: selectedCodeTheme.id,
               bgColor: bgColor.value,
               borderSize: Number(borderSize.value || 0),
+              borderRadius: Number(borderRadius.value || 0),
               containerWidth: Number(containerWidth.value || 600),
               showLineNumbers: showLineNumbers.checked,
               code: code.value,
@@ -2062,16 +2000,31 @@ const exampleHtml = (
         }
       };
 
-      const applyI18nMenus = () => {
-        renderMenu(uiLanguageMenu, locales, currentLocale, (item) => {
-          currentLocale = item.id;
-          setCookie("code_snip_locale", item.id);
-          applyI18n();
-          applyI18nMenus();
-        });
+      const closeLocaleMenu = () => {
+        if (!localeTrigger || !localeMenu) return;
+        localeTrigger.setAttribute("aria-expanded", "false");
+        localeMenu.hidden = true;
       };
 
-      uiLanguageTrigger.addEventListener("click", () => toggleMenu(uiLanguageMenu));
+      const toggleLocaleMenu = () => {
+        if (!localeTrigger || !localeMenu) return;
+        const expanded = localeTrigger.getAttribute("aria-expanded") === "true";
+        localeTrigger.setAttribute("aria-expanded", String(!expanded));
+        localeMenu.hidden = expanded;
+      };
+
+      localeTrigger?.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleLocaleMenu();
+      });
+      document.querySelectorAll("[data-site-locale]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const locale = button.getAttribute("data-site-locale");
+          if (!locale) return;
+          setCookie("code_snip_locale", locale);
+          window.location.reload();
+        });
+      });
       editorTab.addEventListener("click", () => setActiveView("editor"));
       imageTab.addEventListener("click", () => setActiveView("image"));
       viewSwiper.addEventListener("swiperslidechange", syncActiveViewFromSwiper);
@@ -2083,9 +2036,12 @@ const exampleHtml = (
         setSettingsOpen(!document.body.classList.contains("settings-open"));
       });
       document.addEventListener("click", (event) => {
-        if (!event.target.closest("[data-menu]")) {
-          document.querySelectorAll(".menu-panel").forEach((panel) => (panel.hidden = true));
+        if (localeTrigger && localeMenu && !localeMenu.contains(event.target) && !localeTrigger.contains(event.target)) {
+          closeLocaleMenu();
         }
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeLocaleMenu();
       });
 
       languageFilter.addEventListener("focus", () => openOptions(languageOptions, languageFilter, languages, activeLanguageIndex, selectLanguage));
@@ -2145,6 +2101,15 @@ const exampleHtml = (
         updateEditorFrame();
       });
       borderSize.addEventListener("input", () => {
+        applyBorderRadius();
+        invalidateImage();
+      });
+      borderRadius.addEventListener("blur", () => {
+        applyBorderRadius(true);
+        invalidateImage();
+      });
+      borderRadius.addEventListener("change", () => {
+        applyBorderRadius(true);
         invalidateImage();
       });
       showLineNumbers.addEventListener("change", () => {
@@ -2168,10 +2133,10 @@ const exampleHtml = (
       initializeSettingsPanel();
       setupAudio();
       applyI18n();
-      applyI18nMenus();
+      selectedBackground = getStoredBackground();
       renderBackgroundPresets();
       initializeBackgroundSwiper();
-      selectBackground(selectedBackground, { slide: false });
+      selectBackground(selectedBackground, { persist: false });
       selectLanguage(selectedLanguage);
       selectCodeTheme(selectedCodeTheme);
       updateEditorFrame();
