@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.14](https://github.com/AaronConlon/codia/compare/v0.1.13...v0.1.14) (2026-07-14)
+
+
+### Features
+
+* polish try-it page and database config ([92430e0](https://github.com/AaronConlon/codia/commit/92430e0590601f9cdb790cdea8202fd656f9a8d1))
+
 ### [0.1.13](https://github.com/AaronConlon/codia/compare/v0.1.12...v0.1.13) (2026-07-14)
 
 ### [0.1.12](https://github.com/AaronConlon/codia/compare/v0.1.11...v0.1.12) (2026-07-14)
