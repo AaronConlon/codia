@@ -221,7 +221,7 @@ const exampleHtml = (
 
       :root {
         color-scheme: dark;
-        --page-bg: #050505;
+        --page-bg: #080a10;
         --text: #f8fafc;
         --muted: rgb(248 250 252 / 62%);
         --panel: #18181b;
@@ -261,9 +261,12 @@ const exampleHtml = (
         overflow-x: clip;
         background-color: var(--page-bg);
         background-image:
+          radial-gradient(ellipse 78% 42% at 50% -12%, rgb(56 189 248 / 10%), transparent 72%),
+          radial-gradient(ellipse 42% 36% at 100% 24%, rgb(129 140 248 / 7%), transparent 74%),
           linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
           linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
-        background-size: 28px 28px, 28px 28px;
+        background-size: auto, auto, 28px 28px, 28px 28px;
+        background-attachment: fixed;
         color: var(--text);
         -webkit-font-smoothing: antialiased;
       }

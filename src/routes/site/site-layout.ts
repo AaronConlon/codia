@@ -170,6 +170,8 @@ export const siteShellStyles = `
   body {
     margin: 0;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     overflow-x: clip;
     color: var(--text);
     background:
@@ -179,6 +181,10 @@ export const siteShellStyles = `
     background-size: 28px 28px;
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
+  }
+
+  main {
+    flex: 1 0 auto;
   }
 
   a {
