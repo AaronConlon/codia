@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.28](https://github.com/AaronConlon/codia/compare/v0.1.27...v0.1.28) (2026-07-16)
+
+
+### Bug Fixes
+
+* keep locale hover background unchanged ([25f3415](https://github.com/AaronConlon/codia/commit/25f3415f946d058cf57292c5870e8fa884cdfc9e))
+
 ### [0.1.27](https://github.com/AaronConlon/codia/compare/v0.1.26...v0.1.27) (2026-07-16)
 
 
