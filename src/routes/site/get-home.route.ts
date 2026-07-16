@@ -303,8 +303,6 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
       .site-menu-trigger[aria-expanded="true"],
       .site-avatar-link:hover,
       .site-icon-link:hover {
-        background: rgb(255 255 255 / 13%);
-        border-color: rgb(255 255 255 / 14%);
         color: #ffffff;
       }
 
@@ -323,20 +321,20 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
       }
 
       .site-locale-menu {
-        background: #ffffff;
-        border-color: rgb(15 23 42 / 10%);
+        background: #09090b;
+        border-color: rgb(255 255 255 / 10%);
+        box-shadow: 0 18px 40px rgb(0 0 0 / 32%);
       }
 
       .site-locale-menu button {
-        color: #0f172a;
+        color: rgb(248 250 252 / 62%);
       }
 
       .site-locale-menu button:hover {
-        background: rgb(15 23 42 / 6%);
+        color: #ffffff;
       }
 
       .site-locale-menu button[aria-pressed="true"] {
-        background: #111827;
         color: #ffffff;
       }
 
@@ -368,9 +366,7 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
         .site-header-actions .site-locale-trigger:hover,
         .site-header-actions .site-avatar-link:hover,
         .site-header-actions .site-icon-link:hover {
-          background: rgb(15 23 42 / 6%);
-          border-color: rgb(15 23 42 / 12%);
-          color: #0f172a;
+          color: #000000;
         }
       }
 
@@ -657,7 +653,6 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
 
       .site-footer a:hover {
         color: #ffffff;
-        background: rgb(255 255 255 / 10%);
       }
 
       @media (max-width: 840px) {

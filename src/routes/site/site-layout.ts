@@ -239,15 +239,13 @@ export const siteShellStyles = `
     font: inherit;
     cursor: pointer;
     box-shadow: 0 10px 24px rgb(15 23 42 / 10%);
-    transition-property: color, background, border-color, transform, box-shadow;
+    transition-property: color, transform;
     transition-duration: 160ms;
   }
 
   .site-menu-trigger:hover,
   .site-menu-trigger[aria-expanded="true"] {
-    background: rgb(15 23 42 / 4%);
-    border-color: rgb(15 23 42 / 18%);
-    box-shadow: 0 12px 28px rgb(15 23 42 / 14%);
+    color: var(--ink);
   }
 
   .site-menu-trigger:active {
@@ -312,15 +310,13 @@ export const siteShellStyles = `
     box-shadow: 0 10px 24px rgb(15 23 42 / 10%);
     overflow: hidden;
     flex: 0 0 auto;
-    transition-property: color, background, border-color, transform, box-shadow;
+    transition-property: color, transform;
     transition-duration: 160ms;
   }
 
   .site-avatar-link:hover,
   .site-icon-link:hover {
-    background: rgb(15 23 42 / 4%);
-    border-color: rgb(15 23 42 / 18%);
-    box-shadow: 0 12px 28px rgb(15 23 42 / 14%);
+    color: var(--ink);
   }
 
   .site-avatar-link:active,
@@ -361,7 +357,7 @@ export const siteShellStyles = `
     font-size: 14px;
     font-weight: 800;
     cursor: pointer;
-    transition-property: color, background, transform;
+    transition-property: color, transform;
     transition-duration: 160ms;
   }
 
@@ -369,8 +365,6 @@ export const siteShellStyles = `
   .site-playground-link:hover,
   .site-footer a:hover {
     color: var(--text);
-    background: rgb(15 23 42 / 6%);
-    border-color: rgb(15 23 42 / 10%);
   }
 
   .site-footer a {
@@ -459,13 +453,12 @@ export const siteShellStyles = `
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
-    transition-property: color, background, border-color, transform, box-shadow;
+    transition-property: color, transform;
     transition-duration: 160ms;
   }
 
   .site-locale-trigger:hover {
-    background: rgb(15 23 42 / 4%);
-    border-color: rgb(15 23 42 / 18%);
+    color: var(--ink);
   }
 
   .site-locale-trigger[aria-expanded="true"] {
@@ -500,9 +493,9 @@ export const siteShellStyles = `
     padding: 3px;
     list-style: none;
     border-radius: 11px;
-    background: var(--panel);
-    border: 1px solid rgb(15 23 42 / 10%);
-    box-shadow: 0 18px 40px rgb(15 23 42 / 16%);
+    background: #09090b;
+    border: 1px solid rgb(255 255 255 / 10%);
+    box-shadow: 0 18px 40px rgb(0 0 0 / 28%);
     z-index: 40;
   }
 
@@ -528,23 +521,22 @@ export const siteShellStyles = `
     border: 0;
     border-radius: 7px;
     background: transparent;
-    color: var(--text);
+    color: rgb(248 250 252 / 62%);
     font: inherit;
     font-size: 11px;
     font-weight: 600;
     text-align: left;
     cursor: pointer;
-    transition-property: color, background;
+    transition-property: color;
     transition-duration: 140ms;
   }
 
   .site-locale-menu button:hover {
-    background: rgb(15 23 42 / 6%);
+    color: #ffffff;
   }
 
   .site-locale-menu button[aria-pressed="true"] {
     color: #ffffff;
-    background: #111827;
   }
 
   .site-locale-check {
@@ -553,7 +545,7 @@ export const siteShellStyles = `
     justify-content: center;
     width: 16px;
     height: 16px;
-    color: var(--text);
+    color: currentColor;
   }
 
   .site-locale-check svg {
@@ -591,8 +583,6 @@ export const siteShellStyles = `
 
   .site-footer a:hover {
     color: #ffffff;
-    background: rgb(255 255 255 / 10%);
-    border-color: rgb(255 255 255 / 12%);
   }
 
   .site-footer-brand {
@@ -615,7 +605,7 @@ export const siteShellStyles = `
   }
 
   .site-footer-avatar {
-    border-radius: 999px;
+    border-radius: 4px;
     object-fit: cover;
     outline: 1px solid rgb(255 255 255 / 18%);
   }
@@ -714,7 +704,7 @@ export const siteShellStyles = `
     .site-avatar {
       width: 24px;
       height: 24px;
-      border-radius: 999px;
+      border-radius: 4px;
     }
 
     .site-locale {
@@ -765,7 +755,7 @@ export const siteShellStyles = `
     }
 
     .site-footer a:hover {
-      background: rgb(255 255 255 / 10%);
+      color: #ffffff;
     }
 
     .site-footer::before {

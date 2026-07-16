@@ -282,7 +282,7 @@ const exampleHtml = (
         top: 0;
         left: 0;
         width: 100%;
-        height: 3px;
+        height: 8px;
         overflow: hidden;
         opacity: 0;
         pointer-events: none;
@@ -296,23 +296,33 @@ const exampleHtml = (
       .render-progress::after {
         content: "";
         position: absolute;
-        inset: 0;
-        transform-origin: left center;
+        pointer-events: none;
       }
 
       .render-progress::before {
-        background: linear-gradient(90deg, #e2e8f0, #f8fafc, #cbd5e1);
-        box-shadow: 0 0 14px rgb(148 163 184 / 42%);
-        transform: scaleX(0.18);
-        animation: render-progress-grow 1200ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
+        top: 2px;
+        left: 0;
+        width: min(48vw, 520px);
+        height: 3px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 18%) 24%, rgb(255 255 255 / 86%) 72%, #ffffff 100%);
+        filter: drop-shadow(0 0 10px rgb(255 255 255 / 72%));
+        transform: translateX(-110%);
+        animation: render-progress-meteor-tail 860ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
       }
 
       .render-progress::after {
-        width: 36%;
-        background: linear-gradient(90deg, transparent, rgb(255 255 255 / 88%), transparent);
-        filter: drop-shadow(0 0 8px rgb(255 255 255 / 64%));
-        transform: translateX(-110%);
-        animation: render-progress-glint 820ms ease-in-out infinite;
+        top: 0;
+        left: 0;
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #ffffff;
+        box-shadow:
+          0 0 10px rgb(255 255 255 / 92%),
+          0 0 22px rgb(255 255 255 / 54%);
+        transform: translateX(-10vw);
+        animation: render-progress-meteor-head 860ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
       }
 
       body.is-rendering .render-progress {
@@ -320,24 +330,31 @@ const exampleHtml = (
         transform: translateY(0);
       }
 
-      @keyframes render-progress-grow {
+      @keyframes render-progress-meteor-tail {
         0% {
-          transform: scaleX(0.12);
+          opacity: 0;
+          transform: translateX(-110%);
         }
-        45% {
-          transform: scaleX(0.72);
+        12% {
+          opacity: 1;
         }
         100% {
-          transform: scaleX(0.96);
+          opacity: 0.72;
+          transform: translateX(calc(100vw + 24px));
         }
       }
 
-      @keyframes render-progress-glint {
+      @keyframes render-progress-meteor-head {
         0% {
-          transform: translateX(-110%);
+          opacity: 0;
+          transform: translateX(-10vw) scale(0.82);
+        }
+        12% {
+          opacity: 1;
         }
         100% {
-          transform: translateX(320%);
+          opacity: 0.86;
+          transform: translateX(calc(100vw + 24px)) scale(1);
         }
       }
 
@@ -504,7 +521,7 @@ const exampleHtml = (
       }
 
       .site-footer-avatar {
-        border-radius: 999px;
+        border-radius: 4px;
         object-fit: cover;
         outline: 1px solid rgb(255 255 255 / 18%);
       }
@@ -536,8 +553,6 @@ const exampleHtml = (
 
       .site-footer a:hover {
         color: #ffffff;
-        background: rgb(255 255 255 / 10%);
-        border-color: rgb(255 255 255 / 12%);
       }
 
       .site-footer a:active {
@@ -810,30 +825,55 @@ const exampleHtml = (
         box-shadow: 0 0 0 3px var(--focus-soft);
       }
 
-      .format-select {
-        width: 100%;
-        height: 42px;
+      .format-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .format-option {
+        min-height: 42px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 12px;
         border: 1px solid var(--field-border);
         border-radius: 9px;
         background: var(--field);
-        color: var(--text);
-        padding: 0 12px;
-        font: 15px/1.5 ui-monospace, "SFMono-Regular", Consolas, monospace;
-        outline: none;
+        color: var(--muted);
+        font: 700 14px/1.5 ui-monospace, "SFMono-Regular", Consolas, monospace;
+        cursor: pointer;
         box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
         transition:
           border-color 150ms ease,
           background 150ms ease,
+          color 150ms ease,
           box-shadow 150ms ease;
       }
 
-      .format-select:hover,
-      .format-select:focus {
+      .format-option:hover,
+      .format-option:focus-within {
         border-color: var(--focus);
+        color: var(--text);
       }
 
-      .format-select:focus {
+      .format-option:focus-within {
         box-shadow: 0 0 0 3px var(--focus-soft);
+      }
+
+      .format-option:has(input:checked) {
+        background: var(--button-bg);
+        color: var(--button-text);
+        border-color: var(--button-bg);
+      }
+
+      .format-option input {
+        width: 16px;
+        height: 16px;
+        padding: 0;
+        accent-color: var(--button-bg);
+        box-shadow: none;
+        flex: 0 0 auto;
       }
 
       input[type="color"] {
@@ -1409,8 +1449,6 @@ const exampleHtml = (
       .site-menu-trigger[aria-expanded="true"],
       .site-avatar-link:hover,
       .site-icon-link:hover {
-        background: rgb(255 255 255 / 13%);
-        border-color: rgb(255 255 255 / 14%);
         color: #ffffff;
       }
 
@@ -1420,20 +1458,20 @@ const exampleHtml = (
       }
 
       .site-locale-menu {
-        background: #ffffff;
-        border-color: rgb(15 23 42 / 10%);
+        background: #09090b;
+        border-color: rgb(255 255 255 / 10%);
+        box-shadow: 0 18px 40px rgb(0 0 0 / 32%);
       }
 
       .site-locale-menu button {
-        color: #0f172a;
+        color: rgb(248 250 252 / 62%);
       }
 
       .site-locale-menu button:hover {
-        background: rgb(15 23 42 / 6%);
+        color: #ffffff;
       }
 
       .site-locale-menu button[aria-pressed="true"] {
-        background: #111827;
         color: #ffffff;
       }
 
@@ -1540,9 +1578,7 @@ const exampleHtml = (
         .site-header-actions .site-locale-trigger:hover,
         .site-header-actions .site-avatar-link:hover,
         .site-header-actions .site-icon-link:hover {
-          background: rgb(15 23 42 / 6%);
-          border-color: rgb(15 23 42 / 12%);
-          color: #0f172a;
+          color: #000000;
         }
       }
 
@@ -1776,10 +1812,17 @@ const exampleHtml = (
               </div>
               <label>
                 <span data-i18n="imageFormat">${text.imageFormat}</span>
-                <select class="format-select" id="imageFormat" name="format" aria-label="${text.imageFormat}">
-                  <option value="png" selected>PNG</option>
-                  <option value="webp">WebP</option>
-                </select>
+                <input id="imageFormat" name="format" type="hidden" value="png" />
+                <div class="format-options" id="imageFormatGroup" role="group" aria-label="${text.imageFormat}">
+                  <label class="format-option">
+                    <input class="format-checkbox" type="checkbox" value="png" data-image-format checked />
+                    <span>PNG</span>
+                  </label>
+                  <label class="format-option">
+                    <input class="format-checkbox" type="checkbox" value="webp" data-image-format />
+                    <span>WebP</span>
+                  </label>
+                </div>
               </label>
               <label>
                 <span data-i18n="backgroundColor">${text.backgroundColor}</span>
@@ -1909,6 +1952,8 @@ const exampleHtml = (
       const themePrev = $("#themePrev");
       const themeNext = $("#themeNext");
       const imageFormat = $("#imageFormat");
+      const imageFormatGroup = $("#imageFormatGroup");
+      const imageFormatOptions = Array.from(document.querySelectorAll("[data-image-format]"));
       const bgColor = $("#bgColor");
       const backgroundSwiper = $("#backgroundSwiper");
       const borderSize = $("#borderSize");
@@ -2208,9 +2253,22 @@ const exampleHtml = (
         languageFilter.placeholder = t("language");
         themeFilter.placeholder = t("codeTheme");
         imageFormat.setAttribute("aria-label", t("imageFormat"));
+        imageFormatGroup.setAttribute("aria-label", t("imageFormat"));
         code.placeholder = t("codePlaceholder");
         clearCode.setAttribute("aria-label", t("clear"));
         generateImage.setAttribute("aria-label", t("generateImage"));
+      };
+
+      const syncImageFormatOptions = () => {
+        imageFormatOptions.forEach((option) => {
+          option.checked = option.value === imageFormat.value;
+        });
+      };
+
+      const selectImageFormat = (format) => {
+        imageFormat.value = format === "webp" ? "webp" : "png";
+        syncImageFormatOptions();
+        invalidateImage();
       };
 
       const getInteractionKind = (target) => {
@@ -2218,7 +2276,7 @@ const exampleHtml = (
         if (target.closest("#copy, #download, #clearCode, #generateImage")) return "action";
         if (target.closest("#settingsToggle, .theme-stepper button, .background-stepper button")) return "toggle";
         if (target.closest(".site-locale-trigger, [data-site-locale], .option")) return "menu";
-        if (target.closest("input, textarea, select, .combobox")) return "input";
+        if (target.closest("input, textarea, .combobox, .format-option")) return "input";
         return "action";
       };
 
@@ -2943,7 +3001,15 @@ const exampleHtml = (
       }, 120));
       themePrev.addEventListener("click", () => stepCodeTheme(-1));
       themeNext.addEventListener("click", () => stepCodeTheme(1));
-      imageFormat.addEventListener("change", () => invalidateImage());
+      imageFormatOptions.forEach((option) => {
+        option.addEventListener("change", () => {
+          if (!option.checked) {
+            syncImageFormatOptions();
+            return;
+          }
+          selectImageFormat(option.value);
+        });
+      });
 
       copy.addEventListener("click", copyImage);
       download.addEventListener("click", downloadImage);
@@ -2989,6 +3055,7 @@ const exampleHtml = (
       initializeSettingsPanel();
       setupAudio();
       applyI18n();
+      syncImageFormatOptions();
       selectedBackground = getStoredBackground();
       renderBackgroundPresets();
       initializeBackgroundSwiper();
