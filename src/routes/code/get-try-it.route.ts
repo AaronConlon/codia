@@ -34,6 +34,7 @@ const exampleTranslations = {
     loading: "正在加载 Codia...",
     language: "语言",
     codeTheme: "代码主题",
+    imageFormat: "图片格式",
     backgroundColor: "背景",
     borderSize: "边距",
     borderRadius: "圆角",
@@ -64,6 +65,7 @@ const exampleTranslations = {
     loading: "Loading Codia...",
     language: "Language",
     codeTheme: "Code theme",
+    imageFormat: "Image format",
     backgroundColor: "Background",
     borderSize: "Padding",
     borderRadius: "Corner radius",
@@ -94,6 +96,7 @@ const exampleTranslations = {
     loading: "Codia を読み込み中...",
     language: "言語",
     codeTheme: "コードテーマ",
+    imageFormat: "画像形式",
     backgroundColor: "背景",
     borderSize: "余白",
     borderRadius: "角丸",
@@ -173,8 +176,11 @@ console.log(result);`;
 
 const defaultExampleBackgroundId = "sunset";
 const defaultExampleBackground = backgroundPresets.find((item) => item.id === defaultExampleBackgroundId) ?? backgroundPresets[0];
-const defaultExampleImageUrl =
-  "https://de4965e.webp.li/blog-images/2026/07/43657a7058788af6263b1c349a16cb22.webp";
+const defaultExampleImageUrls = {
+  png: "/examples/default-quicksort.png",
+  webp: "https://de4965e.webp.li/blog-images/2026/07/43657a7058788af6263b1c349a16cb22.webp",
+} as const;
+const defaultExampleImageUrl = defaultExampleImageUrls.png;
 
 const inspectorPath = (line: number, column: number, node: string) =>
   `src/routes/code/get-try-it.route.ts:${line}:${column}:${node}`;
@@ -208,7 +214,7 @@ const exampleHtml = (
       href="https://cdn.jsdelivr.net/npm/vanilla-sonner@0.5.2/dist/vanilla-sonner.min.css"
       rel="stylesheet"
     />
-    <link rel="preload" as="image" href="${defaultExampleImageUrl}" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="${defaultExampleImageUrl}" type="image/png" fetchpriority="high" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@14/swiper-element-bundle.min.js"></script>
     <style>
       ${siteShellStyles}
@@ -798,6 +804,32 @@ const exampleHtml = (
       input:focus,
       .combobox:focus-within {
         border-color: var(--focus);
+        box-shadow: 0 0 0 3px var(--focus-soft);
+      }
+
+      .format-select {
+        width: 100%;
+        height: 42px;
+        border: 1px solid var(--field-border);
+        border-radius: 9px;
+        background: var(--field);
+        color: var(--text);
+        padding: 0 12px;
+        font: 15px/1.5 ui-monospace, "SFMono-Regular", Consolas, monospace;
+        outline: none;
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+        transition:
+          border-color 150ms ease,
+          background 150ms ease,
+          box-shadow 150ms ease;
+      }
+
+      .format-select:hover,
+      .format-select:focus {
+        border-color: var(--focus);
+      }
+
+      .format-select:focus {
         box-shadow: 0 0 0 3px var(--focus-soft);
       }
 
@@ -1740,6 +1772,13 @@ const exampleHtml = (
                 </div>
               </div>
               <label>
+                <span data-i18n="imageFormat">${text.imageFormat}</span>
+                <select class="format-select" id="imageFormat" name="format" aria-label="${text.imageFormat}">
+                  <option value="png" selected>PNG</option>
+                  <option value="webp">WebP</option>
+                </select>
+              </label>
+              <label>
                 <span data-i18n="backgroundColor">${text.backgroundColor}</span>
                 <input id="bgColor" name="bgColor" type="hidden" value="${defaultBgColor}" />
                 <div class="background-picker">
@@ -1792,7 +1831,7 @@ const exampleHtml = (
       const shikiThemes = ${JSON.stringify(shikiThemes)};
       const initialState = ${JSON.stringify(initialState)};
       const defaultCode = ${JSON.stringify(defaultExampleCode)};
-      const defaultExampleImageUrl = ${JSON.stringify(defaultExampleImageUrl)};
+      const defaultExampleImageUrls = ${JSON.stringify(defaultExampleImageUrls)};
       const defaultExampleBackgroundId = ${JSON.stringify(defaultExampleBackgroundId)};
       const defaultExampleBgColor = ${JSON.stringify(defaultBgColor)};
       const previewQuality = 2;
@@ -1866,6 +1905,7 @@ const exampleHtml = (
       const themeOptions = $("#themeOptions");
       const themePrev = $("#themePrev");
       const themeNext = $("#themeNext");
+      const imageFormat = $("#imageFormat");
       const bgColor = $("#bgColor");
       const backgroundSwiper = $("#backgroundSwiper");
       const borderSize = $("#borderSize");
@@ -2116,11 +2156,12 @@ const exampleHtml = (
 
       const primeDefaultExampleImage = () => {
         if (!isDefaultExampleState()) return false;
-        latestDataUrl = defaultExampleImageUrl;
+        const defaultImageUrl = defaultExampleImageUrls[imageFormat.value] ?? defaultExampleImageUrls.png;
+        latestDataUrl = defaultImageUrl;
         latestBlobUrl = "";
         latestBlob = null;
         latestImageData = null;
-        finalImage.src = defaultExampleImageUrl;
+        finalImage.src = defaultImageUrl;
         finalImage.style.width = "";
         finalImage.hidden = false;
         imageEmpty.hidden = true;
@@ -2163,6 +2204,7 @@ const exampleHtml = (
         });
         languageFilter.placeholder = t("language");
         themeFilter.placeholder = t("codeTheme");
+        imageFormat.setAttribute("aria-label", t("imageFormat"));
         code.placeholder = t("codePlaceholder");
         clearCode.setAttribute("aria-label", t("clear"));
         generateImage.setAttribute("aria-label", t("generateImage"));
@@ -2173,7 +2215,7 @@ const exampleHtml = (
         if (target.closest("#copy, #download, #clearCode, #generateImage")) return "action";
         if (target.closest("#settingsToggle, .theme-stepper button, .background-stepper button")) return "toggle";
         if (target.closest(".site-locale-trigger, [data-site-locale], .option")) return "menu";
-        if (target.closest("input, textarea, .combobox")) return "input";
+        if (target.closest("input, textarea, select, .combobox")) return "input";
         return "action";
       };
 
@@ -2229,7 +2271,7 @@ const exampleHtml = (
       };
 
       document.addEventListener("click", (event) => {
-        if (event.target.closest("button, input, textarea, .combobox")) {
+        if (event.target.closest("button, input, textarea, select, .combobox")) {
           playInteractionSound(getInteractionKind(event.target));
         }
       }, true);
@@ -2440,10 +2482,10 @@ const exampleHtml = (
       };
 
       const normalizeRenderFormat = (format) => {
-        const normalized = (format || "webp").trim().toLowerCase();
+        const normalized = (format || imageFormat.value || "png").trim().toLowerCase();
         if (normalized === "png" || normalized === "webp") return normalized;
         if (normalized === "jpg" || normalized === "jpeg") return "jpeg";
-        return "webp";
+        return "png";
       };
 
       const mimeTypeFromFormat = (format) => {
@@ -2651,11 +2693,13 @@ const exampleHtml = (
         };
       };
 
-      const requestImage = async ({ silent = false, source = "try-it-preview", format } = {}) => {
-        if (!silent) startImageRefresh();
-        if (!silent) startRenderProgress();
+      const requestImage = async ({ silent = false, source = "try-it-preview", format, updatePreview = true } = {}) => {
+        const shouldUpdatePreview = updatePreview !== false;
+        if (shouldUpdatePreview && !silent) startImageRefresh();
+        if (shouldUpdatePreview && !silent) startRenderProgress();
         try {
           const data = await renderClientImage({ format, source });
+          if (!shouldUpdatePreview) return data;
           if (latestBlobUrl && latestBlobUrl !== data.dataUrl) {
             URL.revokeObjectURL(latestBlobUrl);
           }
@@ -2674,8 +2718,10 @@ const exampleHtml = (
           lastValidContainerWidth = String(data.containerWidth);
           return data;
         } finally {
-          finishImageRefresh();
-          if (!silent) finishRenderProgress();
+          if (shouldUpdatePreview) {
+            finishImageRefresh();
+            if (!silent) finishRenderProgress();
+          }
         }
       };
 
@@ -2724,20 +2770,41 @@ const exampleHtml = (
         });
       };
 
+      const renderActionImage = async (source) => {
+        const format = normalizeRenderFormat(imageFormat.value);
+        if (!imageDirty && latestImageData?.format === format) {
+          return { data: latestImageData, shouldRevoke: false };
+        }
+        const data = await requestImage({ source, format, silent: true, updatePreview: false });
+        return { data, shouldRevoke: true };
+      };
+
+      const releaseActionImage = ({ data, shouldRevoke }) => {
+        if (shouldRevoke) {
+          window.setTimeout(() => URL.revokeObjectURL(data.dataUrl), 0);
+        }
+      };
+
       const copyImage = async () => {
+        let rendered;
         try {
-          const data = await requestImage({ source: "try-it-copy", format: "png" });
+          rendered = await renderActionImage("try-it-copy");
+          const { data } = rendered;
           await navigator.clipboard.write([new ClipboardItem({ [data.blob.type]: data.blob })]);
           recordSatisfaction("copy");
           setStatus(t("copied"));
         } catch (error) {
           setStatus(t("failed"), true);
+        } finally {
+          if (rendered) releaseActionImage(rendered);
         }
       };
 
       const downloadImage = async () => {
+        let rendered;
         try {
-          const data = await requestImage({ source: "try-it-download" });
+          rendered = await renderActionImage("try-it-download");
+          const { data } = rendered;
           const link = document.createElement("a");
           link.href = data.dataUrl;
           const extension = data.format === "jpeg" ? "jpg" : data.format || "webp";
@@ -2747,6 +2814,8 @@ const exampleHtml = (
           setStatus(t("downloaded"));
         } catch (error) {
           setStatus(t("failed"), true);
+        } finally {
+          if (rendered) releaseActionImage(rendered);
         }
       };
 
@@ -2871,6 +2940,7 @@ const exampleHtml = (
       }, 120));
       themePrev.addEventListener("click", () => stepCodeTheme(-1));
       themeNext.addEventListener("click", () => stepCodeTheme(1));
+      imageFormat.addEventListener("change", () => invalidateImage());
 
       copy.addEventListener("click", copyImage);
       download.addEventListener("click", downloadImage);
