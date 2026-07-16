@@ -1468,6 +1468,7 @@ const exampleHtml = (
       }
 
       .site-locale-menu button:hover {
+        background: transparent;
         color: #ffffff;
       }
 

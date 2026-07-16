@@ -331,6 +331,7 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
       }
 
       .site-locale-menu button:hover {
+        background: transparent;
         color: #ffffff;
       }
 

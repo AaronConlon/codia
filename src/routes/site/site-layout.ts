@@ -532,6 +532,7 @@ export const siteShellStyles = `
   }
 
   .site-locale-menu button:hover {
+    background: transparent;
     color: #ffffff;
   }
 
