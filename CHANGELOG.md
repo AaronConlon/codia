@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.23](https://github.com/AaronConlon/codia/compare/v0.1.22...v0.1.23) (2026-07-16)
+
+
+### Features
+
+* track try-it satisfaction actions ([b11b846](https://github.com/AaronConlon/codia/commit/b11b8465f8a0b6d25e94cd4a27e1af15e9fbecf1))
+
 ### [0.1.22](https://github.com/AaronConlon/codia/compare/v0.1.21...v0.1.22) (2026-07-16)
 
 ### Features
