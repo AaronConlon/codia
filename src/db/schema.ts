@@ -25,5 +25,17 @@ export const renderRecords = sqliteTable(
   ],
 );
 
+export const satisfactionEvents = sqliteTable(
+  "satisfaction_events",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    action: text("action").notNull(),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [index("satisfaction_events_created_at_idx").on(table.createdAt)],
+);
+
 export type RenderRecord = typeof renderRecords.$inferSelect;
 export type NewRenderRecord = typeof renderRecords.$inferInsert;
+export type SatisfactionEvent = typeof satisfactionEvents.$inferSelect;
+export type NewSatisfactionEvent = typeof satisfactionEvents.$inferInsert;

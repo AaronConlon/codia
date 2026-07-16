@@ -143,9 +143,27 @@ Example response shape:
 
 GET /v1/code/stats
 
-Returns aggregate SQLite render stats for the homepage and external tools, including total renders,
-generated image count, total rendered lines, top languages, and recent generation records. Stats do
-not include stored code or image content.
+Returns aggregate SQLite render and satisfaction stats for the homepage and external tools, including
+total renders, generated image count, satisfaction count, total rendered lines, top languages, and
+recent generation records. Stats do not include stored code or image content.
+
+## Satisfaction Endpoint
+
+POST /v1/feedback/satisfaction
+
+Record one successful /try-it copy or download action. Each successful action adds one satisfaction
+event. The server stores only the action type and timestamp, not the code or image content.
+
+Request body:
+
+\`\`\`json
+{
+  "action": "copy"
+}
+\`\`\`
+
+The action must be \`copy\` or \`download\`. The response includes \`accepted: true\` and the current
+\`totalSatisfactions\` count.
 
 ## Human Preview
 

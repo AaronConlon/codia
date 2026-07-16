@@ -2704,10 +2704,31 @@ const exampleHtml = (
         scheduleImageRender();
       };
 
+      const submitSatisfaction = async (action) => {
+        const response = await fetch("/v1/feedback/satisfaction", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ action }),
+          keepalive: true,
+        });
+        if (!response.ok) {
+          throw new Error("Failed to record satisfaction");
+        }
+      };
+
+      const recordSatisfaction = (action) => {
+        submitSatisfaction(action).catch((error) => {
+          console.warn("Failed to record try-it satisfaction", error);
+        });
+      };
+
       const copyImage = async () => {
         try {
           const data = await requestImage({ source: "try-it-copy", format: "png" });
           await navigator.clipboard.write([new ClipboardItem({ [data.blob.type]: data.blob })]);
+          recordSatisfaction("copy");
           setStatus(t("copied"));
         } catch (error) {
           setStatus(t("failed"), true);
@@ -2722,6 +2743,7 @@ const exampleHtml = (
           const extension = data.format === "jpeg" ? "jpg" : data.format || "webp";
           link.download = "code-snip." + extension;
           link.click();
+          recordSatisfaction("download");
           setStatus(t("downloaded"));
         } catch (error) {
           setStatus(t("failed"), true);

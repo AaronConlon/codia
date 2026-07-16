@@ -2,6 +2,7 @@ import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import type { Context } from "hono";
 import { createCodeController } from "./routes/code/code-controller.js";
+import { createFeedbackController } from "./routes/feedback/feedback-controller.js";
 import { createSiteController } from "./routes/site/site-controller.js";
 import { siteSlogan } from "./routes/site/site-layout.js";
 
@@ -57,6 +58,7 @@ export const createApp = (options: CreateAppOptions = {}) => {
   createCodeController(app, {
     codeInspectorScript: options.codeInspectorScript,
   });
+  createFeedbackController(app);
 
   app.doc("/openapi.json", {
     openapi: "3.1.0",

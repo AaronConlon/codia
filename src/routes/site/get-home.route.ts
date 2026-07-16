@@ -32,7 +32,7 @@ const homeCopy = {
     viewApi: "查看 API",
     galleryLabel: "Codia screenshot gallery",
     totalRenders: "总生成次数",
-    imagesStored: "图片生成数",
+    satisfactionCount: "用户满意数",
     linesRendered: "已渲染行数",
     screenshotLabels: [
       "TypeScript",
@@ -70,7 +70,7 @@ const homeCopy = {
     viewApi: "View API",
     galleryLabel: "Codia screenshot gallery",
     totalRenders: "Total renders",
-    imagesStored: "Images generated",
+    satisfactionCount: "User satisfaction",
     linesRendered: "Lines rendered",
     screenshotLabels: [
       "TypeScript",
@@ -108,7 +108,7 @@ const homeCopy = {
     viewApi: "API を見る",
     galleryLabel: "Codia スクリーンショットギャラリー",
     totalRenders: "生成回数",
-    imagesStored: "画像生成数",
+    satisfactionCount: "満足数",
     linesRendered: "描画行数",
     screenshotLabels: [
       "TypeScript",
@@ -217,7 +217,7 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
   const text = homeCopy[initialState.locale];
   const statItems = [
     { value: stats.totalRenders, label: text.totalRenders },
-    { value: stats.totalImagesStored, label: text.imagesStored },
+    { value: stats.totalSatisfactions, label: text.satisfactionCount },
     { value: stats.totalLinesRendered, label: text.linesRendered },
   ].map((item) => {
     const display = getStatDisplayValue(item.value);

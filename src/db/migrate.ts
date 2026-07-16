@@ -24,6 +24,14 @@ export const migrateDatabase = () => {
     );
   `);
 
+  rawSqlite.exec(`
+    CREATE TABLE IF NOT EXISTS satisfaction_events (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      action TEXT NOT NULL CHECK (action IN ('copy', 'download')),
+      created_at TEXT NOT NULL
+    );
+  `);
+
   const columns = rawSqlite.prepare("PRAGMA table_info(render_records)").all() as Array<{
     name: string;
   }>;
@@ -99,6 +107,9 @@ export const migrateDatabase = () => {
 
     CREATE INDEX IF NOT EXISTS render_records_source_idx
       ON render_records (source);
+
+    CREATE INDEX IF NOT EXISTS satisfaction_events_created_at_idx
+      ON satisfaction_events (created_at);
   `);
 
   migrated = true;

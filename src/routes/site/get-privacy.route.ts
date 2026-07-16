@@ -16,7 +16,7 @@ type PrivacyInitialState = {
 
 const privacyCopy = {
   zh: {
-    metaDescription: "Codia 隐私说明：我们不收集用户代码和生成图片，仅记录生成次数统计。",
+    metaDescription: "Codia 隐私说明：我们不收集用户代码和生成图片，仅记录生成与满意操作统计。",
     navTryIt: "Playground",
     navDocs: "API 文档",
     languageLabel: "语言",
@@ -33,21 +33,21 @@ const privacyCopy = {
       },
       {
         title: "我们记录什么",
-        body: "为了展示公开的产品统计，我们只记录一次图片生成事件以及非内容元数据，例如生成来源、语言、主题、图片尺寸、渲染行数、是否展示行号和生成时间。",
+        body: "为了展示公开的产品统计，我们只记录图片生成事件、成功复制或下载的满意操作，以及非内容元数据，例如生成来源、语言、主题、图片尺寸、渲染行数、是否展示行号和生成时间。",
       },
       {
         title: "这些统计如何使用",
-        body: "这些数据仅用于首页展示生成次数、图片生成数、累计渲染行数、热门语言和最近生成流。它们不能还原你的代码或图片。",
+        body: "这些数据仅用于首页展示生成次数、用户满意数、累计渲染行数、热门语言和最近生成流。它们不能还原你的代码或图片。",
       },
       {
         title: "本地和 API 使用",
-        body: "/try-it 页面和 API 调用都遵循同样规则：只要成功生成图片，就会增加一次生成统计。",
+        body: "/try-it 页面和 API 调用都遵循同样规则：成功生成图片会增加生成统计，成功复制或下载图片会增加一次满意统计。",
       },
     ],
   },
   en: {
     metaDescription:
-      "Codia privacy notice: we do not collect user code or generated images, only lightweight render counts.",
+      "Codia privacy notice: we do not collect user code or generated images, only lightweight render and satisfaction counts.",
     navTryIt: "Playground",
     navDocs: "API Docs",
     languageLabel: "Language",
@@ -64,21 +64,21 @@ const privacyCopy = {
       },
       {
         title: "What We Record",
-        body: "To show public product statistics, we record a render event and non-content metadata such as source, language, theme, image dimensions, rendered line count, line-number setting, and timestamp.",
+        body: "To show public product statistics, we record render events, successful copy or download actions, and non-content metadata such as source, language, theme, image dimensions, rendered line count, line-number setting, and timestamp.",
       },
       {
         title: "How Stats Are Used",
-        body: "These records only power homepage totals, generated image counts, rendered line totals, popular languages, and recent generation flow. They cannot reconstruct your code or image.",
+        body: "These records only power homepage totals, user satisfaction counts, rendered line totals, popular languages, and recent generation flow. They cannot reconstruct your code or image.",
       },
       {
         title: "Try-It and API Usage",
-        body: "The /try-it page and API follow the same rule: every successful image render increments the generation statistics once.",
+        body: "The /try-it page and API follow the same rule: every successful image render increments render statistics, while each successful copy or download adds one satisfaction event.",
       },
     ],
   },
   ja: {
     metaDescription:
-      "Codia のプライバシー説明：コードや生成画像は保存せず、軽量な生成回数統計のみを記録します。",
+      "Codia のプライバシー説明：コードや生成画像は保存せず、軽量な生成と満足操作の統計のみを記録します。",
     navTryIt: "Playground",
     navDocs: "API ドキュメント",
     languageLabel: "言語",
@@ -95,15 +95,15 @@ const privacyCopy = {
       },
       {
         title: "記録するもの",
-        body: "公開統計を表示するため、生成イベントと非コンテンツのメタデータのみを記録します。例として、生成元、言語、テーマ、画像サイズ、描画行数、行番号設定、生成時刻があります。",
+        body: "公開統計を表示するため、生成イベント、コピーまたはダウンロードの成功操作、非コンテンツのメタデータのみを記録します。例として、生成元、言語、テーマ、画像サイズ、描画行数、行番号設定、生成時刻があります。",
       },
       {
         title: "統計の使い道",
-        body: "これらの記録は、ホームの生成回数、画像生成数、描画行数、人気言語、最近の生成履歴の表示にのみ使われます。コードや画像を復元することはできません。",
+        body: "これらの記録は、ホームの生成回数、ユーザー満足数、描画行数、人気言語、最近の生成履歴の表示にのみ使われます。コードや画像を復元することはできません。",
       },
       {
         title: "Try-It と API",
-        body: "/try-it ページと API は同じルールに従います。画像生成が成功するたびに、生成統計が 1 回増えます。",
+        body: "/try-it ページと API は同じルールに従います。画像生成が成功するたびに生成統計が増え、コピーまたはダウンロードが成功するたびに満足統計が 1 回増えます。",
       },
     ],
   },

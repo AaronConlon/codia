@@ -10,7 +10,7 @@ Codia turns source code into crisp images for docs, blogs, social posts, and aut
 
 - Interactive `/try-it` playground with language, theme, background, padding, width, line-number, copy, and download controls.
 - `POST /v1/code/render` API for generating code images from JSON payloads.
-- SQLite-backed render records for usage stats.
+- SQLite-backed render and satisfaction event records for usage stats.
 - OpenAPI documentation at `/docs`.
 - Docker Compose and OVO deployment scripts.
 

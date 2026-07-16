@@ -2,6 +2,7 @@ import { desc, sql } from "drizzle-orm";
 import { db } from "../db/client.js";
 import { renderRecords, type NewRenderRecord } from "../db/schema.js";
 import type { RenderCodeImageResult } from "./code-image-renderer.js";
+import { getSatisfactionCount } from "./satisfaction-events.js";
 
 export type RenderRecordSource = "api" | "try-it-preview" | "try-it-copy" | "try-it-download";
 
@@ -71,6 +72,7 @@ export const getRenderStats = () => {
   return {
     totalRenders: Number(totals?.totalRenders ?? 0),
     totalImagesStored: Number(totals?.totalImagesStored ?? 0),
+    totalSatisfactions: getSatisfactionCount(),
     totalLinesRendered: Number(totals?.totalLinesRendered ?? 0),
     latestCreatedAt: totals?.latestCreatedAt ?? null,
     topLanguages: topLanguages.map((item) => ({

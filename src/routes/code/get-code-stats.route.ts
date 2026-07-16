@@ -12,6 +12,10 @@ const schemaCodeStatsResponse = z
       example: 128,
       description: "SQLite 中已记录的图片生成次数；不保存图片内容本身。",
     }),
+    totalSatisfactions: z.number().int().min(0).openapi({
+      example: 96,
+      description: "用户成功复制或下载图片的累计满意操作数量。",
+    }),
     totalLinesRendered: z.number().int().min(0).openapi({
       example: 2048,
       description: "累计渲染的代码行数。",
@@ -85,7 +89,7 @@ const route = createRoute({
   tags: ["code"],
   summary: "Get Codia render statistics",
   description:
-    "读取 SQLite 中的图片生成统计记录，返回总生成数、图片生成次数、累计渲染行数、热门语言和最近记录。服务端不保存图片 base64 内容。",
+    "读取 SQLite 中的图片生成和用户满意统计，返回总生成数、图片生成次数、满意操作数、累计渲染行数、热门语言和最近记录。服务端不保存图片 base64 内容。",
   responses: {
     200: {
       description: "统计读取成功。",
