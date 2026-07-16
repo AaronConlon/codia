@@ -306,6 +306,12 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
         color: #ffffff;
       }
 
+      .site-locale-trigger:hover {
+        background: rgb(255 255 255 / 7%);
+        border-color: rgb(255 255 255 / 12%);
+        box-shadow: none;
+      }
+
       .site-menu-trigger {
         color: #f8fafc;
       }
@@ -332,6 +338,7 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
 
       .site-locale-menu button:hover {
         background: transparent;
+        box-shadow: none;
         color: #ffffff;
       }
 

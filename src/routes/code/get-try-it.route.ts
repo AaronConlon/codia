@@ -1452,6 +1452,12 @@ const exampleHtml = (
         color: #ffffff;
       }
 
+      .site-locale-trigger:hover {
+        background: rgb(255 255 255 / 7%);
+        border-color: rgb(255 255 255 / 12%);
+        box-shadow: 0 16px 34px rgb(0 0 0 / 24%);
+      }
+
       .site-nav a[aria-current="page"],
       .site-playground-link[aria-current="page"] {
         color: #ffffff;
@@ -1469,6 +1475,7 @@ const exampleHtml = (
 
       .site-locale-menu button:hover {
         background: transparent;
+        box-shadow: none;
         color: #ffffff;
       }
 

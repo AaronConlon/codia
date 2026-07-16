@@ -458,6 +458,9 @@ export const siteShellStyles = `
   }
 
   .site-locale-trigger:hover {
+    background: var(--panel);
+    border-color: rgb(15 23 42 / 10%);
+    box-shadow: none;
     color: var(--ink);
   }
 
@@ -533,6 +536,7 @@ export const siteShellStyles = `
 
   .site-locale-menu button:hover {
     background: transparent;
+    box-shadow: none;
     color: #ffffff;
   }
 
