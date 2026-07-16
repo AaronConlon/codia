@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.30](https://github.com/AaronConlon/codia/compare/v0.1.29...v0.1.30) (2026-07-16)
+
+
+### Bug Fixes
+
+* align locale menu and default preview image ([9c62f75](https://github.com/AaronConlon/codia/commit/9c62f754c5ced88d8e40e7333785a39377235cfe))
+
 ### [0.1.29](https://github.com/AaronConlon/codia/compare/v0.1.28...v0.1.29) (2026-07-16)
 
 
