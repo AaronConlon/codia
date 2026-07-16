@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.24](https://github.com/AaronConlon/codia/compare/v0.1.23...v0.1.24) (2026-07-16)
+
+
+### Features
+
+* add try-it image format selector ([fbfec49](https://github.com/AaronConlon/codia/commit/fbfec49e912882f47a899d6a9b2fc3d6e3b050e6))
+
 ### [0.1.23](https://github.com/AaronConlon/codia/compare/v0.1.22...v0.1.23) (2026-07-16)
 
 
