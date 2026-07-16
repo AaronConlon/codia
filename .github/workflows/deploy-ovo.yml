@@ -48,11 +48,20 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Export build metadata
+        run: |
+          {
+            echo "CODIA_BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "CODIA_BUILD_TAG=$GITHUB_REF_NAME"
+          } >> "$GITHUB_ENV"
+
       - name: Build OVO release bundle
         run: npm run build:release
 
       - name: Print release debug info
         run: |
+          echo "CODIA_BUILD_DATE=$CODIA_BUILD_DATE"
+          echo "CODIA_BUILD_TAG=$CODIA_BUILD_TAG"
           echo "APP_VERSION=$APP_VERSION"
           echo "OVO_RELEASE_VERSION=$OVO_RELEASE_VERSION"
           echo "OVO_RELEASE_COMMIT=$OVO_RELEASE_COMMIT"

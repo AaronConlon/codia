@@ -1,5 +1,6 @@
 node_modules/
 dist/
+src/generated/build-info.ts
 .wrangler/
 .release/
 .dev.vars

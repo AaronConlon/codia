@@ -1,3 +1,5 @@
+import { codiaBuildInfo } from "../../generated/build-info.js";
+
 export type SiteLocale = "zh" | "en" | "ja";
 
 export type SiteCopy = {
@@ -41,6 +43,10 @@ export const siteLocaleLabels: Record<SiteLocale, string> = {
 const profileImageUrl = "https://pbs.twimg.com/profile_images/2069979979467890689/H3eMkyep_400x400.jpg";
 const xFollowUrl = "https://x.com/intent/follow?screen_name=aaronconlondev";
 const githubUrl = "https://github.com/AaronConlon/codia";
+const siteBuildConsolePayload = JSON.stringify({
+  updatedAt: codiaBuildInfo.date,
+  gitTag: codiaBuildInfo.tag,
+});
 
 export const renderSiteMeta = ({ origin, path, title, description }: SiteMetaOptions) => {
   const canonicalUrl = `${origin}${path}`;
@@ -69,7 +75,10 @@ export const renderSiteMeta = ({ origin, path, title, description }: SiteMetaOpt
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
     <meta name="twitter:image" content="${ogImageUrl}" />
-    <meta name="twitter:image:alt" content="Codia turns code into beautiful images for humans and APIs." />`;
+    <meta name="twitter:image:alt" content="Codia turns code into beautiful images for humans and APIs." />
+    <script>
+      console.info("Codia update", ${siteBuildConsolePayload});
+    </script>`;
 };
 
 export const renderSiteHeader = (

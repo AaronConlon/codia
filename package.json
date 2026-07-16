@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/write-build-info.mjs",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "db:init": "node dist/db/init.js",
+    "prebuild": "node scripts/write-build-info.mjs",
     "build": "tsc",
+    "pretypecheck": "node scripts/write-build-info.mjs",
     "typecheck": "tsc --noEmit",
     "build:release": "bash scripts/build-release.sh",
     "release": "standard-version",

@@ -177,7 +177,7 @@ console.log(result);`;
 const defaultExampleBackgroundId = "sunset";
 const defaultExampleBackground = backgroundPresets.find((item) => item.id === defaultExampleBackgroundId) ?? backgroundPresets[0];
 const defaultExampleImageUrls = {
-  png: "/examples/default-quicksort.png",
+  png: "https://de4965e.webp.li/blog-images/2026/07/d88674e117d0f11e86158cc5ba6fd9a6.png",
   webp: "https://de4965e.webp.li/blog-images/2026/07/43657a7058788af6263b1c349a16cb22.webp",
 } as const;
 const defaultExampleImageUrl = defaultExampleImageUrls.png;
