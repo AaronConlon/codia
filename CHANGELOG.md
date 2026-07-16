@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.27](https://github.com/AaronConlon/codia/compare/v0.1.26...v0.1.27) (2026-07-16)
+
+
+### Features
+
+* refine try-it controls and navigation hover ([265e282](https://github.com/AaronConlon/codia/commit/265e2820613e3c7bca3789ce6466a1a98c907b4d))
+
 ### [0.1.26](https://github.com/AaronConlon/codia/compare/v0.1.25...v0.1.26) (2026-07-16)
 
 
