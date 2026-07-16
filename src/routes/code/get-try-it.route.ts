@@ -1464,7 +1464,7 @@ const exampleHtml = (
       }
 
       .site-locale-menu {
-        background: #09090b;
+        background: rgb(255 255 255 / 7%);
         border-color: rgb(255 255 255 / 10%);
         box-shadow: 0 18px 40px rgb(0 0 0 / 32%);
       }
@@ -1475,6 +1475,7 @@ const exampleHtml = (
 
       .site-locale-menu button:hover {
         background: transparent;
+        border-color: transparent;
         box-shadow: none;
         color: #ffffff;
       }
@@ -1887,7 +1888,6 @@ const exampleHtml = (
       const defaultCode = ${JSON.stringify(defaultExampleCode)};
       const defaultExampleImageUrls = ${JSON.stringify(defaultExampleImageUrls)};
       const defaultExampleBackgroundId = ${JSON.stringify(defaultExampleBackgroundId)};
-      const defaultExampleBgColor = ${JSON.stringify(defaultBgColor)};
       const previewQuality = 2;
       const translations = ${JSON.stringify(exampleTranslations)};
       const codeLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#111827"/><path fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" d="M24 22 12 32l12 10m16-20 12 10-12 10M36 16 28 48"/></svg>';
@@ -2199,20 +2199,11 @@ const exampleHtml = (
         finalImage.classList.remove("is-image-refreshing");
       };
 
-      const isDefaultExampleState = () =>
-        code.value === defaultCode &&
-        selectedLanguage.id === "typescript" &&
-        selectedCodeTheme.id === "dracula" &&
-        selectedBackground.id === defaultExampleBackgroundId &&
-        bgColor.value === defaultExampleBgColor &&
-        Number(borderSize.value) === 12 &&
-        Number(borderRadius.value) === 4 &&
-        Number(containerWidth.value) === Math.max(600, currentMinContainerWidth) &&
-        showLineNumbers.checked;
+      const isDefaultExampleCodeState = () => code.value === defaultCode;
 
       const primeDefaultExampleImage = () => {
-        if (!isDefaultExampleState()) return false;
         const defaultImageUrl = defaultExampleImageUrls[imageFormat.value] ?? defaultExampleImageUrls.png;
+        if (!isDefaultExampleCodeState() || !defaultImageUrl) return false;
         latestDataUrl = defaultImageUrl;
         latestBlobUrl = "";
         latestBlob = null;

@@ -327,7 +327,7 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
       }
 
       .site-locale-menu {
-        background: #09090b;
+        background: rgb(255 255 255 / 7%);
         border-color: rgb(255 255 255 / 10%);
         box-shadow: 0 18px 40px rgb(0 0 0 / 32%);
       }
@@ -338,6 +338,7 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
 
       .site-locale-menu button:hover {
         background: transparent;
+        border-color: transparent;
         box-shadow: none;
         color: #ffffff;
       }

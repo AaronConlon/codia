@@ -124,11 +124,11 @@ export const renderSiteHeader = (
               (item) =>
                 `<li role="option" aria-selected="${item === locale}"><button type="button" data-site-locale="${item}"${
                   item === locale ? ' aria-pressed="true"' : ""
-                }><span class="site-locale-check" aria-hidden="true">${
+                }>${
                   item === locale
-                    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+                    ? '<span class="site-locale-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>'
                     : ""
-                }</span>${siteLocaleLabels[item]}</button></li>`,
+                }${siteLocaleLabels[item]}</button></li>`,
             )
             .join("")}
         </ul>
@@ -496,7 +496,7 @@ export const siteShellStyles = `
     padding: 3px;
     list-style: none;
     border-radius: 11px;
-    background: #09090b;
+    background: var(--panel);
     border: 1px solid rgb(255 255 255 / 10%);
     box-shadow: 0 18px 40px rgb(0 0 0 / 28%);
     z-index: 40;
@@ -536,6 +536,7 @@ export const siteShellStyles = `
 
   .site-locale-menu button:hover {
     background: transparent;
+    border-color: transparent;
     box-shadow: none;
     color: #ffffff;
   }
