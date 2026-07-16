@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.25](https://github.com/AaronConlon/codia/compare/v0.1.24...v0.1.25) (2026-07-16)
+
+
+### Bug Fixes
+
+* polish try-it background and page layout ([17330a4](https://github.com/AaronConlon/codia/commit/17330a44640f1276ca08299b4da4be35148e6911))
+
 ### [0.1.24](https://github.com/AaronConlon/codia/compare/v0.1.23...v0.1.24) (2026-07-16)
 
 
