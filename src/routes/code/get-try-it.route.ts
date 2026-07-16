@@ -173,6 +173,8 @@ console.log(result);`;
 
 const defaultExampleBackgroundId = "sunset";
 const defaultExampleBackground = backgroundPresets.find((item) => item.id === defaultExampleBackgroundId) ?? backgroundPresets[0];
+const defaultExampleImageUrl =
+  "https://de4965e.webp.li/blog-images/2026/07/43657a7058788af6263b1c349a16cb22.webp";
 
 const inspectorPath = (line: number, column: number, node: string) =>
   `src/routes/code/get-try-it.route.ts:${line}:${column}:${node}`;
@@ -206,34 +208,35 @@ const exampleHtml = (
       href="https://cdn.jsdelivr.net/npm/vanilla-sonner@0.5.2/dist/vanilla-sonner.min.css"
       rel="stylesheet"
     />
+    <link rel="preload" as="image" href="${defaultExampleImageUrl}" type="image/webp" fetchpriority="high" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@14/swiper-element-bundle.min.js"></script>
     <style>
       ${siteShellStyles}
 
       :root {
-        color-scheme: light;
-        --page-bg: #f8fafc;
-        --text: #09090b;
-        --muted: #64748b;
-        --panel: #ffffff;
-        --panel-strong: #f8fafc;
-        --field: #ffffff;
-        --border: #e4e4e7;
-        --field-border: #d4d4d8;
-        --divider: rgb(15 23 42 / 14%);
-        --control-hover: #f4f4f5;
-        --button-bg: #18181b;
-        --button-text: #ffffff;
-        --button-hover: #27272a;
-        --button-secondary-bg: transparent;
-        --focus: #18181b;
-        --focus-soft: rgb(24 24 27 / 13%);
-        --active-bg: #f4f4f5;
-        --info: #0369a1;
-        --error: #dc2626;
-        --shadow: rgb(15 23 42 / 14%);
-        --shimmer-base: #18181b;
-        --shimmer-highlight: #000000;
+        color-scheme: dark;
+        --page-bg: #050505;
+        --text: #f8fafc;
+        --muted: rgb(248 250 252 / 62%);
+        --panel: #18181b;
+        --panel-strong: #111827;
+        --field: #111111;
+        --border: rgb(255 255 255 / 12%);
+        --field-border: rgb(255 255 255 / 12%);
+        --divider: rgb(255 255 255 / 10%);
+        --control-hover: rgb(255 255 255 / 10%);
+        --button-bg: #ffffff;
+        --button-text: #09090b;
+        --button-hover: #e5e7eb;
+        --button-secondary-bg: rgb(255 255 255 / 10%);
+        --focus: #ffffff;
+        --focus-soft: rgb(255 255 255 / 14%);
+        --active-bg: rgb(255 255 255 / 10%);
+        --info: #7dd3fc;
+        --error: #f87171;
+        --shadow: rgb(0 0 0 / 38%);
+        --shimmer-base: #f8fafc;
+        --shimmer-highlight: #ffffff;
         --shimmer-mid: #71717a;
         font-family:
           Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -252,10 +255,11 @@ const exampleHtml = (
         overflow-x: clip;
         background-color: var(--page-bg);
         background-image:
-          linear-gradient(rgb(15 23 42 / 5%) 1px, transparent 1px),
-          linear-gradient(90deg, rgb(15 23 42 / 5%) 1px, transparent 1px);
-        background-size: 32px 32px, 32px 32px;
+          linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
+          linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
+        background-size: 28px 28px, 28px 28px;
         color: var(--text);
+        -webkit-font-smoothing: antialiased;
       }
 
       #root {
@@ -1192,6 +1196,23 @@ const exampleHtml = (
         max-width: 100%;
         height: auto;
         display: block;
+        transition:
+          filter 360ms cubic-bezier(0.22, 1, 0.36, 1),
+          opacity 260ms ease;
+      }
+
+      .final-image.is-image-refreshing {
+        filter: blur(14px) saturate(0.84);
+        opacity: 0.68;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .final-image,
+        .final-image.is-image-refreshing {
+          filter: none;
+          opacity: 1;
+          transition: none;
+        }
       }
 
       .image-empty {
@@ -1314,6 +1335,180 @@ const exampleHtml = (
 
       [hidden] {
         display: none !important;
+      }
+
+      .site-brand,
+      .site-nav a,
+      .site-playground-link,
+      .site-locale-trigger,
+      .site-icon-link {
+        color: #f8fafc;
+      }
+
+      .site-brand img {
+        outline-color: rgb(255 255 255 / 16%);
+        box-shadow: 0 16px 34px rgb(0 0 0 / 32%);
+      }
+
+      .site-nav a,
+      .site-playground-link {
+        background: transparent;
+        border-color: transparent;
+        color: rgb(248 250 252 / 78%);
+      }
+
+      .site-locale-trigger,
+      .site-menu-trigger,
+      .site-avatar-link,
+      .site-icon-link {
+        background: rgb(255 255 255 / 7%);
+        border-color: rgb(255 255 255 / 12%);
+        color: #f8fafc;
+        box-shadow: 0 16px 34px rgb(0 0 0 / 24%);
+      }
+
+      .site-nav a:hover,
+      .site-playground-link:hover,
+      .site-locale-trigger:hover,
+      .site-menu-trigger:hover,
+      .site-menu-trigger[aria-expanded="true"],
+      .site-avatar-link:hover,
+      .site-icon-link:hover {
+        background: rgb(255 255 255 / 13%);
+        border-color: rgb(255 255 255 / 14%);
+        color: #ffffff;
+      }
+
+      .site-nav a[aria-current="page"],
+      .site-playground-link[aria-current="page"] {
+        color: #ffffff;
+      }
+
+      .site-locale-menu {
+        background: #ffffff;
+        border-color: rgb(15 23 42 / 10%);
+      }
+
+      .site-locale-menu button {
+        color: #0f172a;
+      }
+
+      .site-locale-menu button:hover {
+        background: rgb(15 23 42 / 6%);
+      }
+
+      .site-locale-menu button[aria-pressed="true"] {
+        background: #111827;
+        color: #ffffff;
+      }
+
+      .settings-panel {
+        box-shadow:
+          0 18px 50px rgb(0 0 0 / 34%),
+          inset 0 0 0 1px rgb(255 255 255 / 8%);
+      }
+
+      .code-input {
+        border-color: rgb(255 255 255 / 12%);
+        background: #18181b;
+        box-shadow: 0 18px 50px rgb(0 0 0 / 32%);
+      }
+
+      .code-input:focus {
+        border-color: rgb(255 255 255 / 34%);
+        box-shadow:
+          0 0 0 3px rgb(255 255 255 / 8%),
+          0 18px 50px rgb(0 0 0 / 38%);
+      }
+
+      .code-input::selection {
+        background: rgb(255 255 255 / 24%);
+      }
+
+      .clear-code-button,
+      .generate-image-button {
+        border-color: rgb(255 255 255 / 14%);
+        box-shadow: 0 10px 26px rgb(0 0 0 / 30%);
+      }
+
+      .clear-code-button {
+        background: rgb(255 255 255 / 10%);
+        color: rgb(248 250 252 / 82%);
+      }
+
+      .clear-code-button:hover {
+        background: rgb(255 255 255 / 16%);
+        color: #ffffff;
+      }
+
+      .generate-image-button,
+      .generate-image-button:hover {
+        background: #ffffff;
+        color: #09090b;
+      }
+
+      .preview-tools .icon-button,
+      .preview-tools .icon-button:hover,
+      .preview-tools .icon-button[aria-expanded="true"] {
+        border-color: rgb(255 255 255 / 12%);
+        background: rgb(255 255 255 / 10%);
+        color: #f8fafc;
+        box-shadow: 0 8px 20px rgb(0 0 0 / 24%);
+      }
+
+      .copy-button,
+      .download-button {
+        border-color: rgb(255 255 255 / 14%);
+        background: #ffffff;
+        color: #09090b;
+        box-shadow: 0 12px 28px rgb(0 0 0 / 24%);
+      }
+
+      .copy-button:hover,
+      .download-button:hover {
+        background: #e5e7eb;
+        color: #09090b;
+        border-color: rgb(255 255 255 / 20%);
+        box-shadow: 0 14px 32px rgb(0 0 0 / 30%);
+      }
+
+      .final-image {
+        outline: 1px solid rgb(255 255 255 / 10%);
+        box-shadow: 0 18px 48px rgb(0 0 0 / 30%);
+      }
+
+      @media (max-width: 760px) {
+        .site-header-actions {
+          background: #ffffff;
+          color: #0f172a;
+        }
+
+        .site-header.is-menu-open .site-header-actions {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+        }
+
+        .site-header-actions .site-nav a,
+        .site-header-actions .site-playground-link,
+        .site-header-actions .site-locale-trigger,
+        .site-header-actions .site-avatar-link,
+        .site-header-actions .site-icon-link {
+          background: transparent;
+          border-color: rgb(15 23 42 / 8%);
+          color: #0f172a;
+          box-shadow: none;
+        }
+
+        .site-header-actions .site-nav a:hover,
+        .site-header-actions .site-playground-link:hover,
+        .site-header-actions .site-locale-trigger:hover,
+        .site-header-actions .site-avatar-link:hover,
+        .site-header-actions .site-icon-link:hover {
+          background: rgb(15 23 42 / 6%);
+          border-color: rgb(15 23 42 / 12%);
+          color: #0f172a;
+        }
       }
 
       @media (max-width: 860px) {
@@ -1462,7 +1657,7 @@ const exampleHtml = (
       duration="2200"
       close-button="false"
       rich-colors="false"
-      theme="light">
+      theme="dark">
     </ol>
     <template id="appTemplate">
     ${renderSiteHeader("try-it", initialState.locale, text)}
@@ -1510,7 +1705,7 @@ const exampleHtml = (
               </div>
             </div>
             <div class="image-stage view" id="imageView" role="tabpanel" aria-labelledby="imageTab" hidden>
-              <img class="final-image" id="finalImage" alt="Rendered code image" hidden />
+              <img class="final-image" id="finalImage" src="${defaultExampleImageUrl}" alt="Rendered code image" loading="eager" decoding="async" fetchpriority="high" hidden />
               <div class="image-empty" id="imageEmpty" data-i18n="imageEmpty">${text.imageEmpty}</div>
             </div>
           </div>
@@ -1597,6 +1792,9 @@ const exampleHtml = (
       const shikiThemes = ${JSON.stringify(shikiThemes)};
       const initialState = ${JSON.stringify(initialState)};
       const defaultCode = ${JSON.stringify(defaultExampleCode)};
+      const defaultExampleImageUrl = ${JSON.stringify(defaultExampleImageUrl)};
+      const defaultExampleBackgroundId = ${JSON.stringify(defaultExampleBackgroundId)};
+      const defaultExampleBgColor = ${JSON.stringify(defaultBgColor)};
       const previewQuality = 2;
       const translations = ${JSON.stringify(exampleTranslations)};
       const codeLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#111827"/><path fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" d="M24 22 12 32l12 10m16-20 12 10-12 10M36 16 28 48"/></svg>';
@@ -1889,7 +2087,45 @@ const exampleHtml = (
 
       const invalidateImage = () => {
         imageDirty = true;
-        if (activeView === "image") scheduleImageRender();
+        if (activeView === "image") {
+          startImageRefresh();
+          scheduleImageRender();
+        }
+      };
+
+      const startImageRefresh = () => {
+        if (activeView === "image" && !finalImage.hidden) {
+          finalImage.classList.add("is-image-refreshing");
+        }
+      };
+
+      const finishImageRefresh = () => {
+        finalImage.classList.remove("is-image-refreshing");
+      };
+
+      const isDefaultExampleState = () =>
+        code.value === defaultCode &&
+        selectedLanguage.id === "typescript" &&
+        selectedCodeTheme.id === "dracula" &&
+        selectedBackground.id === defaultExampleBackgroundId &&
+        bgColor.value === defaultExampleBgColor &&
+        Number(borderSize.value) === 12 &&
+        Number(borderRadius.value) === 4 &&
+        Number(containerWidth.value) === Math.max(600, currentMinContainerWidth) &&
+        showLineNumbers.checked;
+
+      const primeDefaultExampleImage = () => {
+        if (!isDefaultExampleState()) return false;
+        latestDataUrl = defaultExampleImageUrl;
+        latestBlobUrl = "";
+        latestBlob = null;
+        latestImageData = null;
+        finalImage.src = defaultExampleImageUrl;
+        finalImage.style.width = "";
+        finalImage.hidden = false;
+        imageEmpty.hidden = true;
+        imageDirty = false;
+        return true;
       };
 
       const setActiveView = (view) => {
@@ -2416,6 +2652,7 @@ const exampleHtml = (
       };
 
       const requestImage = async ({ silent = false, source = "try-it-preview", format } = {}) => {
+        if (!silent) startImageRefresh();
         if (!silent) startRenderProgress();
         try {
           const data = await renderClientImage({ format, source });
@@ -2437,12 +2674,17 @@ const exampleHtml = (
           lastValidContainerWidth = String(data.containerWidth);
           return data;
         } finally {
+          finishImageRefresh();
           if (!silent) finishRenderProgress();
         }
       };
 
       const renderFinalImage = async () => {
         if (!imageDirty && latestDataUrl) return;
+        if (primeDefaultExampleImage()) {
+          finishImageRefresh();
+          return;
+        }
         try {
           await requestImage();
         } catch (error) {
@@ -2659,6 +2901,7 @@ const exampleHtml = (
       selectLanguage(selectedLanguage);
       selectCodeTheme(selectedCodeTheme);
       updateEditorFrame();
+      primeDefaultExampleImage();
       finishInitialLoad();
       updateTabIndicator();
     </script>
