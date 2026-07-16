@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.26](https://github.com/AaronConlon/codia/compare/v0.1.25...v0.1.26) (2026-07-16)
+
+
+### Features
+
+* add try-it build metadata ([44f3d6b](https://github.com/AaronConlon/codia/commit/44f3d6b3e9d99bd3e1496fe8a3e75699b904d2a4))
+
 ### [0.1.25](https://github.com/AaronConlon/codia/compare/v0.1.24...v0.1.25) (2026-07-16)
 
 
