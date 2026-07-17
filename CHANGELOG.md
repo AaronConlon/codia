@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.31](https://github.com/AaronConlon/codia/compare/v0.1.30...v0.1.31) (2026-07-17)
+
+
+### Bug Fixes
+
+* remove locale option borders ([962ee57](https://github.com/AaronConlon/codia/commit/962ee57cffe863de64190a950cdd23709896ed88))
+
 ### [0.1.30](https://github.com/AaronConlon/codia/compare/v0.1.29...v0.1.30) (2026-07-16)
 
 
