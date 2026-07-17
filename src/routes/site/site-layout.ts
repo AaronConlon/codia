@@ -522,27 +522,30 @@ export const siteShellStyles = `
     min-height: 33px;
     padding: 0 7px;
     border: 0;
-    border-radius: 7px;
+    border-radius: 0;
     background: transparent;
+    box-shadow: none;
     color: rgb(248 250 252 / 62%);
     font: inherit;
     font-size: 11px;
     font-weight: 600;
+    outline: none;
     text-align: left;
     cursor: pointer;
     transition-property: color;
     transition-duration: 140ms;
   }
 
-  .site-locale-menu button:hover {
+  .site-locale-menu button:hover,
+  .site-locale-menu button:focus-visible,
+  .site-locale-menu button[aria-pressed="true"] {
     background: transparent;
+    border: 0;
     border-color: transparent;
+    border-radius: 0;
     box-shadow: none;
     color: #ffffff;
-  }
-
-  .site-locale-menu button[aria-pressed="true"] {
-    color: #ffffff;
+    outline: none;
   }
 
   .site-locale-check {

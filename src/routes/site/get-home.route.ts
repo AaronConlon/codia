@@ -333,18 +333,24 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
       }
 
       .site-locale-menu button {
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
         color: rgb(248 250 252 / 62%);
+        outline: none;
       }
 
-      .site-locale-menu button:hover {
+      .site-locale-menu button:hover,
+      .site-locale-menu button:focus-visible,
+      .site-locale-menu button[aria-pressed="true"] {
         background: transparent;
+        border: 0;
         border-color: transparent;
+        border-radius: 0;
         box-shadow: none;
         color: #ffffff;
-      }
-
-      .site-locale-menu button[aria-pressed="true"] {
-        color: #ffffff;
+        outline: none;
       }
 
       @media (max-width: 760px) {
