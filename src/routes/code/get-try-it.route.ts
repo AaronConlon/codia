@@ -41,6 +41,7 @@ const exampleTranslations = {
     containerWidth: "容器宽度",
     showLineNumbers: "显示行号",
     generateImage: "生成图片",
+    editImage: "点击切换到编辑模式",
     copy: "复制图片",
     download: "下载",
     clear: "清空",
@@ -72,6 +73,7 @@ const exampleTranslations = {
     containerWidth: "Container width",
     showLineNumbers: "Line numbers",
     generateImage: "Generate Image",
+    editImage: "Click to edit",
     copy: "Copy Image",
     download: "Download",
     clear: "Clear",
@@ -103,6 +105,7 @@ const exampleTranslations = {
     containerWidth: "コンテナ幅",
     showLineNumbers: "行番号",
     generateImage: "画像を生成",
+    editImage: "クリックして編集",
     copy: "画像をコピー",
     download: "ダウンロード",
     clear: "クリア",
@@ -1267,13 +1270,71 @@ const exampleHtml = (
         overflow: auto;
       }
 
+      .final-image-frame {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        max-height: min(72vh, 760px);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
       .final-image {
         max-width: 100%;
+        max-height: min(72vh, 760px);
         height: auto;
         display: block;
+        object-fit: contain;
         transition:
           filter 360ms cubic-bezier(0.22, 1, 0.36, 1),
           opacity 260ms ease;
+      }
+
+      .edit-image-button {
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+        min-width: 0;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 0 12px;
+        border: 1px solid rgb(255 255 255 / 18%);
+        border-radius: 999px;
+        background: rgb(9 9 11 / 68%);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 800;
+        box-shadow: 0 12px 32px rgb(0 0 0 / 28%);
+        opacity: 0;
+        transform: translateY(6px);
+        pointer-events: none;
+        backdrop-filter: blur(12px);
+        transition:
+          opacity 160ms ease,
+          transform 160ms ease,
+          background 160ms ease;
+      }
+
+      .edit-image-button svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .final-image-frame:hover .edit-image-button,
+      .final-image-frame:focus-within .edit-image-button {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .edit-image-button:hover {
+        background: rgb(9 9 11 / 82%);
+        box-shadow: 0 12px 32px rgb(0 0 0 / 28%);
       }
 
       .final-image.is-image-refreshing {
@@ -1685,6 +1746,10 @@ const exampleHtml = (
           overflow: hidden;
         }
 
+        .final-image-frame {
+          max-height: 72vh;
+        }
+
         .final-image {
           max-height: 72vh;
           object-fit: contain;
@@ -1753,8 +1818,8 @@ const exampleHtml = (
         <section class="editor-section" data-insp-path="${inspectorPath(1205, 9, "section")}">
           <div class="panel-header">
             <div class="tabs" role="tablist" aria-label="Preview mode">
-              <button class="tab-button" id="editorTab" type="button" role="tab" aria-selected="true" aria-controls="editorView" data-view="editor" data-i18n="editor">${text.editor}</button>
-              <button class="tab-button" id="imageTab" type="button" role="tab" aria-selected="false" aria-controls="imageView" data-view="image" data-i18n="image">${text.image}</button>
+              <button class="tab-button" id="editorTab" type="button" role="tab" aria-selected="false" aria-controls="editorView" data-view="editor" data-i18n="editor">${text.editor}</button>
+              <button class="tab-button" id="imageTab" type="button" role="tab" aria-selected="true" aria-controls="imageView" data-view="image" data-i18n="image">${text.image}</button>
             </div>
             <div class="preview-tools">
               <button class="secondary copy-button" id="copy" type="button">
@@ -1771,7 +1836,7 @@ const exampleHtml = (
             </div>
           </div>
           <div class="view-stack" id="viewStack">
-            <div class="editor-stage view" id="editorView" role="tabpanel" aria-labelledby="editorTab">
+            <div class="editor-stage view" id="editorView" role="tabpanel" aria-labelledby="editorTab" hidden>
               <div class="editor-canvas" id="editorCanvas">
                 <div class="editor-window" id="editorWindow">
                   <div class="editor-body" id="editorBody">
@@ -1790,9 +1855,15 @@ const exampleHtml = (
                 </div>
               </div>
             </div>
-            <div class="image-stage view" id="imageView" role="tabpanel" aria-labelledby="imageTab" hidden>
-              <img class="final-image" id="finalImage" src="${defaultExampleImageUrl}" alt="Rendered code image" loading="eager" decoding="async" fetchpriority="high" hidden />
-              <div class="image-empty" id="imageEmpty" data-i18n="imageEmpty">${text.imageEmpty}</div>
+            <div class="image-stage view" id="imageView" role="tabpanel" aria-labelledby="imageTab">
+              <div class="final-image-frame" id="finalImageFrame">
+                <img class="final-image" id="finalImage" src="${defaultExampleImageUrl}" alt="Rendered code image" loading="eager" decoding="async" fetchpriority="high" />
+                <button class="edit-image-button" id="editImage" type="button" aria-label="${text.editImage}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  <span data-i18n="editImage">${text.editImage}</span>
+                </button>
+              </div>
+              <div class="image-empty" id="imageEmpty" data-i18n="imageEmpty" hidden>${text.imageEmpty}</div>
             </div>
           </div>
         </section>
@@ -1988,6 +2059,7 @@ const exampleHtml = (
       const editorTab = $("#editorTab");
       const imageTab = $("#imageTab");
       const finalImage = $("#finalImage");
+      const editImage = $("#editImage");
       const imageEmpty = $("#imageEmpty");
       const editorWindow = $("#editorWindow");
       const editorBody = $("#editorBody");
@@ -2019,7 +2091,7 @@ const exampleHtml = (
       let firaCodeFontsPromise;
       let takumiRendererPromise;
       let renderTimer;
-      let activeView = "editor";
+      let activeView = "image";
       let imageDirty = true;
       let activeLanguageIndex = 0;
       let activeThemeIndex = 0;
@@ -2219,6 +2291,7 @@ const exampleHtml = (
         finalImage.hidden = false;
         imageEmpty.hidden = true;
         imageDirty = false;
+        finishImageRefresh();
         return true;
       };
 
@@ -2262,6 +2335,7 @@ const exampleHtml = (
         code.placeholder = t("codePlaceholder");
         clearCode.setAttribute("aria-label", t("clear"));
         generateImage.setAttribute("aria-label", t("generateImage"));
+        editImage.setAttribute("aria-label", t("editImage"));
       };
 
       const syncImageFormatOptions = () => {
@@ -2935,6 +3009,7 @@ const exampleHtml = (
       });
       editorTab.addEventListener("click", () => setActiveView("editor"));
       imageTab.addEventListener("click", () => setActiveView("image"));
+      editImage.addEventListener("click", () => setActiveView("editor"));
       backgroundSwiper.addEventListener("swiperslidechange", () => {
         const nextIndex = backgroundSwiper.swiper?.activeIndex ?? 0;
         selectBackground(backgroundPresets[nextIndex] ?? backgroundPresets[0], { slide: false });
