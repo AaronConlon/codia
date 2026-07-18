@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.33](https://github.com/AaronConlon/codia/compare/v0.1.32...v0.1.33) (2026-07-18)
+
+
+### Bug Fixes
+
+* debounce try-it image rendering ([19104a0](https://github.com/AaronConlon/codia/commit/19104a02bc60af423df777c01b4ad9ec9966fe04))
+
 ### [0.1.32](https://github.com/AaronConlon/codia/compare/v0.1.31...v0.1.32) (2026-07-18)
 
 
