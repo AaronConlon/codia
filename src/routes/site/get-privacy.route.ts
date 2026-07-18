@@ -239,6 +239,7 @@ const privacyHtml = (initialState: PrivacyInitialState, origin: string) => {
       if (localeTrigger && localeMenu) {
         localeTrigger.addEventListener("click", (event) => {
           event.stopPropagation();
+          closeHeaderMenu();
           const expanded = localeTrigger.getAttribute("aria-expanded") === "true";
           localeTrigger.setAttribute("aria-expanded", String(!expanded));
           localeMenu.hidden = expanded;

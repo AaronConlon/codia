@@ -312,6 +312,13 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
         box-shadow: none;
       }
 
+      .site-menu-trigger:hover,
+      .site-menu-trigger[aria-expanded="true"] {
+        background: rgb(255 255 255 / 7%);
+        border-color: rgb(255 255 255 / 12%);
+        box-shadow: 0 16px 34px rgb(0 0 0 / 24%);
+      }
+
       .site-menu-trigger {
         color: #f8fafc;
       }
@@ -327,14 +334,15 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
       }
 
       .site-locale-menu {
-        background: rgb(255 255 255 / 7%);
-        border-color: rgb(255 255 255 / 10%);
-        box-shadow: 0 18px 40px rgb(0 0 0 / 32%);
+        background: #111111;
+        border-color: rgb(255 255 255 / 12%);
+        box-shadow: 0 18px 48px rgb(0 0 0 / 38%);
       }
 
       .site-locale-menu button {
-        background: transparent;
+        background: #111111;
         border: 0;
+        border-color: transparent;
         border-radius: 0;
         box-shadow: none;
         color: rgb(248 250 252 / 62%);
@@ -344,7 +352,7 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
       .site-locale-menu button:hover,
       .site-locale-menu button:focus-visible,
       .site-locale-menu button[aria-pressed="true"] {
-        background: transparent;
+        background: #111111;
         border: 0;
         border-color: transparent;
         border-radius: 0;
@@ -355,14 +363,14 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
 
       @media (max-width: 760px) {
         .site-header-actions {
-          background: #ffffff;
-          color: #0f172a;
+          background: #111111;
+          color: #ffffff;
         }
 
         .site-header.is-menu-open .site-header-actions {
           opacity: 1;
           visibility: visible;
-          transform: translateY(0);
+          transform: translate(-50%, 0);
         }
 
         .site-header-actions .site-nav a,
@@ -370,9 +378,9 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
         .site-header-actions .site-locale-trigger,
         .site-header-actions .site-avatar-link,
         .site-header-actions .site-icon-link {
-          background: transparent;
-          border-color: rgb(15 23 42 / 8%);
-          color: #0f172a;
+          background: #111111;
+          border-color: rgb(255 255 255 / 12%);
+          color: rgb(248 250 252 / 62%);
           box-shadow: none;
         }
 
@@ -381,7 +389,7 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
         .site-header-actions .site-locale-trigger:hover,
         .site-header-actions .site-avatar-link:hover,
         .site-header-actions .site-icon-link:hover {
-          color: #000000;
+          color: #ffffff;
         }
       }
 
@@ -849,6 +857,7 @@ const homeHtml = (initialState: HomeInitialState, origin: string) => {
       if (localeTrigger) {
         localeTrigger.addEventListener("click", (event) => {
           event.stopPropagation();
+          closeHeaderMenu();
           toggleLocaleMenu();
         });
       }

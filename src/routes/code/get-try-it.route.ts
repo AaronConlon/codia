@@ -40,6 +40,13 @@ const exampleTranslations = {
     borderRadius: "圆角",
     containerWidth: "容器宽度",
     showLineNumbers: "显示行号",
+    imageQuality: "生成质量",
+    parameterSettings: "参数设置",
+    qualityDraft: "轻量",
+    qualityStandard: "标准",
+    qualityHigh: "高清",
+    qualityUltra: "超清",
+    imageSize: "图片大小",
     generateImage: "生成图片",
     editImage: "点击切换到编辑模式",
     copy: "复制图片",
@@ -72,6 +79,13 @@ const exampleTranslations = {
     borderRadius: "Corner radius",
     containerWidth: "Container width",
     showLineNumbers: "Line numbers",
+    imageQuality: "Image quality",
+    parameterSettings: "Settings",
+    qualityDraft: "Draft",
+    qualityStandard: "Standard",
+    qualityHigh: "High",
+    qualityUltra: "Ultra",
+    imageSize: "Image size",
     generateImage: "Generate Image",
     editImage: "Click to edit",
     copy: "Copy Image",
@@ -104,6 +118,13 @@ const exampleTranslations = {
     borderRadius: "角丸",
     containerWidth: "コンテナ幅",
     showLineNumbers: "行番号",
+    imageQuality: "生成品質",
+    parameterSettings: "パラメータ設定",
+    qualityDraft: "軽量",
+    qualityStandard: "標準",
+    qualityHigh: "高画質",
+    qualityUltra: "超高画質",
+    imageSize: "画像サイズ",
     generateImage: "画像を生成",
     editImage: "クリックして編集",
     copy: "画像をコピー",
@@ -179,11 +200,6 @@ console.log(result);`;
 
 const defaultExampleBackgroundId = "sunset";
 const defaultExampleBackground = backgroundPresets.find((item) => item.id === defaultExampleBackgroundId) ?? backgroundPresets[0];
-const defaultExampleImageUrls = {
-  png: "https://de4965e.webp.li/blog-images/2026/07/d88674e117d0f11e86158cc5ba6fd9a6.png",
-  webp: "https://de4965e.webp.li/blog-images/2026/07/43657a7058788af6263b1c349a16cb22.webp",
-} as const;
-const defaultExampleImageUrl = defaultExampleImageUrls.png;
 
 const inspectorPath = (line: number, column: number, node: string) =>
   `src/routes/code/get-try-it.route.ts:${line}:${column}:${node}`;
@@ -217,7 +233,6 @@ const exampleHtml = (
       href="https://cdn.jsdelivr.net/npm/vanilla-sonner@0.5.2/dist/vanilla-sonner.min.css"
       rel="stylesheet"
     />
-    <link rel="preload" as="image" href="${defaultExampleImageUrl}" type="image/png" fetchpriority="high" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@14/swiper-element-bundle.min.js"></script>
     <style>
       ${siteShellStyles}
@@ -237,7 +252,6 @@ const exampleHtml = (
         --button-bg: #ffffff;
         --button-text: #09090b;
         --button-hover: #e5e7eb;
-        --button-secondary-bg: rgb(255 255 255 / 10%);
         --focus: #ffffff;
         --focus-soft: rgb(255 255 255 / 14%);
         --active-bg: rgb(255 255 255 / 10%);
@@ -256,6 +270,43 @@ const exampleHtml = (
 
       * {
         box-sizing: border-box;
+      }
+
+      @property --image-border-angle {
+        syntax: "<angle>";
+        inherits: false;
+        initial-value: 0deg;
+      }
+
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: rgb(248 250 252 / 34%) transparent;
+      }
+
+      *::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      *::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      *::-webkit-scrollbar-thumb {
+        min-height: 44px;
+        border: 3px solid transparent;
+        border-radius: 999px;
+        background: rgb(248 250 252 / 28%);
+        background-clip: padding-box;
+      }
+
+      *::-webkit-scrollbar-thumb:hover {
+        background: rgb(248 250 252 / 46%);
+        background-clip: padding-box;
+      }
+
+      *::-webkit-scrollbar-corner {
+        background: transparent;
       }
 
       body {
@@ -420,7 +471,7 @@ const exampleHtml = (
       }
 
       main {
-        width: min(1366px, calc(100% - 32px));
+        width: min(1200px, calc(100% - 32px));
         margin: 0 auto;
         padding: 34px 0;
         display: grid;
@@ -625,7 +676,9 @@ const exampleHtml = (
         color: var(--text);
       }
 
-      .preview-tools .icon-button {
+      .preview-tools .icon-button,
+      .copy-button,
+      .download-button {
         width: 32px;
         min-width: 32px;
         height: 32px;
@@ -637,11 +690,27 @@ const exampleHtml = (
       }
 
       .preview-tools .icon-button:hover,
-      .preview-tools .icon-button[aria-expanded="true"] {
+      .preview-tools .icon-button[aria-expanded="true"],
+      .copy-button:hover,
+      .download-button:hover {
         background: #f8fafc;
         border-color: rgb(15 23 42 / 18%);
         color: var(--text);
         box-shadow: 0 10px 24px rgb(15 23 42 / 12%);
+      }
+
+      .preview-tools .settings-toggle-button {
+        width: auto;
+        min-width: 32px;
+        padding: 0 10px;
+        gap: 6px;
+      }
+
+      .settings-toggle-label {
+        display: inline;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
       }
 
       svg {
@@ -672,50 +741,53 @@ const exampleHtml = (
       }
 
       .app-layout {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 0px;
-        gap: 0;
-        align-items: start;
+        display: block;
         width: 100%;
         min-width: 0;
-        transition: grid-template-columns 200ms ease;
       }
 
       .settings-panel {
+        position: relative;
+        z-index: 6;
         display: block;
+        width: 100%;
         min-width: 0;
         max-width: 100%;
-        background: var(--panel);
-        border-radius: 12px;
-        box-shadow:
-          0 18px 50px rgb(15 23 42 / 12%),
-          inset 0 0 0 1px rgb(15 23 42 / 8%);
+        margin: 0;
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
         opacity: 0;
-        transform: translateX(12px);
+        transform: translateY(-8px);
         visibility: hidden;
         pointer-events: none;
         max-height: 0;
         overflow: hidden;
         transition:
+          max-height 180ms ease,
           opacity 180ms ease,
           transform 180ms ease,
           visibility 180ms ease;
       }
 
       body.settings-open .app-layout {
-        grid-template-columns: minmax(0, 1fr) 424px;
+        display: block;
       }
 
       body.settings-open .settings-panel {
         display: block;
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
         visibility: visible;
         pointer-events: auto;
-        max-height: min(80vh, calc(100vh - 264px));
-        overflow: auto;
-        margin-left: 18px;
-        padding: 14px;
+        max-height: none;
+        overflow: visible;
+        margin-top: 12px;
+        padding: 0;
+      }
+
+      body.settings-open .view-stack {
+        margin-top: 24px;
       }
 
       body.settings-open .editor-section {
@@ -784,8 +856,21 @@ const exampleHtml = (
 
       .settings-grid {
         display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.35fr);
+        gap: 14px;
+        align-items: stretch;
+        min-width: 0;
+      }
+
+      .settings-primary-column,
+      .settings-secondary-column {
+        display: grid;
         gap: 14px;
         min-width: 0;
+      }
+
+      .settings-primary-column > label {
+        grid-template-rows: auto 1fr;
       }
 
       .settings-row {
@@ -800,6 +885,11 @@ const exampleHtml = (
 
       .settings-row.three-up {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .settings-row.compact-settings {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        align-items: start;
       }
 
       label,
@@ -892,6 +982,128 @@ const exampleHtml = (
         flex: 0 0 auto;
       }
 
+      .quality-select {
+        position: relative;
+        min-width: 0;
+      }
+
+      .quality-trigger {
+        width: 100%;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0 12px;
+        border: 1px solid var(--field-border);
+        border-radius: 9px;
+        background: var(--field);
+        color: var(--text);
+        font: 800 13px/1.2 ui-monospace, "SFMono-Regular", Consolas, monospace;
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+      }
+
+      .quality-trigger[aria-expanded="true"],
+      .quality-trigger:focus-visible {
+        border-color: color-mix(in srgb, var(--quality-color) 72%, #ffffff 12%);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--quality-color) 18%, transparent);
+      }
+
+      .quality-trigger:hover {
+        border-color: var(--field-border);
+        background: var(--field);
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+      }
+
+      .quality-trigger-main,
+      .quality-option-main {
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .quality-trigger-label,
+      .quality-option-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .quality-swatch {
+        width: 20px;
+        height: 8px;
+        border-radius: 2px;
+        background: var(--quality-color);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--quality-color) 48%, transparent);
+        flex: 0 0 auto;
+      }
+
+      .quality-bars {
+        display: inline-grid;
+        grid-template-columns: repeat(4, 12px);
+        gap: 3px;
+        flex: 0 0 auto;
+      }
+
+      .quality-bars span {
+        width: 12px;
+        height: 6px;
+        border-radius: 2px;
+        background: rgb(248 250 252 / 16%);
+      }
+
+      .quality-bars span.is-on {
+        background: var(--quality-color);
+        box-shadow: 0 0 10px color-mix(in srgb, var(--quality-color) 58%, transparent);
+      }
+
+      .quality-menu {
+        position: absolute;
+        z-index: 18;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        padding: 4px;
+        border: 1px solid var(--field-border);
+        border-radius: 7px;
+        background: var(--field);
+        box-shadow: 0 18px 48px var(--shadow);
+      }
+
+      .quality-option {
+        width: 100%;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 0 8px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: var(--muted);
+        font: 800 12px/1.2 ui-monospace, "SFMono-Regular", Consolas, monospace;
+        box-shadow: none;
+      }
+
+      .quality-option:hover,
+      .quality-option.is-active,
+      .quality-option:focus-visible {
+        background: transparent;
+        color: #ffffff;
+        box-shadow: none;
+      }
+
+      .quality-option .option-selection-icon {
+        opacity: 0;
+      }
+
+      .quality-option.is-active .option-selection-icon {
+        opacity: 1;
+      }
+
       input[type="color"] {
         padding: 4px;
       }
@@ -975,44 +1187,6 @@ const exampleHtml = (
         box-shadow: none;
       }
 
-      .background-stepper {
-        position: absolute;
-        z-index: 2;
-        right: 8px;
-        bottom: 8px;
-        height: 28px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 6px;
-        border: 0;
-        background: transparent;
-      }
-
-      .background-stepper button {
-        width: 28px;
-        height: 28px;
-        min-width: 0;
-        padding: 0;
-        border: 0;
-        border-radius: 4px;
-        background: transparent;
-        color: #ffffff;
-        box-shadow: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .background-stepper button + button {
-        border-left: 0;
-      }
-
-      .background-stepper button:hover {
-        background: transparent;
-        color: rgb(255 255 255 / 82%);
-        box-shadow: none;
-      }
-
       .options {
         position: absolute;
         z-index: 18;
@@ -1027,18 +1201,12 @@ const exampleHtml = (
         box-shadow: 0 18px 48px var(--shadow);
       }
 
-      #themeOptions {
-        left: auto;
-        right: 0;
-        width: min(200%, calc(100vw - 32px));
-      }
-
       .option {
         width: 100%;
         height: 35px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         padding: 0 9px;
         border: 0;
         border-radius: 0;
@@ -1076,23 +1244,31 @@ const exampleHtml = (
 
       .option:hover,
       .option.is-active {
-        background: var(--active-bg);
+        background: transparent;
+        color: #ffffff;
       }
 
-      .option-id {
-        color: var(--muted);
-        font: 9px/1.2 "Fira Code", monospace;
+      .option-selection-icon {
+        width: 13px;
+        height: 13px;
+        color: #ffffff;
+        opacity: 0;
+        flex: 0 0 auto;
+      }
+
+      .option.is-active .option-selection-icon {
+        opacity: 1;
+      }
+
+      .option-selection-icon svg {
+        width: 13px;
+        height: 13px;
       }
 
       .empty {
         padding: 7px 9px;
         color: var(--muted);
         font-size: 11px;
-      }
-
-      .secondary {
-        background: var(--button-secondary-bg);
-        color: var(--text);
       }
 
       button:disabled {
@@ -1111,18 +1287,6 @@ const exampleHtml = (
         align-items: center;
         justify-content: center;
         gap: 6px;
-        border-color: rgb(15 23 42 / 12%);
-        background: #ffffff;
-        color: var(--text);
-        box-shadow: 0 8px 20px rgb(15 23 42 / 8%);
-      }
-
-      .copy-button:hover,
-      .download-button:hover {
-        background: #f8fafc;
-        color: var(--text);
-        border-color: rgb(15 23 42 / 18%);
-        box-shadow: 0 10px 24px rgb(15 23 42 / 12%);
       }
 
       .color-control {
@@ -1153,35 +1317,10 @@ const exampleHtml = (
       .background-picker {
         position: relative;
         width: 100%;
-        aspect-ratio: 16 / 9;
-        max-height: 150px;
-        min-height: 0;
+        height: 100%;
+        min-height: 294px;
         overflow: hidden;
         border-radius: 12px;
-      }
-
-      .background-swiper {
-        width: 100%;
-        height: 100%;
-        max-width: 100%;
-        min-width: 0;
-        padding: 0;
-        overflow: hidden;
-      }
-
-      .background-swiper::part(container) {
-        height: 100%;
-        overflow: hidden;
-      }
-
-      .background-swiper::part(wrapper) {
-        height: 100%;
-        min-width: 0;
-      }
-
-      .background-swiper swiper-slide {
-        height: 100%;
-        min-width: 0;
       }
 
       .background-card {
@@ -1189,22 +1328,19 @@ const exampleHtml = (
         width: 100%;
         height: 100%;
         min-height: 0;
-        display: grid;
-        align-content: end;
-        gap: 8px;
-        padding: 12px;
+        display: block;
+        padding: 0;
         border: 0;
         border-radius: 12px;
         background: var(--preset-bg);
         color: #ffffff;
-        text-align: left;
-        cursor: pointer;
+        cursor: default;
+        transition: background 180ms ease;
         box-shadow:
           inset 0 0 0 1px rgb(255 255 255 / 24%),
           0 14px 36px rgb(15 23 42 / 16%);
       }
 
-      .background-card:hover,
       .background-card.is-selected {
         background: var(--preset-bg);
         color: #ffffff;
@@ -1213,16 +1349,92 @@ const exampleHtml = (
           0 16px 42px rgb(15 23 42 / 18%);
       }
 
-      .background-card span {
-        width: fit-content;
-        max-width: 100%;
-        padding: 4px 8px;
+      .background-thumbs {
+        position: absolute;
+        z-index: 3;
+        left: 54px;
+        right: 54px;
+        bottom: 10px;
+        height: 48px;
+        padding: 0;
+      }
+
+      .background-thumb-nav {
+        position: absolute;
+        z-index: 4;
+        bottom: 14px;
+        width: 40px;
+        min-width: 40px;
+        height: 40px;
+        display: inline-grid;
+        place-items: center;
+        padding: 0;
+        border: 1px solid rgb(255 255 255 / 26%);
         border-radius: 999px;
-        background: rgb(0 0 0 / 34%);
+        background: rgb(15 23 42 / 52%);
         color: #ffffff;
-        font-size: 12px;
-        font-weight: 800;
-        backdrop-filter: blur(10px);
+        box-shadow:
+          0 10px 24px rgb(0 0 0 / 24%),
+          inset 0 1px 0 rgb(255 255 255 / 16%);
+        backdrop-filter: blur(12px);
+      }
+
+      .background-thumb-nav:hover,
+      .background-thumb-nav:focus-visible {
+        background: rgb(15 23 42 / 68%);
+        border-color: rgb(255 255 255 / 52%);
+        box-shadow:
+          0 12px 28px rgb(0 0 0 / 30%),
+          inset 0 1px 0 rgb(255 255 255 / 20%);
+      }
+
+      .background-thumb-nav:disabled {
+        opacity: 0.38;
+        cursor: default;
+        pointer-events: none;
+      }
+
+      .background-thumb-nav.prev {
+        left: 10px;
+      }
+
+      .background-thumb-nav.next {
+        right: 10px;
+      }
+
+      .background-thumbs::part(container) {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .background-thumbs::part(wrapper) {
+        height: 100%;
+      }
+
+      .background-thumbs swiper-slide {
+        height: 100%;
+        width: 68px;
+      }
+
+      .background-thumb {
+        width: 68px;
+        height: 48px;
+        min-width: 0;
+        padding: 0;
+        border: 2px solid rgb(255 255 255 / 22%);
+        border-radius: 7px;
+        background: var(--preset-bg);
+        box-shadow: 0 8px 20px rgb(0 0 0 / 22%);
+      }
+
+      .background-thumb:hover,
+      .background-thumb:focus-visible,
+      .background-thumb.is-selected {
+        border-color: #ffffff;
+        background: var(--preset-bg);
+        box-shadow:
+          0 0 0 2px rgb(0 0 0 / 28%),
+          0 12px 24px rgb(0 0 0 / 28%);
       }
 
       .toggle-field {
@@ -1230,6 +1442,84 @@ const exampleHtml = (
         align-items: center;
         justify-content: space-between;
         gap: 12px;
+      }
+
+      .compact-settings .toggle-field {
+        min-height: 42px;
+        padding: 0 12px;
+        border: 1px solid var(--field-border);
+        border-radius: 9px;
+        background: var(--field);
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+      }
+
+      .compact-settings .quality-field {
+        grid-column: span 2;
+      }
+
+      .switch-control {
+        width: 100%;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
+      .switch-control input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        border: 0;
+        opacity: 0;
+        clip: rect(0 0 0 0);
+        overflow: hidden;
+      }
+
+      .switch-track {
+        position: relative;
+        width: 48px;
+        height: 28px;
+        border: 1px solid var(--field-border);
+        border-radius: 999px;
+        background: var(--field);
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
+        transition:
+          background 150ms ease,
+          border-color 150ms ease,
+          box-shadow 150ms ease;
+      }
+
+      .switch-track::before {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        background: rgb(248 250 252 / 78%);
+        box-shadow: 0 4px 10px rgb(0 0 0 / 24%);
+        transition:
+          transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1),
+          background 150ms ease;
+      }
+
+      .switch-control:hover .switch-track,
+      .switch-control:focus-within .switch-track {
+        border-color: var(--focus);
+        box-shadow: 0 0 0 3px var(--focus-soft);
+      }
+
+      .switch-control input:checked + .switch-track {
+        border-color: #ffffff;
+        background: #ffffff;
+      }
+
+      .switch-control input:checked + .switch-track::before {
+        background: #09090b;
+        transform: translateX(20px);
       }
 
       .toggle-field input {
@@ -1257,6 +1547,8 @@ const exampleHtml = (
       }
 
       .view-stack {
+        position: relative;
+        z-index: 1;
         width: 100%;
         margin-top: clamp(24px, calc((100vh - 842px) / 2), 60px);
         overflow: hidden;
@@ -1284,8 +1576,10 @@ const exampleHtml = (
 
       .image-stage {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
+        gap: 10px;
         overflow: auto;
       }
 
@@ -1296,7 +1590,7 @@ const exampleHtml = (
         justify-content: center;
         max-width: 100%;
         max-height: min(72vh, 760px);
-        border-radius: 12px;
+        border-radius: var(--image-frame-radius, 12px);
         overflow: hidden;
       }
 
@@ -1306,9 +1600,7 @@ const exampleHtml = (
         height: auto;
         display: block;
         object-fit: contain;
-        transition:
-          filter 360ms cubic-bezier(0.22, 1, 0.36, 1),
-          opacity 260ms ease;
+        transition: opacity 260ms ease;
       }
 
       .edit-image-button {
@@ -1356,23 +1648,80 @@ const exampleHtml = (
         box-shadow: 0 12px 32px rgb(0 0 0 / 28%);
       }
 
-      .final-image.is-image-refreshing {
-        filter: blur(14px) saturate(0.84);
-        opacity: 0.68;
+      .edit-image-button {
+        z-index: 5;
+      }
+
+      .final-image-frame::before,
+      .final-image-frame::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .final-image-frame::before {
+        z-index: 3;
+        padding: 2px;
+        background: conic-gradient(
+          from var(--image-border-angle),
+          rgb(255 255 255 / 0%) 0deg,
+          rgb(255 255 255 / 0%) 238deg,
+          rgb(255 255 255 / 28%) 286deg,
+          #ffffff 322deg,
+          rgb(255 255 255 / 0%) 360deg
+        );
+        -webkit-mask:
+          linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+      }
+
+      .final-image-frame::after {
+        z-index: 2;
+        box-shadow:
+          inset 0 0 0 1px rgb(255 255 255 / 18%),
+          inset 0 0 28px rgb(255 255 255 / 10%),
+          0 0 28px rgb(255 255 255 / 18%);
+      }
+
+      .final-image-frame.is-image-refreshing::before,
+      .final-image-frame.is-image-refreshing::after {
+        opacity: 1;
+      }
+
+      .final-image-frame.is-image-refreshing::before {
+        animation: image-border-flow 880ms linear infinite;
+      }
+
+      @keyframes image-border-flow {
+        to {
+          --image-border-angle: 360deg;
+        }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .final-image,
-        .final-image.is-image-refreshing {
-          filter: none;
-          opacity: 1;
+        .final-image {
           transition: none;
+        }
+
+        .final-image-frame.is-image-refreshing::before {
+          animation: none;
         }
       }
 
       .image-empty {
         color: var(--muted);
         font-size: 14px;
+      }
+
+      .image-size {
+        color: rgb(248 250 252 / 58%);
+        font: 12px/1.4 "Fira Code", ui-monospace, "SFMono-Regular", Consolas, monospace;
+        text-align: center;
       }
 
       .view.is-entering {
@@ -1538,20 +1887,28 @@ const exampleHtml = (
         box-shadow: 0 16px 34px rgb(0 0 0 / 24%);
       }
 
+      .site-menu-trigger:hover,
+      .site-menu-trigger[aria-expanded="true"] {
+        background: rgb(255 255 255 / 7%);
+        border-color: rgb(255 255 255 / 12%);
+        box-shadow: 0 16px 34px rgb(0 0 0 / 24%);
+      }
+
       .site-nav a[aria-current="page"],
       .site-playground-link[aria-current="page"] {
         color: #ffffff;
       }
 
       .site-locale-menu {
-        background: rgb(255 255 255 / 7%);
-        border-color: rgb(255 255 255 / 10%);
-        box-shadow: 0 18px 40px rgb(0 0 0 / 32%);
+        background: #111111;
+        border-color: rgb(255 255 255 / 12%);
+        box-shadow: 0 18px 48px rgb(0 0 0 / 38%);
       }
 
       .site-locale-menu button {
-        background: transparent;
+        background: #111111;
         border: 0;
+        border-color: transparent;
         border-radius: 0;
         box-shadow: none;
         color: rgb(248 250 252 / 62%);
@@ -1561,19 +1918,13 @@ const exampleHtml = (
       .site-locale-menu button:hover,
       .site-locale-menu button:focus-visible,
       .site-locale-menu button[aria-pressed="true"] {
-        background: transparent;
+        background: #111111;
         border: 0;
         border-color: transparent;
         border-radius: 0;
         box-shadow: none;
         color: #ffffff;
         outline: none;
-      }
-
-      .settings-panel {
-        box-shadow:
-          0 18px 50px rgb(0 0 0 / 34%),
-          inset 0 0 0 1px rgb(255 255 255 / 8%);
       }
 
       .code-input {
@@ -1617,27 +1968,15 @@ const exampleHtml = (
 
       .preview-tools .icon-button,
       .preview-tools .icon-button:hover,
-      .preview-tools .icon-button[aria-expanded="true"] {
+      .preview-tools .icon-button[aria-expanded="true"],
+      .copy-button,
+      .download-button,
+      .copy-button:hover,
+      .download-button:hover {
         border-color: rgb(255 255 255 / 12%);
         background: rgb(255 255 255 / 10%);
         color: #f8fafc;
         box-shadow: 0 8px 20px rgb(0 0 0 / 24%);
-      }
-
-      .copy-button,
-      .download-button {
-        border-color: rgb(255 255 255 / 14%);
-        background: #ffffff;
-        color: #09090b;
-        box-shadow: 0 12px 28px rgb(0 0 0 / 24%);
-      }
-
-      .copy-button:hover,
-      .download-button:hover {
-        background: #e5e7eb;
-        color: #09090b;
-        border-color: rgb(255 255 255 / 20%);
-        box-shadow: 0 14px 32px rgb(0 0 0 / 30%);
       }
 
       .final-image {
@@ -1645,16 +1984,22 @@ const exampleHtml = (
         box-shadow: 0 18px 48px rgb(0 0 0 / 30%);
       }
 
+      @media (min-width: 861px) {
+        .final-image-frame {
+          margin-top: 24px;
+        }
+      }
+
       @media (max-width: 760px) {
         .site-header-actions {
-          background: #ffffff;
-          color: #0f172a;
+          background: #111111;
+          color: #ffffff;
         }
 
         .site-header.is-menu-open .site-header-actions {
           opacity: 1;
           visibility: visible;
-          transform: translateY(0);
+          transform: translate(-50%, 0);
         }
 
         .site-header-actions .site-nav a,
@@ -1662,9 +2007,9 @@ const exampleHtml = (
         .site-header-actions .site-locale-trigger,
         .site-header-actions .site-avatar-link,
         .site-header-actions .site-icon-link {
-          background: transparent;
-          border-color: rgb(15 23 42 / 8%);
-          color: #0f172a;
+          background: #111111;
+          border-color: rgb(255 255 255 / 12%);
+          color: rgb(248 250 252 / 62%);
           box-shadow: none;
         }
 
@@ -1673,46 +2018,63 @@ const exampleHtml = (
         .site-header-actions .site-locale-trigger:hover,
         .site-header-actions .site-avatar-link:hover,
         .site-header-actions .site-icon-link:hover {
-          color: #000000;
+          color: #ffffff;
         }
       }
 
       @media (max-width: 860px) {
         main,
         main.app-shell {
-          width: min(100% - 24px, 1366px);
+          width: min(100% - 24px, 1200px);
           padding: 18px 0 26px;
         }
 
         .panel-header {
           min-height: 0;
-          align-items: stretch;
-          flex-direction: column;
+          align-items: center;
+          flex-direction: row;
+          justify-content: space-between;
           gap: 12px;
         }
 
         .tabs {
-          width: 100%;
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          width: max-content;
+          max-width: 100%;
+          align-self: flex-start;
         }
 
         .tab-button {
-          width: 100%;
           min-width: 0;
         }
 
         .preview-tools {
-          width: 100%;
-          justify-content: stretch;
-          display: grid;
-          grid-template-columns: 1fr 1fr 40px;
+          width: max-content;
+          max-width: calc(100% - 146px);
+          justify-content: flex-end;
+          display: flex;
+          flex-wrap: nowrap;
         }
 
         .copy-button,
         .download-button {
-          width: 100%;
+          width: 40px;
           min-width: 0;
+          padding: 0;
+        }
+
+        .copy-button span,
+        .download-button span {
+          display: none;
+        }
+
+        .preview-tools .settings-toggle-button {
+          width: 32px;
+          min-width: 32px;
+          padding: 0;
+        }
+
+        .settings-toggle-label {
+          display: none;
         }
 
         .app-layout {
@@ -1725,14 +2087,26 @@ const exampleHtml = (
 
         body.settings-open .settings-panel {
           margin-left: 0;
-          margin-top: 18px;
-          padding: 14px;
+          margin-top: 12px;
+          padding: 0;
           max-height: none;
         }
 
-        .settings-row.two-up,
-        .settings-row.three-up {
+        .settings-row.three-up,
+        .settings-grid {
           grid-template-columns: 1fr;
+        }
+
+        .settings-row.two-up,
+        .settings-row.compact-settings {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .background-picker {
+          height: auto;
+          min-height: 0;
+          max-height: 150px;
+          aspect-ratio: 16 / 9;
         }
 
         body.settings-open .editor-section {
@@ -1740,7 +2114,7 @@ const exampleHtml = (
         }
 
         .view-stack {
-          margin-top: 26px;
+          margin-top: 24px;
         }
 
         .editor-body,
@@ -1766,8 +2140,9 @@ const exampleHtml = (
         }
 
         .image-stage {
-          min-height: 420px;
-          overflow: hidden;
+          min-height: 0;
+          justify-content: flex-start;
+          overflow: visible;
         }
 
         .final-image-frame {
@@ -1779,8 +2154,14 @@ const exampleHtml = (
           object-fit: contain;
         }
 
+        .edit-image-button {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+        }
+
         .site-footer {
-          align-items: stretch;
+          align-items: center;
           flex-direction: column;
           padding: 22px 0 24px;
           gap: 14px;
@@ -1788,14 +2169,17 @@ const exampleHtml = (
 
         .site-footer-brand {
           width: 100%;
-          align-items: flex-start;
+          justify-content: center;
+          align-items: center;
           flex-wrap: wrap;
+          text-align: center;
           line-height: 1.5;
           margin: 24px 0;
         }
 
         .site-footer-brand span {
           flex: 0 0 100%;
+          text-align: center;
         }
 
         .site-footer nav {
@@ -1846,19 +2230,153 @@ const exampleHtml = (
               <button class="tab-button" id="imageTab" type="button" role="tab" aria-selected="true" aria-controls="imageView" data-view="image" data-i18n="image">${text.image}</button>
             </div>
             <div class="preview-tools">
-              <button class="secondary copy-button" id="copy" type="button">
+              <button class="copy-button" id="copy" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 <span data-i18n="copy">${text.copy}</span>
               </button>
-              <button class="secondary download-button" id="download" type="button">
+              <button class="download-button" id="download" type="button">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
                 <span data-i18n="download">${text.download}</span>
               </button>
-              <button class="icon-button" id="settingsToggle" type="button" aria-label="${text.settings}" aria-expanded="false">
+              <button class="icon-button settings-toggle-button" id="settingsToggle" type="button" aria-label="${text.parameterSettings}" aria-expanded="false">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
+                <span class="settings-toggle-label" data-i18n="parameterSettings">${text.parameterSettings}</span>
               </button>
             </div>
           </div>
+          <aside class="settings-panel" id="settingsPanel" data-insp-path="${inspectorPath(1242, 9, "aside")}">
+            <form id="form">
+              <div class="settings-grid">
+                <div class="settings-primary-column">
+                  <label>
+                    <span data-i18n="backgroundColor">${text.backgroundColor}</span>
+                    <input id="bgColor" name="bgColor" type="hidden" value="${defaultBgColor}" />
+                    <div class="background-picker">
+                      <div class="background-card" id="backgroundPreview" aria-hidden="true"></div>
+                      <button class="background-thumb-nav prev" id="backgroundThumbPrev" type="button" aria-label="Previous background">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                      </button>
+                      <swiper-container class="background-thumbs" id="backgroundThumbs" init="false"></swiper-container>
+                      <button class="background-thumb-nav next" id="backgroundThumbNext" type="button" aria-label="Next background">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                      </button>
+                    </div>
+                  </label>
+                </div>
+                <div class="settings-secondary-column">
+                  <div class="settings-row two-up">
+                    <div class="field">
+                      <span data-i18n="language">${text.language}</span>
+                      <input id="language" name="language" type="hidden" value="typescript" />
+                      <div class="combobox language-combobox" id="languageCombobox">
+                        <span class="language-preview-icon" id="languagePreviewIcon" aria-hidden="true"></span>
+                        <input id="languageFilter" type="text" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="languageOptions" />
+                        <div class="options" id="languageOptions" role="listbox" hidden></div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <span data-i18n="codeTheme">${text.codeTheme}</span>
+                      <input id="codeTheme" name="theme" type="hidden" value="dracula" />
+                      <div class="combobox theme-combobox" id="themeCombobox">
+                        <input id="themeFilter" type="text" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="themeOptions" />
+                        <div class="theme-stepper" aria-label="Code theme stepper">
+                          <button id="themePrev" type="button" aria-label="Previous code theme">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+                          </button>
+                          <button id="themeNext" type="button" aria-label="Next code theme">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                          </button>
+                        </div>
+                        <div class="options" id="themeOptions" role="listbox" hidden></div>
+                      </div>
+                    </div>
+                  </div>
+                  <label>
+                    <span data-i18n="imageFormat">${text.imageFormat}</span>
+                    <input id="imageFormat" name="format" type="hidden" value="png" />
+                    <div class="format-options" id="imageFormatGroup" role="group" aria-label="${text.imageFormat}">
+                      <label class="format-option">
+                        <input class="format-checkbox" type="checkbox" value="png" data-image-format checked />
+                        <span>PNG</span>
+                      </label>
+                      <label class="format-option">
+                        <input class="format-checkbox" type="checkbox" value="webp" data-image-format />
+                        <span>WebP</span>
+                      </label>
+                    </div>
+                  </label>
+                  <div class="settings-row compact-settings">
+                    <label>
+                      <span data-i18n="borderSize">${text.borderSize}</span>
+                      <input id="borderSize" name="borderSize" type="number" min="0" max="120" step="1" value="12" />
+                    </label>
+                    <label>
+                      <span data-i18n="borderRadius">${text.borderRadius}</span>
+                      <input id="borderRadius" name="borderRadius" type="number" min="0" max="11" step="1" value="4" />
+                    </label>
+                    <label>
+                      <span data-i18n="containerWidth">${text.containerWidth}</span>
+                      <input id="containerWidth" name="containerWidth" type="number" min="400" max="1920" step="1" value="600" />
+                    </label>
+                    <div class="field line-number-field">
+                      <span data-i18n="showLineNumbers">${text.showLineNumbers}</span>
+                      <label class="switch-control">
+                        <input id="showLineNumbers" name="showLineNumbers" type="checkbox" checked />
+                        <span class="switch-track" aria-hidden="true"></span>
+                      </label>
+                    </div>
+                    <div class="field quality-field">
+                      <span data-i18n="imageQuality">${text.imageQuality}</span>
+                      <input id="imageQuality" name="quality" type="hidden" value="2" />
+                      <div class="quality-select">
+                        <button class="quality-trigger" id="imageQualityTrigger" type="button" aria-expanded="false" aria-controls="imageQualityOptions" aria-label="${text.imageQuality}" style="--quality-color: #22c55e;">
+                          <span class="quality-trigger-main">
+                            <span class="quality-swatch" id="imageQualitySwatch" aria-hidden="true"></span>
+                            <span class="quality-trigger-label" id="imageQualityLabel">${text.qualityStandard}</span>
+                          </span>
+                          <span class="quality-bars" id="imageQualityBars" aria-hidden="true"><span class="is-on"></span><span class="is-on"></span><span></span><span></span></span>
+                        </button>
+                        <div class="quality-menu" id="imageQualityOptions" role="listbox" hidden>
+                          <button class="quality-option" type="button" role="option" aria-selected="false" data-image-quality="1" data-quality-label-key="qualityDraft" style="--quality-color: #38bdf8;">
+                            <span class="quality-option-main">
+                              <span class="option-selection-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>
+                              <span class="quality-swatch" aria-hidden="true"></span>
+                              <span class="quality-option-label" data-i18n="qualityDraft">${text.qualityDraft}</span>
+                            </span>
+                            <span class="quality-bars" aria-hidden="true"><span class="is-on"></span><span></span><span></span><span></span></span>
+                          </button>
+                          <button class="quality-option is-active" type="button" role="option" aria-selected="true" data-image-quality="2" data-quality-label-key="qualityStandard" style="--quality-color: #22c55e;">
+                            <span class="quality-option-main">
+                              <span class="option-selection-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>
+                              <span class="quality-swatch" aria-hidden="true"></span>
+                              <span class="quality-option-label" data-i18n="qualityStandard">${text.qualityStandard}</span>
+                            </span>
+                            <span class="quality-bars" aria-hidden="true"><span class="is-on"></span><span class="is-on"></span><span></span><span></span></span>
+                          </button>
+                          <button class="quality-option" type="button" role="option" aria-selected="false" data-image-quality="3" data-quality-label-key="qualityHigh" style="--quality-color: #f59e0b;">
+                            <span class="quality-option-main">
+                              <span class="option-selection-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>
+                              <span class="quality-swatch" aria-hidden="true"></span>
+                              <span class="quality-option-label" data-i18n="qualityHigh">${text.qualityHigh}</span>
+                            </span>
+                            <span class="quality-bars" aria-hidden="true"><span class="is-on"></span><span class="is-on"></span><span class="is-on"></span><span></span></span>
+                          </button>
+                          <button class="quality-option" type="button" role="option" aria-selected="false" data-image-quality="4" data-quality-label-key="qualityUltra" style="--quality-color: #f43f5e;">
+                            <span class="quality-option-main">
+                              <span class="option-selection-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>
+                              <span class="quality-swatch" aria-hidden="true"></span>
+                              <span class="quality-option-label" data-i18n="qualityUltra">${text.qualityUltra}</span>
+                            </span>
+                            <span class="quality-bars" aria-hidden="true"><span class="is-on"></span><span class="is-on"></span><span class="is-on"></span><span class="is-on"></span></span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </aside>
           <div class="view-stack" id="viewStack">
             <div class="editor-stage view" id="editorView" role="tabpanel" aria-labelledby="editorTab" hidden>
               <div class="editor-canvas" id="editorCanvas">
@@ -1881,96 +2399,17 @@ const exampleHtml = (
             </div>
             <div class="image-stage view" id="imageView" role="tabpanel" aria-labelledby="imageTab">
               <div class="final-image-frame" id="finalImageFrame">
-                <img class="final-image" id="finalImage" src="${defaultExampleImageUrl}" alt="Rendered code image" loading="eager" decoding="async" fetchpriority="high" />
+                <img class="final-image" id="finalImage" alt="Rendered code image" loading="eager" decoding="async" fetchpriority="high" hidden />
                 <button class="edit-image-button" id="editImage" type="button" aria-label="${text.editImage}">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                   <span data-i18n="editImage">${text.editImage}</span>
                 </button>
               </div>
+              <div class="image-size" id="imageSize" aria-live="polite" hidden></div>
               <div class="image-empty" id="imageEmpty" data-i18n="imageEmpty" hidden>${text.imageEmpty}</div>
             </div>
           </div>
         </section>
-        <aside class="settings-panel" id="settingsPanel" data-insp-path="${inspectorPath(1242, 9, "aside")}">
-          <form id="form">
-            <div class="settings-grid">
-              <div class="settings-row two-up">
-                <div class="field">
-                  <span data-i18n="language">${text.language}</span>
-                  <input id="language" name="language" type="hidden" value="typescript" />
-                  <div class="combobox language-combobox" id="languageCombobox">
-                    <span class="language-preview-icon" id="languagePreviewIcon" aria-hidden="true"></span>
-                    <input id="languageFilter" type="text" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="languageOptions" />
-                    <div class="options" id="languageOptions" role="listbox" hidden></div>
-                  </div>
-                </div>
-                <div class="field">
-                  <span data-i18n="codeTheme">${text.codeTheme}</span>
-                  <input id="codeTheme" name="theme" type="hidden" value="dracula" />
-                  <div class="combobox theme-combobox" id="themeCombobox">
-                    <input id="themeFilter" type="text" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="themeOptions" />
-                    <div class="theme-stepper" aria-label="Code theme stepper">
-                      <button id="themePrev" type="button" aria-label="Previous code theme">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
-                      </button>
-                      <button id="themeNext" type="button" aria-label="Next code theme">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                      </button>
-                    </div>
-                    <div class="options" id="themeOptions" role="listbox" hidden></div>
-                  </div>
-                </div>
-              </div>
-              <label>
-                <span data-i18n="imageFormat">${text.imageFormat}</span>
-                <input id="imageFormat" name="format" type="hidden" value="png" />
-                <div class="format-options" id="imageFormatGroup" role="group" aria-label="${text.imageFormat}">
-                  <label class="format-option">
-                    <input class="format-checkbox" type="checkbox" value="png" data-image-format checked />
-                    <span>PNG</span>
-                  </label>
-                  <label class="format-option">
-                    <input class="format-checkbox" type="checkbox" value="webp" data-image-format />
-                    <span>WebP</span>
-                  </label>
-                </div>
-              </label>
-              <label>
-                <span data-i18n="backgroundColor">${text.backgroundColor}</span>
-                <input id="bgColor" name="bgColor" type="hidden" value="${defaultBgColor}" />
-                <div class="background-picker">
-                  <swiper-container class="background-swiper" id="backgroundSwiper" init="false"></swiper-container>
-                  <div class="background-stepper" aria-label="Background stepper">
-                    <button class="background-step-button" id="backgroundPrev" type="button" aria-label="Previous background" data-background-step="-1">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-                    </button>
-                    <button class="background-step-button" id="backgroundNext" type="button" aria-label="Next background" data-background-step="1">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </button>
-                  </div>
-                </div>
-              </label>
-              <div class="settings-row three-up">
-                <label>
-                  <span data-i18n="borderSize">${text.borderSize}</span>
-                  <input id="borderSize" name="borderSize" type="number" min="0" max="120" step="1" value="12" />
-                </label>
-                <label>
-                  <span data-i18n="borderRadius">${text.borderRadius}</span>
-                  <input id="borderRadius" name="borderRadius" type="number" min="0" max="11" step="1" value="4" />
-                </label>
-                <label>
-                  <span data-i18n="containerWidth">${text.containerWidth}</span>
-                  <input id="containerWidth" name="containerWidth" type="number" min="400" max="1920" step="1" value="600" />
-                </label>
-              </div>
-              <label class="toggle-field">
-                <span data-i18n="showLineNumbers">${text.showLineNumbers}</span>
-                <input id="showLineNumbers" name="showLineNumbers" type="checkbox" checked />
-              </label>
-            </div>
-          </form>
-        </aside>
       </div>
     </main>
     ${renderSiteFooter()}
@@ -1990,9 +2429,7 @@ const exampleHtml = (
       const shikiThemes = ${JSON.stringify(shikiThemes)};
       const initialState = ${JSON.stringify(initialState)};
       const defaultCode = ${JSON.stringify(defaultExampleCode)};
-      const defaultExampleImageUrls = ${JSON.stringify(defaultExampleImageUrls)};
       const defaultExampleBackgroundId = ${JSON.stringify(defaultExampleBackgroundId)};
-      const previewQuality = 2;
       const translations = ${JSON.stringify(exampleTranslations)};
       const codeLogoSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#111827"/><path fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" d="M24 22 12 32l12 10m16-20 12 10-12 10M36 16 28 48"/></svg>';
       const languageLogoAliases = {
@@ -2067,11 +2504,20 @@ const exampleHtml = (
       const imageFormatGroup = $("#imageFormatGroup");
       const imageFormatOptions = Array.from(document.querySelectorAll("[data-image-format]"));
       const bgColor = $("#bgColor");
-      const backgroundSwiper = $("#backgroundSwiper");
+      const backgroundPreview = $("#backgroundPreview");
+      const backgroundThumbs = $("#backgroundThumbs");
+      const backgroundThumbPrev = $("#backgroundThumbPrev");
+      const backgroundThumbNext = $("#backgroundThumbNext");
       const borderSize = $("#borderSize");
       const borderRadius = $("#borderRadius");
       const containerWidth = $("#containerWidth");
       const showLineNumbers = $("#showLineNumbers");
+      const imageQuality = $("#imageQuality");
+      const imageQualityTrigger = $("#imageQualityTrigger");
+      const imageQualityLabel = $("#imageQualityLabel");
+      const imageQualityBars = $("#imageQualityBars");
+      const imageQualityMenu = $("#imageQualityOptions");
+      const imageQualityOptions = Array.from(document.querySelectorAll("[data-image-quality]"));
       const form = $("#form");
       const copy = $("#copy");
       const download = $("#download");
@@ -2085,8 +2531,10 @@ const exampleHtml = (
       const imageView = $("#imageView");
       const editorTab = $("#editorTab");
       const imageTab = $("#imageTab");
+      const finalImageFrame = $("#finalImageFrame");
       const finalImage = $("#finalImage");
       const editImage = $("#editImage");
+      const imageSize = $("#imageSize");
       const imageEmpty = $("#imageEmpty");
       const editorWindow = $("#editorWindow");
       const editorBody = $("#editorBody");
@@ -2115,6 +2563,8 @@ const exampleHtml = (
       let latestBlobUrl = "";
       let latestBlob = null;
       let latestImageData = null;
+      let latestImageRadiusData = null;
+      let currentImageInfo = { width: 0, height: 0, fileSize: null };
       let firaCodeFontsPromise;
       let takumiRendererPromise;
       let renderTimer;
@@ -2122,11 +2572,16 @@ const exampleHtml = (
       let renderQueued = false;
       let renderStateVersion = 0;
       let lastRenderStartedAt = 0;
+      let imageRefreshStartedAt = 0;
+      let imageRefreshToken = 0;
+      const settingInvalidateTimers = new Map();
+      const settingInvalidateLastRun = new Map();
       let activeView = "image";
       let imageDirty = true;
-      let defaultExampleImagePrimingEnabled = true;
       const imageRenderDebounceMs = 360;
       const imageRenderThrottleMs = 640;
+      const imageRefreshMinMs = 1000;
+      const settingInvalidateThrottleMs = 180;
       let activeLanguageIndex = 0;
       let activeThemeIndex = 0;
       let selectedLanguage = languages[0];
@@ -2220,72 +2675,76 @@ const exampleHtml = (
         if (options.persist !== false) {
           writeLocalStorage(storageKeys.backgroundPreset, item.id);
         }
-        backgroundSwiper.querySelectorAll(".background-card").forEach((card) => {
-          card.classList.toggle("is-selected", card.dataset.id === item.id);
+        backgroundPreview.classList.add("is-selected");
+        backgroundPreview.dataset.id = item.id;
+        backgroundPreview.style.setProperty("--preset-bg", item.bgColor);
+        backgroundThumbs.querySelectorAll(".background-thumb").forEach((thumb) => {
+          thumb.classList.toggle("is-selected", thumb.dataset.id === item.id);
+          thumb.setAttribute("aria-pressed", String(thumb.dataset.id === item.id));
         });
-        if (options.slide !== false) {
-          const index = backgroundPresets.findIndex((preset) => preset.id === item.id);
-          if (index >= 0) backgroundSwiper.swiper?.slideTo(index);
-        }
         updateEditorFrame();
         if (didChange) {
-          invalidateImage({ keepDefaultExampleImage: options.keepDefaultExampleImage === true });
+          invalidateSettingImage("background");
         }
       };
 
       const renderBackgroundPresets = () => {
-        backgroundSwiper.replaceChildren(...backgroundPresets.map((item) => {
+        backgroundPreview.className = "background-card is-selected";
+        backgroundPreview.dataset.id = selectedBackground.id;
+        backgroundPreview.style.setProperty("--preset-bg", selectedBackground.bgColor);
+        const thumbnailSlides = backgroundPresets.map((item) => {
           const slide = document.createElement("swiper-slide");
-          const button = document.createElement("div");
-          button.className = "background-card" + (item.id === selectedBackground.id ? " is-selected" : "");
-          button.setAttribute("role", "button");
-          button.tabIndex = 0;
+          const button = document.createElement("button");
+          button.className = "background-thumb" + (item.id === selectedBackground.id ? " is-selected" : "");
+          button.type = "button";
           button.dataset.id = item.id;
           button.style.setProperty("--preset-bg", item.bgColor);
-          button.innerHTML = "<span>" + item.label + "</span>";
+          button.setAttribute("aria-label", item.label);
+          button.setAttribute("aria-pressed", String(item.id === selectedBackground.id));
           button.addEventListener("click", () => {
             selectBackground(item);
           });
-          button.addEventListener("keydown", (event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              selectBackground(item);
-            }
-          });
           slide.append(button);
           return slide;
-        }));
+        });
+        backgroundThumbs.replaceChildren(...thumbnailSlides);
       };
 
       const initializeBackgroundSwiper = () => {
-        Object.assign(backgroundSwiper, {
-          slidesPerView: 1,
-          spaceBetween: 10,
+        Object.assign(backgroundThumbs, {
+          slidesPerView: "auto",
+          spaceBetween: 8,
           speed: 220,
           observer: true,
           observeParents: true,
+          allowTouchMove: false,
+          freeMode: false,
         });
-        if (!backgroundSwiper.swiper) {
-          backgroundSwiper.initialize();
+        if (!backgroundThumbs.swiper) {
+          backgroundThumbs.initialize();
         } else {
-          backgroundSwiper.swiper.update();
+          backgroundThumbs.swiper.update();
         }
+        updateBackgroundThumbNav();
       };
 
-      const stepBackground = (delta) => {
-        const currentIndex = Math.max(
-          backgroundPresets.findIndex((item) => item.id === selectedBackground.id),
-          0,
-        );
-        const nextIndex = (currentIndex + delta + backgroundPresets.length) % backgroundPresets.length;
-        selectBackground(backgroundPresets[nextIndex]);
+      const updateBackgroundThumbNav = () => {
+        const swiper = backgroundThumbs.swiper;
+        if (!swiper) return;
+        backgroundThumbPrev.disabled = swiper.isBeginning;
+        backgroundThumbNext.disabled = swiper.isEnd;
       };
 
-      document.querySelectorAll(".background-step-button").forEach((button) => {
-        button.addEventListener("click", () => {
-          stepBackground(Number(button.dataset.backgroundStep));
-        });
-      });
+      const slideBackgroundThumbs = (direction) => {
+        const swiper = backgroundThumbs.swiper;
+        if (!swiper) return;
+        if (direction === "prev") {
+          swiper.slidePrev();
+        } else {
+          swiper.slideNext();
+        }
+        window.setTimeout(updateBackgroundThumbNav, 260);
+      };
 
       const setSettingsOpen = (isOpen) => {
         document.body.classList.toggle("settings-open", isOpen);
@@ -2296,44 +2755,107 @@ const exampleHtml = (
         setSettingsOpen(window.matchMedia("(min-width: 1080px)").matches);
       };
 
-      const invalidateImage = (options = {}) => {
-        if (options.keepDefaultExampleImage !== true) {
-          defaultExampleImagePrimingEnabled = false;
-        }
+      const invalidateImage = () => {
         renderStateVersion += 1;
         imageDirty = true;
         if (activeView === "image") {
-          startImageRefresh();
           scheduleImageRender();
         }
       };
 
+      const invalidateSettingImage = (key, options = {}) => {
+        if (typeof key !== "string") {
+          options = key ?? {};
+          key = "settings";
+        }
+        window.clearTimeout(settingInvalidateTimers.get(key));
+        const now = Date.now();
+        const elapsed = now - (settingInvalidateLastRun.get(key) ?? 0);
+        const run = () => {
+          settingInvalidateTimers.delete(key);
+          settingInvalidateLastRun.set(key, Date.now());
+          invalidateImage(options);
+        };
+        if (elapsed >= settingInvalidateThrottleMs) {
+          run();
+          return;
+        }
+        settingInvalidateTimers.set(key, window.setTimeout(run, settingInvalidateThrottleMs - elapsed));
+      };
+
       const startImageRefresh = () => {
         if (activeView === "image" && !finalImage.hidden) {
-          finalImage.classList.add("is-image-refreshing");
+          setImageFrameRadius();
+          imageRefreshStartedAt = Date.now();
+          imageRefreshToken += 1;
+          finalImageFrame.classList.add("is-image-refreshing");
+          return imageRefreshToken;
+        }
+        return imageRefreshToken;
+      };
+
+      const wait = (delay) => new Promise((resolve) => window.setTimeout(resolve, delay));
+
+      const finishImageRefresh = async (token = imageRefreshToken) => {
+        if (!finalImageFrame.classList.contains("is-image-refreshing")) return;
+        const elapsed = Date.now() - imageRefreshStartedAt;
+        const remaining = Math.max(imageRefreshMinMs - elapsed, 0);
+        if (remaining > 0) await wait(remaining);
+        if (token === imageRefreshToken) {
+          imageRefreshStartedAt = 0;
+          finalImageFrame.classList.remove("is-image-refreshing");
         }
       };
 
-      const finishImageRefresh = () => {
-        finalImage.classList.remove("is-image-refreshing");
+      const setImageFrameRadius = (radiusData = latestImageRadiusData) => {
+        latestImageRadiusData = radiusData;
+        if (!radiusData?.logicalWidth || radiusData.outerRadius === undefined || radiusData.outerRadius === null) {
+          finalImageFrame.style.removeProperty("--image-frame-radius");
+          return;
+        }
+        const frameWidth = finalImageFrame.getBoundingClientRect().width || Number(radiusData.logicalWidth);
+        const scale = frameWidth / Number(radiusData.logicalWidth);
+        const radius = Math.max(Number(radiusData.outerRadius) * scale, 0);
+        finalImageFrame.style.setProperty("--image-frame-radius", radius.toFixed(2) + "px");
       };
 
-      const isDefaultExampleCodeState = () => code.value === defaultCode;
+      const formatFileSize = (bytes) => {
+        const size = Number(bytes);
+        if (!Number.isFinite(size) || size <= 0) return "";
+        const units = ["B", "KB", "MB", "GB"];
+        let value = size;
+        let unitIndex = 0;
+        while (value >= 1024 && unitIndex < units.length - 1) {
+          value /= 1024;
+          unitIndex += 1;
+        }
+        const precision = unitIndex === 0 || value >= 100 ? 0 : 1;
+        return value.toFixed(precision) + " " + units[unitIndex];
+      };
 
-      const primeDefaultExampleImage = () => {
-        const defaultImageUrl = defaultExampleImageUrls[imageFormat.value] ?? defaultExampleImageUrls.png;
-        if (!defaultExampleImagePrimingEnabled || !isDefaultExampleCodeState() || !defaultImageUrl) return false;
-        latestDataUrl = defaultImageUrl;
-        latestBlobUrl = "";
-        latestBlob = null;
-        latestImageData = null;
-        finalImage.src = defaultImageUrl;
-        finalImage.style.width = "";
-        finalImage.hidden = false;
-        imageEmpty.hidden = true;
-        imageDirty = false;
-        finishImageRefresh();
-        return true;
+      const setImageSize = (width, height, fileSize = null) => {
+        const normalizedWidth = Math.round(Number(width) || 0);
+        const normalizedHeight = Math.round(Number(height) || 0);
+        if (normalizedWidth <= 0 || normalizedHeight <= 0) {
+          currentImageInfo = { width: 0, height: 0, fileSize: null };
+          imageSize.hidden = true;
+          imageSize.textContent = "";
+          return;
+        }
+        const normalizedFileSize = Number(fileSize);
+        const hasFileSize = Number.isFinite(normalizedFileSize) && normalizedFileSize > 0;
+        currentImageInfo = {
+          width: normalizedWidth,
+          height: normalizedHeight,
+          fileSize: hasFileSize ? normalizedFileSize : null,
+        };
+        const fileSizeText = hasFileSize ? " · " + formatFileSize(normalizedFileSize) : "";
+        imageSize.textContent = t("imageSize") + ": " + normalizedWidth + " x " + normalizedHeight + " px" + fileSizeText;
+        imageSize.hidden = false;
+      };
+
+      const updateImageSizeFromElement = (fileSize = null) => {
+        setImageSize(finalImage.naturalWidth, finalImage.naturalHeight, fileSize);
       };
 
       const setActiveView = (view) => {
@@ -2373,10 +2895,16 @@ const exampleHtml = (
         themeFilter.placeholder = t("codeTheme");
         imageFormat.setAttribute("aria-label", t("imageFormat"));
         imageFormatGroup.setAttribute("aria-label", t("imageFormat"));
+        imageQualityTrigger.setAttribute("aria-label", t("imageQuality"));
+        settingsToggle.setAttribute("aria-label", t("parameterSettings"));
         code.placeholder = t("codePlaceholder");
         clearCode.setAttribute("aria-label", t("clear"));
         generateImage.setAttribute("aria-label", t("generateImage"));
         editImage.setAttribute("aria-label", t("editImage"));
+        syncImageQualityOptions();
+        if (!imageSize.hidden) {
+          setImageSize(currentImageInfo.width, currentImageInfo.height, currentImageInfo.fileSize);
+        }
       };
 
       const syncImageFormatOptions = () => {
@@ -2391,16 +2919,16 @@ const exampleHtml = (
         imageFormat.value = nextFormat;
         syncImageFormatOptions();
         if (didChange) {
-          invalidateImage({ keepDefaultExampleImage: defaultExampleImagePrimingEnabled });
+          invalidateSettingImage("imageFormat");
         }
       };
 
       const getInteractionKind = (target) => {
         if (target.closest(".tab-button")) return "tab";
         if (target.closest("#copy, #download, #clearCode, #generateImage")) return "action";
-        if (target.closest("#settingsToggle, .theme-stepper button, .background-stepper button")) return "toggle";
+        if (target.closest("#settingsToggle, .theme-stepper button")) return "toggle";
         if (target.closest(".site-locale-trigger, [data-site-locale], .option")) return "menu";
-        if (target.closest("input, textarea, .combobox, .format-option")) return "input";
+        if (target.closest("input, textarea, .combobox, .format-option, .quality-trigger, .quality-option")) return "input";
         return "action";
       };
 
@@ -2475,9 +3003,10 @@ const exampleHtml = (
                 option.dataset.id = item.id;
                 option.innerHTML =
                   '<span class="option-main">' +
+                    '<span class="option-selection-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>' +
                     (item.icon ? '<span class="option-language-icon" aria-hidden="true"><img src="' + item.icon + '" alt="" /></span>' : "") +
                     '<span class="option-label">' + item.label + "</span>" +
-                  '</span><span class="option-id">' + item.id + "</span>";
+                  "</span>";
                 option.addEventListener("mousedown", (event) => event.preventDefault());
                 option.addEventListener("click", () => onSelect(item));
                 return option;
@@ -2510,7 +3039,7 @@ const exampleHtml = (
         languagePreviewIcon.innerHTML = '<img src="' + item.icon + '" alt="" />';
         closeOptions(languageOptions, languageFilter);
         if (didChange) {
-          invalidateImage({ keepDefaultExampleImage: options.keepDefaultExampleImage === true });
+          invalidateSettingImage("language");
         }
       };
 
@@ -2523,7 +3052,7 @@ const exampleHtml = (
         themeFilter.value = item.id;
         closeOptions(themeOptions, themeFilter);
         if (didChange) {
-          invalidateImage({ keepDefaultExampleImage: options.keepDefaultExampleImage === true });
+          invalidateSettingImage("theme");
         }
       };
 
@@ -2610,6 +3139,82 @@ const exampleHtml = (
         const parsed = Number(value);
         if (!Number.isFinite(parsed) || parsed < currentMinContainerWidth || parsed > 1920) return null;
         return String(Math.trunc(parsed));
+      };
+
+      const normalizeImageQuality = (value) => {
+        const parsed = Number(value || 2);
+        return String(Number.isFinite(parsed) ? Math.min(Math.max(Math.trunc(parsed), 1), 4) : 2);
+      };
+
+      const getPreviewQuality = () => Number(normalizeImageQuality(imageQuality.value));
+
+      const getImageQualityOption = (quality) =>
+        imageQualityOptions.find((option) => option.dataset.imageQuality === quality) ?? imageQualityOptions[0];
+
+      const closeImageQualityMenu = () => {
+        imageQualityMenu.hidden = true;
+        imageQualityTrigger.setAttribute("aria-expanded", "false");
+      };
+
+      const openImageQualityMenu = () => {
+        imageQualityMenu.hidden = false;
+        imageQualityTrigger.setAttribute("aria-expanded", "true");
+        getImageQualityOption(imageQuality.value)?.focus();
+      };
+
+      const toggleImageQualityMenu = () => {
+        if (imageQualityMenu.hidden) {
+          openImageQualityMenu();
+          return;
+        }
+        closeImageQualityMenu();
+      };
+
+      const renderQualityBars = (quality) =>
+        Array.from({ length: 4 }, (_, index) => '<span' + (index < quality ? ' class="is-on"' : "") + "></span>").join("");
+
+      const syncImageQualityOptions = () => {
+        const normalizedQuality = normalizeImageQuality(imageQuality.value);
+        imageQuality.value = normalizedQuality;
+        const selectedOption = getImageQualityOption(normalizedQuality);
+        const labelKey = selectedOption?.dataset.qualityLabelKey ?? "qualityStandard";
+        const qualityColor = selectedOption?.style.getPropertyValue("--quality-color").trim() || "#22c55e";
+        imageQualityTrigger.style.setProperty("--quality-color", qualityColor);
+        imageQualityLabel.textContent = t(labelKey);
+        imageQualityBars.innerHTML = renderQualityBars(Number(normalizedQuality));
+        imageQualityOptions.forEach((option) => {
+          const isSelected = option.dataset.imageQuality === normalizedQuality;
+          option.classList.toggle("is-active", isSelected);
+          option.setAttribute("aria-selected", String(isSelected));
+          option.tabIndex = isSelected ? 0 : -1;
+        });
+      };
+
+      const applyImageQuality = () => {
+        imageQuality.value = normalizeImageQuality(imageQuality.value);
+        syncImageQualityOptions();
+        return true;
+      };
+
+      const selectImageQuality = (value, options = {}) => {
+        const nextQuality = normalizeImageQuality(value);
+        const didChange = imageQuality.value !== nextQuality;
+        imageQuality.value = nextQuality;
+        syncImageQualityOptions();
+        if (options.closeMenu !== false) closeImageQualityMenu();
+        if (didChange) {
+          invalidateSettingImage("imageQuality");
+        }
+      };
+
+      const stepImageQuality = (delta) => {
+        const currentIndex = Math.max(
+          imageQualityOptions.findIndex((option) => option.dataset.imageQuality === imageQuality.value),
+          0,
+        );
+        const nextIndex = (currentIndex + delta + imageQualityOptions.length) % imageQualityOptions.length;
+        selectImageQuality(imageQualityOptions[nextIndex].dataset.imageQuality, { closeMenu: false });
+        imageQualityOptions[nextIndex].focus();
       };
 
       const applyContainerWidth = (shouldUpdate = true) => {
@@ -2836,6 +3441,7 @@ const exampleHtml = (
         );
         const normalizedBorderSize = Number(normalizeBorderSize(borderSize.value));
         const normalizedBorderRadius = Number(normalizeBorderRadius(borderRadius.value, normalizedBorderSize));
+        const previewQuality = getPreviewQuality();
         const tokens = await codeToTokens(formattedCode, {
           lang: renderLanguage,
           theme: selectedCodeTheme.id,
@@ -2844,6 +3450,12 @@ const exampleHtml = (
         const codeWindowHeight = headerHeight + codeVerticalPadding * 2 + lines.length * lineHeight;
         const imageWidth = normalizedContainerWidth + normalizedBorderSize * 2;
         const imageHeight = normalizedBorderSize * 2 + codeWindowHeight;
+        const outerRadius = calculateOuterBackgroundRadius(
+          normalizedBorderRadius,
+          normalizedBorderSize,
+          imageWidth,
+          imageHeight,
+        );
         const node = buildCodeImageNode({
           lines,
           tokens,
@@ -2878,15 +3490,17 @@ const exampleHtml = (
           containerWidth: normalizedContainerWidth,
           logicalWidth: imageWidth,
           logicalHeight: imageHeight,
+          outerRadius,
           width: imageWidth * previewQuality,
           height: imageHeight * previewQuality,
+          fileSize: blob.size,
           quality: previewQuality,
         };
       };
 
       const requestImage = async ({ silent = false, source = "try-it-preview", format, updatePreview = true, previewVersion } = {}) => {
         const shouldUpdatePreview = updatePreview !== false;
-        if (shouldUpdatePreview && !silent) startImageRefresh();
+        const refreshToken = shouldUpdatePreview && !silent ? startImageRefresh() : imageRefreshToken;
         if (shouldUpdatePreview && !silent) startRenderProgress();
         try {
           const data = await renderClientImage({ format, source });
@@ -2903,10 +3517,13 @@ const exampleHtml = (
           latestBlobUrl = data.dataUrl;
           latestBlob = data.blob;
           latestImageData = data;
+          latestImageRadiusData = { logicalWidth: data.logicalWidth, outerRadius: data.outerRadius };
           finalImage.src = data.dataUrl;
           finalImage.style.width = data.logicalWidth + "px";
           finalImage.hidden = false;
           imageEmpty.hidden = true;
+          setImageFrameRadius();
+          setImageSize(data.width, data.height, data.fileSize);
           imageDirty = previewVersion === undefined || previewVersion === renderStateVersion ? false : true;
           currentMinContainerWidth = data.minContainerWidth;
           containerWidth.min = String(data.minContainerWidth);
@@ -2915,7 +3532,7 @@ const exampleHtml = (
           return data;
         } finally {
           if (shouldUpdatePreview) {
-            finishImageRefresh();
+            if (!silent) await finishImageRefresh(refreshToken);
             if (!silent) finishRenderProgress();
           }
         }
@@ -2927,10 +3544,6 @@ const exampleHtml = (
           return;
         }
         if (!imageDirty && latestDataUrl) return;
-        if (primeDefaultExampleImage()) {
-          finishImageRefresh();
-          return;
-        }
         const previewVersion = renderStateVersion;
         renderInFlight = true;
         lastRenderStartedAt = Date.now();
@@ -2940,6 +3553,7 @@ const exampleHtml = (
           if (previewVersion === renderStateVersion) {
             finalImage.hidden = true;
             imageEmpty.hidden = false;
+            setImageSize(0, 0);
             setStatus(t("failed"), true);
           } else {
             imageDirty = true;
@@ -2989,7 +3603,8 @@ const exampleHtml = (
 
       const renderActionImage = async (source) => {
         const format = normalizeRenderFormat(imageFormat.value);
-        if (!imageDirty && latestImageData?.format === format) {
+        const quality = getPreviewQuality();
+        if (!imageDirty && latestImageData?.format === format && latestImageData?.quality === quality) {
           return { data: latestImageData, shouldRevoke: false };
         }
         const data = await requestImage({ source, format, silent: true, updatePreview: false });
@@ -3067,6 +3682,7 @@ const exampleHtml = (
 
       localeTrigger?.addEventListener("click", (event) => {
         event.stopPropagation();
+        closeHeaderMenu();
         toggleLocaleMenu();
       });
       menuTrigger?.addEventListener("click", (event) => {
@@ -3087,16 +3703,18 @@ const exampleHtml = (
       editorTab.addEventListener("click", () => setActiveView("editor"));
       imageTab.addEventListener("click", () => setActiveView("image"));
       editImage.addEventListener("click", () => setActiveView("editor"));
-      backgroundSwiper.addEventListener("swiperslidechange", () => {
-        const nextIndex = backgroundSwiper.swiper?.activeIndex ?? 0;
-        selectBackground(backgroundPresets[nextIndex] ?? backgroundPresets[0], { slide: false });
-      });
+      backgroundThumbPrev.addEventListener("click", () => slideBackgroundThumbs("prev"));
+      backgroundThumbNext.addEventListener("click", () => slideBackgroundThumbs("next"));
+      backgroundThumbs.addEventListener("swiperslidechange", updateBackgroundThumbNav);
       settingsToggle.addEventListener("click", () => {
         setSettingsOpen(!document.body.classList.contains("settings-open"));
       });
       document.addEventListener("click", (event) => {
         if (localeTrigger && localeMenu && !localeMenu.contains(event.target) && !localeTrigger.contains(event.target)) {
           closeLocaleMenu();
+        }
+        if (!imageQualityMenu.contains(event.target) && !imageQualityTrigger.contains(event.target)) {
+          closeImageQualityMenu();
         }
         if (siteHeader && !siteHeader.contains(event.target)) {
           closeHeaderMenu();
@@ -3105,6 +3723,7 @@ const exampleHtml = (
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
           closeLocaleMenu();
+          closeImageQualityMenu();
           closeHeaderMenu();
         }
       });
@@ -3178,43 +3797,95 @@ const exampleHtml = (
       });
       borderSize.addEventListener("input", () => {
         applyBorderRadius();
-        invalidateImage();
+        invalidateSettingImage("borderSize");
       });
       borderRadius.addEventListener("blur", () => {
         applyBorderRadius(true);
-        invalidateImage();
+        invalidateSettingImage("borderRadius");
       });
       borderRadius.addEventListener("input", () => {
         applyBorderRadius();
-        invalidateImage();
+        invalidateSettingImage("borderRadius");
       });
       borderRadius.addEventListener("change", () => {
         applyBorderRadius(true);
-        invalidateImage();
+        invalidateSettingImage("borderRadius");
       });
       showLineNumbers.addEventListener("change", () => {
-        invalidateImage();
+        invalidateSettingImage("showLineNumbers");
+      });
+      imageQualityTrigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleImageQualityMenu();
+      });
+      imageQualityTrigger.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openImageQualityMenu();
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          openImageQualityMenu();
+          stepImageQuality(-1);
+        }
+      });
+      imageQualityOptions.forEach((option) => {
+        option.addEventListener("mousedown", (event) => event.preventDefault());
+        option.addEventListener("click", () => {
+          selectImageQuality(option.dataset.imageQuality);
+          imageQualityTrigger.focus();
+        });
+        option.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+            event.preventDefault();
+            stepImageQuality(1);
+          } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+            event.preventDefault();
+            stepImageQuality(-1);
+          } else if (event.key === "Home") {
+            event.preventDefault();
+            selectImageQuality(imageQualityOptions[0].dataset.imageQuality, { closeMenu: false });
+            imageQualityOptions[0].focus();
+          } else if (event.key === "End") {
+            event.preventDefault();
+            const lastOption = imageQualityOptions[imageQualityOptions.length - 1];
+            selectImageQuality(lastOption.dataset.imageQuality, { closeMenu: false });
+            lastOption.focus();
+          } else if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectImageQuality(option.dataset.imageQuality);
+            imageQualityTrigger.focus();
+          } else if (event.key === "Escape") {
+            event.preventDefault();
+            closeImageQualityMenu();
+            imageQualityTrigger.focus();
+          }
+        });
       });
       containerWidth.addEventListener("blur", () => {
-        if (applyContainerWidth()) invalidateImage();
+        if (applyContainerWidth()) invalidateSettingImage("containerWidth");
       });
       containerWidth.addEventListener("input", () => {
         updateEditorFrame();
-        invalidateImage();
+        invalidateSettingImage("containerWidth");
       });
       containerWidth.addEventListener("change", () => {
-        if (applyContainerWidth()) invalidateImage();
+        if (applyContainerWidth()) invalidateSettingImage("containerWidth");
       });
       form.addEventListener("submit", (event) => {
         event.preventDefault();
         if (applyContainerWidth(false)) {
           updateEditorFrame();
-          invalidateImage();
+          invalidateSettingImage("containerWidth");
         }
       });
       window.addEventListener("resize", () => {
         updateTabIndicator();
         updateEditorFrame();
+        setImageFrameRadius();
+      });
+      finalImage.addEventListener("load", () => {
+        setImageFrameRadius();
+        updateImageSizeFromElement(latestBlob?.size ?? currentImageInfo.fileSize);
       });
 
       initializeSettingsPanel();
@@ -3224,13 +3895,16 @@ const exampleHtml = (
       selectedBackground = getStoredBackground();
       renderBackgroundPresets();
       initializeBackgroundSwiper();
-      selectBackground(selectedBackground, { persist: false, keepDefaultExampleImage: true });
-      selectLanguage(selectedLanguage, { keepDefaultExampleImage: true });
-      selectCodeTheme(selectedCodeTheme, { keepDefaultExampleImage: true });
+      selectBackground(selectedBackground, { persist: false });
+      selectLanguage(selectedLanguage);
+      selectCodeTheme(selectedCodeTheme);
+      applyImageQuality();
       updateEditorFrame();
-      primeDefaultExampleImage();
-      finishInitialLoad();
       updateTabIndicator();
+      renderFinalImage().finally(() => {
+        finishInitialLoad();
+        updateTabIndicator();
+      });
     </script>
   </body>
 </html>`;

@@ -108,31 +108,31 @@ export const renderSiteHeader = (
       <a class="site-icon-link" href="${githubUrl}" target="_blank" rel="noreferrer" aria-label="AaronConlon/codia on GitHub">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.3-.85 2.1"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
       </a>
-      <div class="site-locale" aria-label="${text.languageLabel}">
-        <button type="button" class="site-locale-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="site-locale-menu">
-          <span class="site-locale-trigger-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-          </span>
-          <span class="site-locale-trigger-label">${siteLocaleLabels[locale]}</span>
-          <span class="site-locale-trigger-caret" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </span>
-        </button>
-        <ul id="site-locale-menu" class="site-locale-menu" role="listbox" hidden>
-          ${(["zh", "en", "ja"] as SiteLocale[])
-            .map(
-              (item) =>
-                `<li role="option" aria-selected="${item === locale}"><button type="button" data-site-locale="${item}"${
-                  item === locale ? ' aria-pressed="true"' : ""
-                }>${
-                  item === locale
-                    ? '<span class="site-locale-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>'
-                    : ""
-                }${siteLocaleLabels[item]}</button></li>`,
-            )
-            .join("")}
-        </ul>
-      </div>
+    </div>
+    <div class="site-locale" aria-label="${text.languageLabel}">
+      <button type="button" class="site-locale-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="site-locale-menu">
+        <span class="site-locale-trigger-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+        </span>
+        <span class="site-locale-trigger-label">${siteLocaleLabels[locale]}</span>
+        <span class="site-locale-trigger-caret" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </span>
+      </button>
+      <ul id="site-locale-menu" class="site-locale-menu" role="listbox" hidden>
+        ${(["zh", "en", "ja"] as SiteLocale[])
+          .map(
+            (item) =>
+              `<li role="option" aria-selected="${item === locale}"><button type="button" data-site-locale="${item}"${
+                item === locale ? ' aria-pressed="true"' : ""
+              }>${
+                item === locale
+                  ? '<span class="site-locale-check" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>'
+                  : ""
+              }${siteLocaleLabels[item]}</button></li>`,
+          )
+          .join("")}
+      </ul>
     </div>
   </header>
 `;
@@ -170,6 +170,10 @@ export const siteShellStyles = `
     --ink: #111827;
     --shadow: rgb(15 23 42 / 12%);
     --footer-rule: rgb(15 23 42 / 8%);
+    --site-dropdown-field: #111111;
+    --site-dropdown-border: rgb(255 255 255 / 12%);
+    --site-dropdown-muted: rgb(248 250 252 / 62%);
+    --site-dropdown-text: #ffffff;
   }
 
   * {
@@ -245,6 +249,9 @@ export const siteShellStyles = `
 
   .site-menu-trigger:hover,
   .site-menu-trigger[aria-expanded="true"] {
+    background: var(--panel);
+    border-color: rgb(15 23 42 / 10%);
+    box-shadow: 0 10px 24px rgb(15 23 42 / 10%);
     color: var(--ink);
   }
 
@@ -489,16 +496,16 @@ export const siteShellStyles = `
 
   .site-locale-menu {
     position: absolute;
-    top: calc(100% + 8px);
+    top: calc(100% + 6px);
     right: 0;
     min-width: 168px;
     margin: 0;
-    padding: 3px;
+    padding: 4px;
     list-style: none;
-    border-radius: 11px;
-    background: var(--panel);
-    border: 1px solid rgb(255 255 255 / 10%);
-    box-shadow: 0 18px 40px rgb(0 0 0 / 28%);
+    border-radius: 7px;
+    background: var(--site-dropdown-field);
+    border: 1px solid var(--site-dropdown-border);
+    box-shadow: 0 18px 48px rgb(0 0 0 / 38%);
     z-index: 40;
   }
 
@@ -517,18 +524,19 @@ export const siteShellStyles = `
   .site-locale-menu button {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
     width: 100%;
-    min-height: 33px;
-    padding: 0 7px;
+    min-height: 36px;
+    padding: 0 8px;
     border: 0;
+    border-color: transparent;
     border-radius: 0;
-    background: transparent;
+    background: var(--site-dropdown-field);
     box-shadow: none;
-    color: rgb(248 250 252 / 62%);
+    color: var(--site-dropdown-muted);
     font: inherit;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 800;
     outline: none;
     text-align: left;
     cursor: pointer;
@@ -539,12 +547,12 @@ export const siteShellStyles = `
   .site-locale-menu button:hover,
   .site-locale-menu button:focus-visible,
   .site-locale-menu button[aria-pressed="true"] {
-    background: transparent;
+    background: var(--site-dropdown-field);
     border: 0;
     border-color: transparent;
     border-radius: 0;
     box-shadow: none;
-    color: #ffffff;
+    color: var(--site-dropdown-text);
     outline: none;
   }
 
@@ -634,21 +642,22 @@ export const siteShellStyles = `
       position: absolute;
       z-index: 60;
       top: calc(100% - 8px);
-      right: 0;
-      width: min(320px, calc(100vw - 32px));
+      left: 50%;
+      right: auto;
+      width: calc(100vw - 24px);
       margin-left: 0;
       padding: 12px;
       display: grid;
       grid-template-columns: 1fr;
       gap: 8px;
-      border: 1px solid rgb(15 23 42 / 10%);
+      border: 1px solid var(--site-dropdown-border);
       border-radius: 4px;
-      background: #ffffff;
-      color: #0f172a;
-      box-shadow: 0 22px 60px rgb(15 23 42 / 18%);
+      background: var(--site-dropdown-field);
+      color: var(--site-dropdown-text);
+      box-shadow: 0 22px 60px rgb(0 0 0 / 32%);
       opacity: 0;
       visibility: hidden;
-      transform: translateY(-6px);
+      transform: translate(-50%, -6px);
       pointer-events: none;
       transition:
         opacity 160ms ease,
@@ -659,7 +668,7 @@ export const siteShellStyles = `
     .site-header.is-menu-open .site-header-actions {
       opacity: 1;
       visibility: visible;
-      transform: translateY(0);
+      transform: translate(-50%, 0);
       pointer-events: auto;
     }
 
@@ -675,13 +684,12 @@ export const siteShellStyles = `
     }
 
     .site-nav a,
-    .site-playground-link,
-    .site-locale-trigger {
+    .site-playground-link {
       width: 100%;
       justify-content: flex-start;
-      color: #0f172a;
-      background: transparent;
-      border-color: rgb(15 23 42 / 8%);
+      color: var(--site-dropdown-muted);
+      background: var(--site-dropdown-field);
+      border-color: var(--site-dropdown-border);
     }
 
     .site-avatar-link,
@@ -693,7 +701,9 @@ export const siteShellStyles = `
       padding: 0 12px;
       overflow: visible;
       box-shadow: none;
-      color: #0f172a;
+      color: var(--site-dropdown-muted);
+      background: var(--site-dropdown-field);
+      border-color: var(--site-dropdown-border);
     }
 
     .site-avatar-link::after {
@@ -717,15 +727,20 @@ export const siteShellStyles = `
     }
 
     .site-locale {
-      width: 100%;
+      width: auto;
+      display: inline-flex;
+      flex: 0 0 auto;
+      order: 3;
     }
 
     .site-locale-menu {
-      position: static;
-      width: 100%;
-      min-width: 0;
-      margin-top: 6px;
-      box-shadow: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      width: max-content;
+      min-width: 168px;
+      margin-top: 0;
+      box-shadow: 0 18px 48px rgb(0 0 0 / 38%);
     }
 
     .site-footer {
