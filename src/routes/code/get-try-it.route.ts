@@ -684,7 +684,6 @@ const exampleHtml = (
       .settings-panel {
         display: block;
         min-width: 0;
-        min-height: 100%;
         max-width: 100%;
         background: var(--panel);
         border-radius: 12px;
@@ -704,7 +703,7 @@ const exampleHtml = (
       }
 
       body.settings-open .app-layout {
-        grid-template-columns: minmax(0, 1fr) 360px;
+        grid-template-columns: minmax(0, 1fr) 424px;
       }
 
       body.settings-open .settings-panel {
@@ -787,6 +786,20 @@ const exampleHtml = (
         display: grid;
         gap: 14px;
         min-width: 0;
+      }
+
+      .settings-row {
+        display: grid;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .settings-row.two-up {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .settings-row.three-up {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       label,
@@ -1014,6 +1027,12 @@ const exampleHtml = (
         box-shadow: 0 18px 48px var(--shadow);
       }
 
+      #themeOptions {
+        left: auto;
+        right: 0;
+        width: min(200%, calc(100vw - 32px));
+      }
+
       .option {
         width: 100%;
         height: 35px;
@@ -1239,7 +1258,7 @@ const exampleHtml = (
 
       .view-stack {
         width: 100%;
-        margin-top: clamp(48px, calc(100vh - 842px), 120px);
+        margin-top: clamp(24px, calc((100vh - 842px) / 2), 60px);
         overflow: hidden;
       }
 
@@ -1711,12 +1730,17 @@ const exampleHtml = (
           max-height: none;
         }
 
+        .settings-row.two-up,
+        .settings-row.three-up {
+          grid-template-columns: 1fr;
+        }
+
         body.settings-open .editor-section {
           min-width: 0;
         }
 
         .view-stack {
-          margin-top: 52px;
+          margin-top: 26px;
         }
 
         .editor-body,
@@ -1868,32 +1892,33 @@ const exampleHtml = (
           </div>
         </section>
         <aside class="settings-panel" id="settingsPanel" data-insp-path="${inspectorPath(1242, 9, "aside")}">
-          <div class="panel-header" data-i18n="settings">${text.settings}</div>
           <form id="form">
             <div class="settings-grid">
-              <div class="field">
-                <span data-i18n="language">${text.language}</span>
-                <input id="language" name="language" type="hidden" value="typescript" />
-                <div class="combobox language-combobox" id="languageCombobox">
-                  <span class="language-preview-icon" id="languagePreviewIcon" aria-hidden="true"></span>
-                  <input id="languageFilter" type="text" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="languageOptions" />
-                  <div class="options" id="languageOptions" role="listbox" hidden></div>
-                </div>
-              </div>
-              <div class="field">
-                <span data-i18n="codeTheme">${text.codeTheme}</span>
-                <input id="codeTheme" name="theme" type="hidden" value="dracula" />
-                <div class="combobox theme-combobox" id="themeCombobox">
-                  <input id="themeFilter" type="text" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="themeOptions" />
-                  <div class="theme-stepper" aria-label="Code theme stepper">
-                    <button id="themePrev" type="button" aria-label="Previous code theme">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
-                    </button>
-                    <button id="themeNext" type="button" aria-label="Next code theme">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                    </button>
+              <div class="settings-row two-up">
+                <div class="field">
+                  <span data-i18n="language">${text.language}</span>
+                  <input id="language" name="language" type="hidden" value="typescript" />
+                  <div class="combobox language-combobox" id="languageCombobox">
+                    <span class="language-preview-icon" id="languagePreviewIcon" aria-hidden="true"></span>
+                    <input id="languageFilter" type="text" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="languageOptions" />
+                    <div class="options" id="languageOptions" role="listbox" hidden></div>
                   </div>
-                  <div class="options" id="themeOptions" role="listbox" hidden></div>
+                </div>
+                <div class="field">
+                  <span data-i18n="codeTheme">${text.codeTheme}</span>
+                  <input id="codeTheme" name="theme" type="hidden" value="dracula" />
+                  <div class="combobox theme-combobox" id="themeCombobox">
+                    <input id="themeFilter" type="text" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="themeOptions" />
+                    <div class="theme-stepper" aria-label="Code theme stepper">
+                      <button id="themePrev" type="button" aria-label="Previous code theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+                      </button>
+                      <button id="themeNext" type="button" aria-label="Next code theme">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                      </button>
+                    </div>
+                    <div class="options" id="themeOptions" role="listbox" hidden></div>
+                  </div>
                 </div>
               </div>
               <label>
@@ -1925,18 +1950,20 @@ const exampleHtml = (
                   </div>
                 </div>
               </label>
-              <label>
-                <span data-i18n="borderSize">${text.borderSize}</span>
-                <input id="borderSize" name="borderSize" type="number" min="0" max="120" step="1" value="12" />
-              </label>
-              <label>
-                <span data-i18n="borderRadius">${text.borderRadius}</span>
-                <input id="borderRadius" name="borderRadius" type="number" min="0" max="11" step="1" value="4" />
-              </label>
-              <label>
-                <span data-i18n="containerWidth">${text.containerWidth}</span>
-                <input id="containerWidth" name="containerWidth" type="number" min="400" max="1920" step="1" value="600" />
-              </label>
+              <div class="settings-row three-up">
+                <label>
+                  <span data-i18n="borderSize">${text.borderSize}</span>
+                  <input id="borderSize" name="borderSize" type="number" min="0" max="120" step="1" value="12" />
+                </label>
+                <label>
+                  <span data-i18n="borderRadius">${text.borderRadius}</span>
+                  <input id="borderRadius" name="borderRadius" type="number" min="0" max="11" step="1" value="4" />
+                </label>
+                <label>
+                  <span data-i18n="containerWidth">${text.containerWidth}</span>
+                  <input id="containerWidth" name="containerWidth" type="number" min="400" max="1920" step="1" value="600" />
+                </label>
+              </div>
               <label class="toggle-field">
                 <span data-i18n="showLineNumbers">${text.showLineNumbers}</span>
                 <input id="showLineNumbers" name="showLineNumbers" type="checkbox" checked />
