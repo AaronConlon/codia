@@ -2091,8 +2091,15 @@ const exampleHtml = (
       let firaCodeFontsPromise;
       let takumiRendererPromise;
       let renderTimer;
+      let renderInFlight = false;
+      let renderQueued = false;
+      let renderStateVersion = 0;
+      let lastRenderStartedAt = 0;
       let activeView = "image";
       let imageDirty = true;
+      let defaultExampleImagePrimingEnabled = true;
+      const imageRenderDebounceMs = 360;
+      const imageRenderThrottleMs = 640;
       let activeLanguageIndex = 0;
       let activeThemeIndex = 0;
       let selectedLanguage = languages[0];
@@ -2180,6 +2187,7 @@ const exampleHtml = (
 
       const selectBackground = (item, options = {}) => {
         if (!item) return;
+        const didChange = selectedBackground.id !== item.id || bgColor.value !== item.bgColor;
         selectedBackground = item;
         bgColor.value = item.bgColor;
         if (options.persist !== false) {
@@ -2193,7 +2201,9 @@ const exampleHtml = (
           if (index >= 0) backgroundSwiper.swiper?.slideTo(index);
         }
         updateEditorFrame();
-        invalidateImage();
+        if (didChange) {
+          invalidateImage({ keepDefaultExampleImage: options.keepDefaultExampleImage === true });
+        }
       };
 
       const renderBackgroundPresets = () => {
@@ -2259,7 +2269,11 @@ const exampleHtml = (
         setSettingsOpen(window.matchMedia("(min-width: 1080px)").matches);
       };
 
-      const invalidateImage = () => {
+      const invalidateImage = (options = {}) => {
+        if (options.keepDefaultExampleImage !== true) {
+          defaultExampleImagePrimingEnabled = false;
+        }
+        renderStateVersion += 1;
         imageDirty = true;
         if (activeView === "image") {
           startImageRefresh();
@@ -2281,7 +2295,7 @@ const exampleHtml = (
 
       const primeDefaultExampleImage = () => {
         const defaultImageUrl = defaultExampleImageUrls[imageFormat.value] ?? defaultExampleImageUrls.png;
-        if (!isDefaultExampleCodeState() || !defaultImageUrl) return false;
+        if (!defaultExampleImagePrimingEnabled || !isDefaultExampleCodeState() || !defaultImageUrl) return false;
         latestDataUrl = defaultImageUrl;
         latestBlobUrl = "";
         latestBlob = null;
@@ -2345,9 +2359,13 @@ const exampleHtml = (
       };
 
       const selectImageFormat = (format) => {
-        imageFormat.value = format === "webp" ? "webp" : "png";
+        const nextFormat = format === "webp" ? "webp" : "png";
+        const didChange = imageFormat.value !== nextFormat;
+        imageFormat.value = nextFormat;
         syncImageFormatOptions();
-        invalidateImage();
+        if (didChange) {
+          invalidateImage({ keepDefaultExampleImage: defaultExampleImagePrimingEnabled });
+        }
       };
 
       const getInteractionKind = (target) => {
@@ -2455,25 +2473,31 @@ const exampleHtml = (
         input.setAttribute("aria-expanded", "false");
       };
 
-      const selectLanguage = (item) => {
+      const selectLanguage = (item, options = {}) => {
         if (!item) return;
+        const didChange = selectedLanguage.id !== item.id || language.value !== item.id;
         selectedLanguage = item;
         activeLanguageIndex = Math.max(languages.findIndex((language) => language.id === item.id), 0);
         language.value = item.id;
         languageFilter.value = item.label;
         languagePreviewIcon.innerHTML = '<img src="' + item.icon + '" alt="" />';
         closeOptions(languageOptions, languageFilter);
-        invalidateImage();
+        if (didChange) {
+          invalidateImage({ keepDefaultExampleImage: options.keepDefaultExampleImage === true });
+        }
       };
 
-      const selectCodeTheme = (item) => {
+      const selectCodeTheme = (item, options = {}) => {
         if (!item) return;
+        const didChange = selectedCodeTheme.id !== item.id || codeTheme.value !== item.id;
         selectedCodeTheme = item;
         activeThemeIndex = Math.max(codeThemes.findIndex((theme) => theme.id === item.id), 0);
         codeTheme.value = item.id;
         themeFilter.value = item.id;
         closeOptions(themeOptions, themeFilter);
-        invalidateImage();
+        if (didChange) {
+          invalidateImage({ keepDefaultExampleImage: options.keepDefaultExampleImage === true });
+        }
       };
 
       const stepCodeTheme = (delta) => {
@@ -2833,13 +2857,18 @@ const exampleHtml = (
         };
       };
 
-      const requestImage = async ({ silent = false, source = "try-it-preview", format, updatePreview = true } = {}) => {
+      const requestImage = async ({ silent = false, source = "try-it-preview", format, updatePreview = true, previewVersion } = {}) => {
         const shouldUpdatePreview = updatePreview !== false;
         if (shouldUpdatePreview && !silent) startImageRefresh();
         if (shouldUpdatePreview && !silent) startRenderProgress();
         try {
           const data = await renderClientImage({ format, source });
           if (!shouldUpdatePreview) return data;
+          if (previewVersion !== undefined && previewVersion !== renderStateVersion) {
+            URL.revokeObjectURL(data.dataUrl);
+            imageDirty = true;
+            return data;
+          }
           if (latestBlobUrl && latestBlobUrl !== data.dataUrl) {
             URL.revokeObjectURL(latestBlobUrl);
           }
@@ -2851,7 +2880,7 @@ const exampleHtml = (
           finalImage.style.width = data.logicalWidth + "px";
           finalImage.hidden = false;
           imageEmpty.hidden = true;
-          imageDirty = false;
+          imageDirty = previewVersion === undefined || previewVersion === renderStateVersion ? false : true;
           currentMinContainerWidth = data.minContainerWidth;
           containerWidth.min = String(data.minContainerWidth);
           containerWidth.value = String(data.containerWidth);
@@ -2866,23 +2895,44 @@ const exampleHtml = (
       };
 
       const renderFinalImage = async () => {
+        if (renderInFlight) {
+          renderQueued = true;
+          return;
+        }
         if (!imageDirty && latestDataUrl) return;
         if (primeDefaultExampleImage()) {
           finishImageRefresh();
           return;
         }
+        const previewVersion = renderStateVersion;
+        renderInFlight = true;
+        lastRenderStartedAt = Date.now();
         try {
-          await requestImage();
+          await requestImage({ previewVersion });
         } catch (error) {
-          finalImage.hidden = true;
-          imageEmpty.hidden = false;
-          setStatus(t("failed"), true);
+          if (previewVersion === renderStateVersion) {
+            finalImage.hidden = true;
+            imageEmpty.hidden = false;
+            setStatus(t("failed"), true);
+          } else {
+            imageDirty = true;
+          }
+        } finally {
+          renderInFlight = false;
+          if (activeView === "image" && (renderQueued || imageDirty)) {
+            renderQueued = false;
+            scheduleImageRender();
+          } else {
+            renderQueued = false;
+          }
         }
       };
 
       const scheduleImageRender = () => {
         window.clearTimeout(renderTimer);
-        renderTimer = window.setTimeout(renderFinalImage, 180);
+        const elapsedSinceLastRender = Date.now() - lastRenderStartedAt;
+        const throttleDelay = Math.max(imageRenderThrottleMs - elapsedSinceLastRender, 0);
+        renderTimer = window.setTimeout(renderFinalImage, Math.max(imageRenderDebounceMs, throttleDelay));
       };
 
       const generateAndShowImage = () => {
@@ -3107,6 +3157,10 @@ const exampleHtml = (
         applyBorderRadius(true);
         invalidateImage();
       });
+      borderRadius.addEventListener("input", () => {
+        applyBorderRadius();
+        invalidateImage();
+      });
       borderRadius.addEventListener("change", () => {
         applyBorderRadius(true);
         invalidateImage();
@@ -3116,6 +3170,10 @@ const exampleHtml = (
       });
       containerWidth.addEventListener("blur", () => {
         if (applyContainerWidth()) invalidateImage();
+      });
+      containerWidth.addEventListener("input", () => {
+        updateEditorFrame();
+        invalidateImage();
       });
       containerWidth.addEventListener("change", () => {
         if (applyContainerWidth()) invalidateImage();
@@ -3139,9 +3197,9 @@ const exampleHtml = (
       selectedBackground = getStoredBackground();
       renderBackgroundPresets();
       initializeBackgroundSwiper();
-      selectBackground(selectedBackground, { persist: false });
-      selectLanguage(selectedLanguage);
-      selectCodeTheme(selectedCodeTheme);
+      selectBackground(selectedBackground, { persist: false, keepDefaultExampleImage: true });
+      selectLanguage(selectedLanguage, { keepDefaultExampleImage: true });
+      selectCodeTheme(selectedCodeTheme, { keepDefaultExampleImage: true });
       updateEditorFrame();
       primeDefaultExampleImage();
       finishInitialLoad();
