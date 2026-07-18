@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.35](https://github.com/AaronConlon/codia/compare/v0.1.34...v0.1.35) (2026-07-18)
+
+
+### Bug Fixes
+
+* refine try-it mobile header and controls ([e282588](https://github.com/AaronConlon/codia/commit/e282588d445b44e14805c0c7a8d6ea972b2da113))
+
 ### [0.1.34](https://github.com/AaronConlon/codia/compare/v0.1.33...v0.1.34) (2026-07-18)
 
 
