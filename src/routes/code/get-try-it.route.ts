@@ -47,6 +47,7 @@ const exampleTranslations = {
     qualityHigh: "高清",
     qualityUltra: "超清",
     imageSize: "图片大小",
+    pasteClipboardCode: "粘贴剪贴板代码",
     generateImage: "生成图片",
     editImage: "点击切换到编辑模式",
     copy: "复制图片",
@@ -54,6 +55,7 @@ const exampleTranslations = {
     clear: "清空",
     copied: "图片已复制",
     downloaded: "已下载",
+    clipboardTextOnly: "剪贴板中没有纯文本代码",
     failed: "操作失败",
     ready: "Ready",
     noMatch: "没有匹配项",
@@ -86,6 +88,7 @@ const exampleTranslations = {
     qualityHigh: "High",
     qualityUltra: "Ultra",
     imageSize: "Image size",
+    pasteClipboardCode: "Paste clipboard code",
     generateImage: "Generate Image",
     editImage: "Click to edit",
     copy: "Copy Image",
@@ -93,6 +96,7 @@ const exampleTranslations = {
     clear: "Clear",
     copied: "Image copied",
     downloaded: "Downloaded",
+    clipboardTextOnly: "Clipboard does not contain plain-text code",
     failed: "Action failed",
     ready: "Ready",
     noMatch: "No matches",
@@ -125,6 +129,7 @@ const exampleTranslations = {
     qualityHigh: "高画質",
     qualityUltra: "超高画質",
     imageSize: "画像サイズ",
+    pasteClipboardCode: "クリップボードのコードを貼り付け",
     generateImage: "画像を生成",
     editImage: "クリックして編集",
     copy: "画像をコピー",
@@ -132,6 +137,7 @@ const exampleTranslations = {
     clear: "クリア",
     copied: "画像をコピーしました",
     downloaded: "ダウンロードしました",
+    clipboardTextOnly: "クリップボードにプレーンテキストのコードがありません",
     failed: "失敗しました",
     ready: "Ready",
     noMatch: "一致する項目がありません",
@@ -704,6 +710,13 @@ const exampleHtml = (
         min-width: 32px;
         padding: 0 10px;
         gap: 6px;
+      }
+
+      .preview-tools .settings-toggle-button[aria-expanded="true"] {
+        background: #000000;
+        border-color: #000000;
+        color: #ffffff;
+        box-shadow: 0 10px 24px rgb(0 0 0 / 22%);
       }
 
       .settings-toggle-label {
@@ -1787,13 +1800,26 @@ const exampleHtml = (
 
       .editor-actions {
         position: absolute;
+        left: 14px;
         right: 14px;
         bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        pointer-events: none;
+      }
+
+      .editor-actions-left,
+      .editor-actions-right {
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        min-width: 0;
+        pointer-events: auto;
       }
 
+      .paste-code-button,
       .clear-code-button,
       .generate-image-button {
         height: 34px;
@@ -1813,6 +1839,7 @@ const exampleHtml = (
         backdrop-filter: blur(10px);
       }
 
+      .paste-code-button:hover,
       .clear-code-button:hover,
       .generate-image-button:hover {
         background: #ffffff;
@@ -1831,6 +1858,7 @@ const exampleHtml = (
         color: #ffffff;
       }
 
+      .paste-code-button svg,
       .clear-code-button svg,
       .generate-image-button svg {
         width: 14px;
@@ -1944,17 +1972,20 @@ const exampleHtml = (
         background: rgb(255 255 255 / 24%);
       }
 
+      .paste-code-button,
       .clear-code-button,
       .generate-image-button {
         border-color: rgb(255 255 255 / 14%);
         box-shadow: 0 10px 26px rgb(0 0 0 / 30%);
       }
 
+      .paste-code-button,
       .clear-code-button {
         background: rgb(255 255 255 / 10%);
         color: rgb(248 250 252 / 82%);
       }
 
+      .paste-code-button:hover,
       .clear-code-button:hover {
         background: rgb(255 255 255 / 16%);
         color: #ffffff;
@@ -1977,6 +2008,13 @@ const exampleHtml = (
         background: rgb(255 255 255 / 10%);
         color: #f8fafc;
         box-shadow: 0 8px 20px rgb(0 0 0 / 24%);
+      }
+
+      .preview-tools .settings-toggle-button[aria-expanded="true"] {
+        background: #000000;
+        border-color: #000000;
+        color: #ffffff;
+        box-shadow: 0 10px 24px rgb(0 0 0 / 32%);
       }
 
       .final-image {
@@ -2135,6 +2173,7 @@ const exampleHtml = (
         }
 
         .editor-actions {
+          left: 10px;
           right: 10px;
           bottom: 10px;
         }
@@ -2384,14 +2423,22 @@ const exampleHtml = (
                   <div class="editor-body" id="editorBody">
                     <textarea class="code-input" id="code" name="code" spellcheck="false" placeholder="${text.codePlaceholder}"></textarea>
                     <div class="editor-actions">
-                      <button class="clear-code-button" id="clearCode" type="button" aria-label="${text.clear}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-                        <span data-i18n="clear">${text.clear}</span>
-                      </button>
-                      <button class="generate-image-button" id="generateImage" type="button" aria-label="${text.generateImage}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16l4.586-4.586a2 2 0 0 1 2.828 0L16 16"/><path d="M14 14l1.586-1.586a2 2 0 0 1 2.828 0L20 14"/><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/></svg>
-                        <span data-i18n="generateImage">${text.generateImage}</span>
-                      </button>
+                      <div class="editor-actions-left">
+                        <button class="paste-code-button" id="pasteCode" type="button" aria-label="${text.pasteClipboardCode}">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H9a2 2 0 0 0-2 2v1h10V4a2 2 0 0 0-2-2Z"/><path d="M8 5H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+                          <span data-i18n="pasteClipboardCode">${text.pasteClipboardCode}</span>
+                        </button>
+                      </div>
+                      <div class="editor-actions-right">
+                        <button class="clear-code-button" id="clearCode" type="button" aria-label="${text.clear}">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                          <span data-i18n="clear">${text.clear}</span>
+                        </button>
+                        <button class="generate-image-button" id="generateImage" type="button" aria-label="${text.generateImage}">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16l4.586-4.586a2 2 0 0 1 2.828 0L16 16"/><path d="M14 14l1.586-1.586a2 2 0 0 1 2.828 0L20 14"/><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/></svg>
+                          <span data-i18n="generateImage">${text.generateImage}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2523,6 +2570,7 @@ const exampleHtml = (
       const download = $("#download");
       const generateImage = $("#generateImage");
       const clearCode = $("#clearCode");
+      const pasteCode = $("#pasteCode");
       const code = $("#code");
       code.defaultValue = defaultCode;
       code.value = defaultCode;
@@ -2898,6 +2946,7 @@ const exampleHtml = (
         imageQualityTrigger.setAttribute("aria-label", t("imageQuality"));
         settingsToggle.setAttribute("aria-label", t("parameterSettings"));
         code.placeholder = t("codePlaceholder");
+        pasteCode.setAttribute("aria-label", t("pasteClipboardCode"));
         clearCode.setAttribute("aria-label", t("clear"));
         generateImage.setAttribute("aria-label", t("generateImage"));
         editImage.setAttribute("aria-label", t("editImage"));
@@ -2925,7 +2974,7 @@ const exampleHtml = (
 
       const getInteractionKind = (target) => {
         if (target.closest(".tab-button")) return "tab";
-        if (target.closest("#copy, #download, #clearCode, #generateImage")) return "action";
+        if (target.closest("#copy, #download, #pasteCode, #clearCode, #generateImage")) return "action";
         if (target.closest("#settingsToggle, .theme-stepper button")) return "toggle";
         if (target.closest(".site-locale-trigger, [data-site-locale], .option")) return "menu";
         if (target.closest("input, textarea, .combobox, .format-option, .quality-trigger, .quality-option")) return "input";
@@ -3661,6 +3710,44 @@ const exampleHtml = (
         code.focus();
       };
 
+      const readPlainTextClipboard = async () => {
+        if (!navigator.clipboard) {
+          throw new Error("Clipboard API unavailable");
+        }
+        if (typeof navigator.clipboard.read === "function") {
+          const items = await navigator.clipboard.read();
+          const textItem = items.find((item) => item.types.includes("text/plain"));
+          const hasOnlyPlainText = items.length > 0 && items.every((item) =>
+            item.types.length === 1 && item.types[0] === "text/plain",
+          );
+          if (!textItem || !hasOnlyPlainText) {
+            throw new Error("Clipboard is not plain text");
+          }
+          return await (await textItem.getType("text/plain")).text();
+        }
+        if (typeof navigator.clipboard.readText === "function") {
+          return await navigator.clipboard.readText();
+        }
+        throw new Error("Clipboard text API unavailable");
+      };
+
+      const pasteClipboardCode = async () => {
+        try {
+          const text = await readPlainTextClipboard();
+          if (!text) {
+            setStatus(t("clipboardTextOnly"), true);
+            code.focus();
+            return;
+          }
+          code.value = text;
+          code.dispatchEvent(new Event("input", { bubbles: true }));
+          code.focus();
+        } catch (error) {
+          setStatus(t("clipboardTextOnly"), true);
+          code.focus();
+        }
+      };
+
       const closeLocaleMenu = () => {
         if (!localeTrigger || !localeMenu) return;
         localeTrigger.setAttribute("aria-expanded", "false");
@@ -3790,6 +3877,7 @@ const exampleHtml = (
       copy.addEventListener("click", copyImage);
       download.addEventListener("click", downloadImage);
       generateImage.addEventListener("click", generateAndShowImage);
+      pasteCode.addEventListener("click", pasteClipboardCode);
       clearCode.addEventListener("click", clearCodeInput);
       code.addEventListener("input", () => {
         invalidateImage();
