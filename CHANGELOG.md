@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.32](https://github.com/AaronConlon/codia/compare/v0.1.31...v0.1.32) (2026-07-18)
+
+
+### Bug Fixes
+
+* show default try-it image first ([89f2fd9](https://github.com/AaronConlon/codia/commit/89f2fd9ebc44d2f2a38255497a64f0422af7bb30))
+
 ### [0.1.31](https://github.com/AaronConlon/codia/compare/v0.1.30...v0.1.31) (2026-07-17)
 
 
