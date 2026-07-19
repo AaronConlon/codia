@@ -9,6 +9,9 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const contentTypes: Record<string, string> = {
   ".ico": "image/x-icon",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
   ".png": "image/png",
   ".wasm": "application/wasm",
   ".webp": "image/webp",
@@ -16,10 +19,16 @@ const contentTypes: Record<string, string> = {
 
 const sendPublicAsset = async (filename: string, c: Context) => {
   const extension = filename.slice(filename.lastIndexOf("."));
+  const cacheControl =
+    filename === "sw.js"
+      ? "no-cache"
+      : filename === "manifest.webmanifest"
+        ? "public, max-age=3600"
+        : "public, max-age=31536000, immutable";
 
   return c.body(await readFile(publicAsset(filename)), 200, {
     "content-type": contentTypes[extension] ?? "application/octet-stream",
-    "cache-control": "public, max-age=31536000, immutable",
+    "cache-control": cacheControl,
   });
 };
 

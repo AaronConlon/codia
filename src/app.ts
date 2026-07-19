@@ -29,8 +29,15 @@ export const createApp = (options: CreateAppOptions = {}) => {
   );
 
   if (options.sendPublicAsset) {
+    app.get("/manifest.webmanifest", (c) => options.sendPublicAsset?.("manifest.webmanifest", c) ?? c.notFound());
+    app.get("/sw.js", (c) => options.sendPublicAsset?.("sw.js", c) ?? c.notFound());
     app.get("/favicon.png", (c) => options.sendPublicAsset?.("favicon.png", c) ?? c.notFound());
     app.get("/favicon.ico", (c) => options.sendPublicAsset?.("favicon.png", c) ?? c.notFound());
+    app.get("/icons/:file", (c) => {
+      const file = c.req.param("file");
+      if (!/^icon-(192|512)\.png$/i.test(file)) return c.notFound();
+      return options.sendPublicAsset?.(`icons/${file}`, c) ?? c.notFound();
+    });
     app.get("/assets/codia-logo.png", (c) =>
       options.sendPublicAsset?.("codia-logo.png", c) ?? c.notFound(),
     );

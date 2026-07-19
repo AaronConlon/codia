@@ -270,6 +270,13 @@ const exampleHtml = (
       title: `Try Codia · ${siteSlogan}`,
       description: "Generate beautiful code images in a human-friendly playground backed by an API built for agents.",
     })}
+    <meta name="theme-color" content="#080a10" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Codia" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -755,13 +762,12 @@ const exampleHtml = (
       #sonner-toast-container {
         position: fixed;
         z-index: 100;
-        top: 16px;
-        left: 50%;
+        right: 16px;
+        bottom: 16px;
         width: min(420px, calc(100vw - 32px));
         margin: 0;
         padding: 0;
         pointer-events: none;
-        transform: translateX(-50%);
       }
 
       section {
@@ -1668,6 +1674,13 @@ const exampleHtml = (
         flex-wrap: wrap;
       }
 
+      .image-top-actions {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+      }
+
       .image-result-footer {
         width: 100%;
         display: flex;
@@ -1990,6 +2003,30 @@ const exampleHtml = (
       .generate-image-button:hover {
         background: #020617;
         color: #ffffff;
+      }
+
+      .generate-image-button .generate-loader-icon {
+        display: none;
+      }
+
+      .generate-image-button.is-generating {
+        cursor: wait;
+        opacity: 0.82;
+      }
+
+      .generate-image-button.is-generating .generate-image-icon {
+        display: none;
+      }
+
+      .generate-image-button.is-generating .generate-loader-icon {
+        display: inline-block;
+        animation: generate-loader-spin 780ms linear infinite;
+      }
+
+      @keyframes generate-loader-spin {
+        to {
+          transform: rotate(360deg);
+        }
       }
 
       .paste-code-button svg,
@@ -2576,7 +2613,8 @@ const exampleHtml = (
                           <span data-i18n="clear">${text.clear}</span>
                         </button>
                         <button class="generate-image-button" id="generateImage" type="button" aria-label="${text.generateImage}">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16l4.586-4.586a2 2 0 0 1 2.828 0L16 16"/><path d="M14 14l1.586-1.586a2 2 0 0 1 2.828 0L20 14"/><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/></svg>
+                          <svg class="generate-image-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16l4.586-4.586a2 2 0 0 1 2.828 0L16 16"/><path d="M14 14l1.586-1.586a2 2 0 0 1 2.828 0L20 14"/><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/></svg>
+                          <svg class="generate-loader-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 1-8.04 4.93"/></svg>
                           <span data-i18n="generateImage">${text.generateImage}</span>
                         </button>
                       </div>
@@ -2586,15 +2624,17 @@ const exampleHtml = (
               </div>
             </div>
             <div class="image-stage view" id="imageView" aria-labelledby="finalImage" hidden>
+              <div class="image-top-actions">
+                <button class="edit-image-button" id="editImage" type="button" aria-label="${text.editImage}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                  <span data-i18n="editImage">${text.editImage}</span>
+                </button>
+              </div>
               <div class="final-image-frame" id="finalImageFrame">
                 <img class="final-image" id="finalImage" alt="Rendered code image" loading="eager" decoding="async" fetchpriority="high" hidden />
               </div>
               <div class="image-result-footer">
                 <div class="image-actions">
-                  <button class="edit-image-button" id="editImage" type="button" aria-label="${text.editImage}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                    <span data-i18n="editImage">${text.editImage}</span>
-                  </button>
                   <button class="copy-button" id="copy" type="button">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                     <span data-i18n="copy">${text.copy}</span>
@@ -2863,7 +2903,11 @@ const exampleHtml = (
           toast.error(message);
           return;
         }
-        if (message === t("copied") || message === t("downloaded")) {
+        if (message === t("copied")) {
+          toast.success(message, { duration: 4200 });
+          return;
+        }
+        if (message === t("downloaded")) {
           toast.success(message);
           return;
         }
@@ -4109,8 +4153,58 @@ const exampleHtml = (
         renderTimer = window.setTimeout(renderFinalImage, Math.max(imageRenderDebounceMs, throttleDelay));
       };
 
-      const generateAndShowImage = () => {
-        setActiveView("image");
+      const setGenerateButtonLoading = (isLoading) => {
+        generateImage.classList.toggle("is-generating", isLoading);
+        generateImage.disabled = isLoading;
+        generateImage.setAttribute("aria-busy", String(isLoading));
+      };
+
+      const waitForFinalImageReady = async () => {
+        if (!finalImage.src || finalImage.hidden) return;
+        if (typeof finalImage.decode === "function") {
+          try {
+            await finalImage.decode();
+            return;
+          } catch (error) {
+          }
+        }
+        if (finalImage.complete && finalImage.naturalWidth > 0) return;
+        await new Promise((resolve, reject) => {
+          const cleanup = () => {
+            finalImage.removeEventListener("load", handleLoad);
+            finalImage.removeEventListener("error", handleError);
+          };
+          const handleLoad = () => {
+            cleanup();
+            resolve();
+          };
+          const handleError = () => {
+            cleanup();
+            reject(new Error("Image failed to load"));
+          };
+          finalImage.addEventListener("load", handleLoad, { once: true });
+          finalImage.addEventListener("error", handleError, { once: true });
+        });
+      };
+
+      const generateAndShowImage = async () => {
+        if (generateImage.disabled) return;
+        setGenerateButtonLoading(true);
+        window.clearTimeout(renderTimer);
+        const previewVersion = renderStateVersion;
+        try {
+          if (imageDirty || !latestDataUrl) {
+            await requestImage({ source: "try-it-generate", previewVersion });
+          }
+          await waitForFinalImageReady();
+          if (previewVersion === renderStateVersion && latestDataUrl) {
+            setActiveView("image");
+          }
+        } catch (error) {
+          setStatus(t("failed"), true);
+        } finally {
+          setGenerateButtonLoading(false);
+        }
       };
 
       const submitSatisfaction = async (action) => {
@@ -4513,6 +4607,11 @@ const exampleHtml = (
 
       initializeSettingsPanel();
       setupAudio();
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+        });
+      }
       applyI18n();
       syncImageFormatOptions();
       syncCodeFontOptions();

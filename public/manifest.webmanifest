@@ -1,0 +1,42 @@
+{
+  "name": "Codia Try It",
+  "short_name": "Codia",
+  "description": "Generate beautiful code images in a human-friendly playground.",
+  "id": "/try-it",
+  "start_url": "/try-it",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "background_color": "#080a10",
+  "theme_color": "#080a10",
+  "orientation": "any",
+  "categories": ["developer", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Try Codia",
+      "short_name": "Try It",
+      "url": "/try-it",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
