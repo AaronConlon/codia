@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.40](https://github.com/AaronConlon/codia/compare/v0.1.39...v0.1.40) (2026-07-19)
+
+
+### Features
+
+* update try-it editor controls ([96e9533](https://github.com/AaronConlon/codia/commit/96e953341fe9f3df622b6efd2d5ce95636b92804))
+
 ### [0.1.39](https://github.com/AaronConlon/codia/compare/v0.1.38...v0.1.39) (2026-07-19)
 
 
