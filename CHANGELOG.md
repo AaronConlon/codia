@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.41](https://github.com/AaronConlon/codia/compare/v0.1.40...v0.1.41) (2026-07-19)
+
+
+### Features
+
+* add try-it pwa support ([cb63d4a](https://github.com/AaronConlon/codia/commit/cb63d4a76c5de9e927aa1b6aa3076e8e89c28318))
+
 ### [0.1.40](https://github.com/AaronConlon/codia/compare/v0.1.39...v0.1.40) (2026-07-19)
 
 
