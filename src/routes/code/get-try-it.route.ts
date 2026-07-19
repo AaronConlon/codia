@@ -28,6 +28,7 @@ const exampleTranslations = {
     subtitle: "为人和 API 打造的漂亮代码图片。",
     settings: "设置",
     editor: "编辑器",
+    previewImage: "预览图片",
     image: "图片",
     imageEmpty: "切换到图片模式时生成最终图片。",
     codePlaceholder: "在这里粘贴或输入代码...",
@@ -49,7 +50,7 @@ const exampleTranslations = {
     imageSize: "图片大小",
     pasteClipboardCode: "粘贴剪贴板代码",
     generateImage: "生成图片",
-    editImage: "点击切换到编辑模式",
+    editImage: "返回编辑模式",
     copy: "复制图片",
     download: "下载",
     clear: "清空",
@@ -69,6 +70,7 @@ const exampleTranslations = {
     subtitle: "Beautiful Code Images for Humans and APIs.",
     settings: "Settings",
     editor: "Editor",
+    previewImage: "Preview image",
     image: "Image",
     imageEmpty: "Switch to image mode to render the final image.",
     codePlaceholder: "Paste or type code here...",
@@ -90,7 +92,7 @@ const exampleTranslations = {
     imageSize: "Image size",
     pasteClipboardCode: "Paste clipboard code",
     generateImage: "Generate Image",
-    editImage: "Click to edit",
+    editImage: "Back to editor",
     copy: "Copy Image",
     download: "Download",
     clear: "Clear",
@@ -110,6 +112,7 @@ const exampleTranslations = {
     subtitle: "人と API のための美しいコード画像。",
     settings: "設定",
     editor: "エディター",
+    previewImage: "プレビュー画像",
     image: "画像",
     imageEmpty: "画像モードに切り替えると最終画像を生成します。",
     codePlaceholder: "ここにコードを貼り付けるか入力してください...",
@@ -131,7 +134,7 @@ const exampleTranslations = {
     imageSize: "画像サイズ",
     pasteClipboardCode: "クリップボードのコードを貼り付け",
     generateImage: "画像を生成",
-    editImage: "クリックして編集",
+    editImage: "編集に戻る",
     copy: "画像をコピー",
     download: "ダウンロード",
     clear: "クリア",
@@ -526,6 +529,35 @@ const exampleHtml = (
         }
       }
 
+      @keyframes settings-text-shimmer {
+        0% {
+          background-position: 180% 0;
+        }
+
+        38% {
+          background-position: -80% 0;
+        }
+
+        100% {
+          background-position: -80% 0;
+        }
+      }
+
+      @keyframes settings-icon-shimmer {
+        0%,
+        30%,
+        100% {
+          color: rgb(248 250 252 / 72%);
+          filter: drop-shadow(0 0 0 rgb(255 255 255 / 0%));
+        }
+
+        44%,
+        52% {
+          color: #ffffff;
+          filter: drop-shadow(0 0 10px rgb(255 255 255 / 62%));
+        }
+      }
+
       p {
         margin: 8px 0 0;
         color: var(--muted);
@@ -535,7 +567,7 @@ const exampleHtml = (
       .site-footer {
         position: relative;
         z-index: 0;
-        width: min(1366px, calc(100% - 32px));
+        width: min(1200px, calc(100% - 32px));
         min-height: 96px;
         margin-top: 0;
         padding: 18px 0;
@@ -705,25 +737,57 @@ const exampleHtml = (
         box-shadow: 0 10px 24px rgb(15 23 42 / 12%);
       }
 
+      .preview-tools .settings-toggle-button,
+      .preview-tools .settings-toggle-button:hover,
+      .preview-tools .settings-toggle-button[aria-expanded="true"] {
+        border-color: rgb(15 23 42 / 12%);
+        background: #ffffff;
+        color: var(--text);
+        box-shadow: 0 8px 20px rgb(15 23 42 / 8%);
+      }
+
       .preview-tools .settings-toggle-button {
+        position: relative;
+        isolation: isolate;
         width: auto;
         min-width: 32px;
         padding: 0 10px;
         gap: 6px;
+        overflow: hidden;
       }
 
-      .preview-tools .settings-toggle-button[aria-expanded="true"] {
-        background: #000000;
-        border-color: rgb(15 23 42 / 12%);
-        color: #ffffff;
-        box-shadow: 0 10px 24px rgb(0 0 0 / 22%);
+      .preview-tools .settings-toggle-button > svg,
+      .preview-tools .settings-toggle-button > span {
+        position: relative;
+        z-index: 1;
+      }
+
+      .preview-tools .settings-toggle-button > svg {
+        color: rgb(248 250 252 / 72%);
+        animation: settings-icon-shimmer 4s linear infinite;
       }
 
       .settings-toggle-label {
         display: inline;
+        color: transparent;
+        background:
+          linear-gradient(
+            90deg,
+            rgb(248 250 252 / 72%) 0%,
+            rgb(248 250 252 / 72%) 36%,
+            #ffffff 48%,
+            rgb(248 250 252 / 96%) 52%,
+            #ffffff 56%,
+            rgb(248 250 252 / 72%) 68%,
+            rgb(248 250 252 / 72%) 100%
+          );
+        background-size: 260% 100%;
+        background-clip: text;
+        -webkit-background-clip: text;
         font-size: 13px;
         font-weight: 800;
         white-space: nowrap;
+        animation: settings-text-shimmer 4s linear infinite;
       }
 
       svg {
@@ -799,7 +863,7 @@ const exampleHtml = (
         padding: 0;
       }
 
-      body.settings-open .view-stack {
+      body.settings-open .workspace-stack {
         margin-top: 24px;
       }
 
@@ -818,37 +882,20 @@ const exampleHtml = (
         font-weight: 800;
       }
 
-      .tabs {
-        position: relative;
+      .heading-left {
+        min-width: 0;
         display: inline-flex;
-        gap: 2px;
-        padding: 2px;
-        border: 1px solid var(--field-border);
-        border-radius: 4px;
-        background: var(--field);
+        align-items: center;
+        gap: 8px;
       }
 
-      .tabs::before {
-        content: "";
-        position: absolute;
-        top: 2px;
-        bottom: 2px;
-        left: 2px;
-        width: var(--tab-indicator-width, 84px);
-        border-radius: 4px;
-        background: var(--button-bg);
-        transform: translateX(var(--tab-indicator-x, 0px));
-        transition:
-          transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
-          width 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
-      }
-
-      .tab-button {
-        position: relative;
-        z-index: 1;
+      .heading-back-button {
+        width: 32px;
+        min-width: 32px;
         height: 32px;
-        min-width: 84px;
-        padding: 0 12px;
+        padding: 0;
+        display: inline-grid;
+        place-items: center;
         border: 0;
         border-radius: 4px;
         background: transparent;
@@ -856,10 +903,18 @@ const exampleHtml = (
         box-shadow: none;
       }
 
-      .tab-button:hover,
-      .tab-button[aria-selected="true"] {
-        color: var(--button-text);
+      .heading-back-button:hover {
+        background: transparent;
+        color: #ffffff;
         box-shadow: none;
+      }
+
+      .editor-heading {
+        margin: 0;
+        color: var(--text);
+        font-size: 18px;
+        font-weight: 900;
+        line-height: 1.2;
       }
 
       form {
@@ -1546,38 +1601,39 @@ const exampleHtml = (
         padding: 0;
         display: flex;
         align-items: center;
-        justify-content: center;
-        overflow: hidden;
+        justify-content: flex-start;
+        overflow: visible;
         background: transparent;
       }
 
-      .view {
+      .workspace-stack {
         width: 100%;
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 28px;
+        margin-top: clamp(24px, calc((100vh - 842px) / 2), 60px);
+      }
+
+      .workspace-stack .view {
+        animation: view-fade-in 220ms ease-out both;
       }
 
       .view[hidden] {
         display: none !important;
       }
 
-      .view-stack {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-        margin-top: clamp(24px, calc((100vh - 842px) / 2), 60px);
-        overflow: hidden;
-      }
-
-      .view-stack .view {
-        animation: view-fade-in 220ms ease-out both;
-      }
-
       .editor-canvas {
-        display: flex;
+        display: inline-flex;
         align-items: stretch;
         justify-content: center;
-        width: 100%;
+        width: auto;
         max-width: 100%;
-        background: transparent;
+        box-sizing: border-box;
+        background: var(--editor-frame-bg, transparent);
+        border-radius: var(--editor-frame-radius, 12px);
+        padding: var(--editor-frame-padding, 0);
+        overflow: hidden;
         transition: opacity 180ms ease;
       }
 
@@ -1590,10 +1646,10 @@ const exampleHtml = (
       .image-stage {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        overflow: auto;
+        align-items: flex-start;
+        justify-content: flex-start;
+        gap: 24px;
+        overflow: visible;
       }
 
       .final-image-frame {
@@ -1616,32 +1672,40 @@ const exampleHtml = (
         transition: opacity 260ms ease;
       }
 
+      .image-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .image-result-footer {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
       .edit-image-button {
-        position: absolute;
-        right: 16px;
-        bottom: 16px;
         min-width: 0;
-        height: 36px;
+        height: 32px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 7px;
-        padding: 0 12px;
-        border: 1px solid rgb(255 255 255 / 18%);
-        border-radius: 999px;
-        background: rgb(9 9 11 / 68%);
-        color: #ffffff;
+        gap: 6px;
+        padding: 0 10px;
+        border: 1px solid rgb(15 23 42 / 12%);
+        border-radius: 4px;
+        background: #ffffff;
+        color: var(--text);
         font-size: 13px;
         font-weight: 800;
-        box-shadow: 0 12px 32px rgb(0 0 0 / 28%);
-        opacity: 0;
-        transform: translateY(6px);
-        pointer-events: none;
-        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 20px rgb(15 23 42 / 8%);
         transition:
-          opacity 160ms ease,
-          transform 160ms ease,
-          background 160ms ease;
+          background 150ms ease,
+          border-color 150ms ease,
+          box-shadow 150ms ease;
       }
 
       .edit-image-button svg {
@@ -1649,20 +1713,11 @@ const exampleHtml = (
         height: 15px;
       }
 
-      .final-image-frame:hover .edit-image-button,
-      .final-image-frame:focus-within .edit-image-button {
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-      }
-
       .edit-image-button:hover {
-        background: rgb(9 9 11 / 82%);
-        box-shadow: 0 12px 32px rgb(0 0 0 / 28%);
-      }
-
-      .edit-image-button {
-        z-index: 5;
+        background: #f8fafc;
+        border-color: rgb(15 23 42 / 18%);
+        color: var(--text);
+        box-shadow: 0 10px 24px rgb(15 23 42 / 12%);
       }
 
       .final-image-frame::before,
@@ -1732,13 +1787,22 @@ const exampleHtml = (
       }
 
       .image-size {
+        display: inline-flex;
+        align-items: baseline;
+        justify-content: flex-end;
+        gap: 5px;
         color: rgb(248 250 252 / 58%);
         font: 12px/1.4 "Fira Code", ui-monospace, "SFMono-Regular", Consolas, monospace;
         text-align: center;
       }
 
-      .view.is-entering {
-        animation: view-fade-in 220ms ease-out both;
+      .image-size-value {
+        color: #ffffff;
+        font-weight: 950;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0;
+        text-shadow: 0 10px 26px rgb(0 0 0 / 30%);
+        --number-flow-mask-height: 0.14em;
       }
 
       @keyframes view-fade-in {
@@ -1755,51 +1819,105 @@ const exampleHtml = (
         position: relative;
         min-height: 520px;
         font-family: "Fira Code", ui-monospace, "SFMono-Regular", Consolas, monospace;
-        font-size: 16px;
+        font-size: 18px;
         line-height: 24px;
         background: transparent;
       }
 
-      .code-input {
+      .code-editor {
         margin: 0;
-        font: inherit;
-        white-space: pre;
-      }
-
-      .code-input {
-        position: static;
+        position: relative;
         display: block;
         width: 100%;
         min-height: 520px;
         border: 1px solid rgb(15 23 42 / 16%);
         border-radius: 10px;
         outline: none;
-        resize: none;
-        overflow: auto;
-        background: #ffffff;
-        color: var(--text);
+        overflow: hidden;
+        background: var(--editor-code-bg, #282a36);
+        color: var(--editor-code-fg, #f8f8f2);
         caret-color: currentColor;
-        -webkit-text-fill-color: currentColor;
-        padding: 16px;
+        font: inherit;
+        white-space: pre-wrap;
         box-shadow: 0 18px 50px rgb(15 23 42 / 10%);
         transition:
           border-color 150ms ease,
           box-shadow 150ms ease;
       }
 
-      .code-input:focus {
+      .code-editor::before {
+        content: "";
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 23px 24px, #ff5555 0 5.5px, transparent 6px),
+          radial-gradient(circle at 42px 24px, #f1fa8c 0 5.5px, transparent 6px),
+          radial-gradient(circle at 61px 24px, #50fa7b 0 5.5px, transparent 6px),
+          var(--editor-code-bg, #282a36);
+      }
+
+      .code-editor::after {
+        content: "";
+        position: absolute;
+        z-index: 3;
+        top: 11px;
+        right: 18px;
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        pointer-events: none;
+        background-image: var(--editor-language-icon);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+      }
+
+      .code-editor:focus-within {
         border-color: rgb(15 23 42 / 36%);
         box-shadow:
           0 0 0 3px rgb(24 24 27 / 8%),
           0 18px 50px rgb(15 23 42 / 12%);
       }
 
-      .code-input::selection {
+      .code-editor > textarea,
+      .code-editor > pre {
+        border-radius: inherit;
+        color: inherit;
+        font: inherit;
+        letter-spacing: 0;
+        tab-size: 2;
+      }
+
+      .code-editor > textarea {
+        caret-color: var(--editor-code-fg, #f8f8f2);
+        scrollbar-width: none;
+      }
+
+      .code-editor > textarea::-webkit-scrollbar {
+        display: none;
+      }
+
+      .code-editor > textarea::selection {
         background: rgb(0 0 0 / 28%);
+      }
+
+      .code-editor > pre {
+        color: var(--editor-code-fg, #f8f8f2);
+      }
+
+      .code-editor .yace-line {
+        color: var(--editor-line-number-color, #6272a4) !important;
+        opacity: 1 !important;
       }
 
       .editor-actions {
         position: absolute;
+        z-index: 10;
         left: 14px;
         right: 14px;
         bottom: 14px;
@@ -1835,6 +1953,8 @@ const exampleHtml = (
         color: rgb(15 23 42 / 76%);
         font-size: 12px;
         font-weight: 800;
+        cursor: pointer;
+        pointer-events: auto;
         box-shadow: 0 10px 26px rgb(15 23 42 / 14%);
         backdrop-filter: blur(10px);
       }
@@ -1955,20 +2075,19 @@ const exampleHtml = (
         outline: none;
       }
 
-      .code-input {
+      .code-editor {
         border-color: rgb(255 255 255 / 12%);
-        background: #18181b;
         box-shadow: 0 18px 50px rgb(0 0 0 / 32%);
       }
 
-      .code-input:focus {
+      .code-editor:focus-within {
         border-color: rgb(255 255 255 / 34%);
         box-shadow:
           0 0 0 3px rgb(255 255 255 / 8%),
           0 18px 50px rgb(0 0 0 / 38%);
       }
 
-      .code-input::selection {
+      .code-editor > textarea::selection {
         background: rgb(255 255 255 / 24%);
       }
 
@@ -2002,19 +2121,23 @@ const exampleHtml = (
       .preview-tools .icon-button[aria-expanded="true"],
       .copy-button,
       .download-button,
+      .edit-image-button,
       .copy-button:hover,
-      .download-button:hover {
+      .download-button:hover,
+      .edit-image-button:hover {
         border-color: rgb(255 255 255 / 12%);
         background: rgb(255 255 255 / 10%);
         color: #f8fafc;
         box-shadow: 0 8px 20px rgb(0 0 0 / 24%);
       }
 
+      .preview-tools .settings-toggle-button,
+      .preview-tools .settings-toggle-button:hover,
       .preview-tools .settings-toggle-button[aria-expanded="true"] {
-        background: #000000;
         border-color: rgb(255 255 255 / 12%);
-        color: #ffffff;
-        box-shadow: 0 10px 24px rgb(0 0 0 / 32%);
+        background: rgb(255 255 255 / 10%);
+        color: #f8fafc;
+        box-shadow: 0 8px 20px rgb(0 0 0 / 24%);
       }
 
       .final-image {
@@ -2075,19 +2198,7 @@ const exampleHtml = (
           gap: 12px;
         }
 
-        .tabs {
-          width: max-content;
-          max-width: 100%;
-          align-self: flex-start;
-        }
-
-        .tab-button {
-          min-width: 0;
-        }
-
         .preview-tools {
-          width: max-content;
-          max-width: calc(100% - 146px);
           justify-content: flex-end;
           display: flex;
           flex-wrap: nowrap;
@@ -2151,17 +2262,17 @@ const exampleHtml = (
           min-width: 0;
         }
 
-        .view-stack {
+        .workspace-stack {
           margin-top: 24px;
+          gap: 24px;
         }
 
         .editor-body,
-        .code-input {
+        .code-editor {
           min-height: 420px;
         }
 
-        .code-input {
-          padding: 14px 14px 60px;
+        .code-editor {
           font-size: 14px;
           line-height: 22px;
           border-radius: 4px;
@@ -2193,10 +2304,18 @@ const exampleHtml = (
           object-fit: contain;
         }
 
-        .edit-image-button {
-          opacity: 1;
-          transform: translateY(0);
-          pointer-events: auto;
+        .image-actions {
+          gap: 8px;
+        }
+
+        .image-result-footer {
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        .image-size {
+          max-width: 48%;
+          text-align: right;
         }
 
         .site-footer {
@@ -2264,19 +2383,13 @@ const exampleHtml = (
       <div class="app-layout" id="appLayout" data-insp-path="${inspectorPath(1204, 7, "div")}">
         <section class="editor-section" data-insp-path="${inspectorPath(1205, 9, "section")}">
           <div class="panel-header">
-            <div class="tabs" role="tablist" aria-label="Preview mode">
-              <button class="tab-button" id="editorTab" type="button" role="tab" aria-selected="false" aria-controls="editorView" data-view="editor" data-i18n="editor">${text.editor}</button>
-              <button class="tab-button" id="imageTab" type="button" role="tab" aria-selected="true" aria-controls="imageView" data-view="image" data-i18n="image">${text.image}</button>
+            <div class="heading-left">
+              <button class="heading-back-button" id="headingBack" type="button" aria-label="${text.editImage}" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <h1 class="editor-heading" id="editorHeadingText" data-i18n="editor">${text.editor}</h1>
             </div>
             <div class="preview-tools">
-              <button class="copy-button" id="copy" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                <span data-i18n="copy">${text.copy}</span>
-              </button>
-              <button class="download-button" id="download" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
-                <span data-i18n="download">${text.download}</span>
-              </button>
               <button class="icon-button settings-toggle-button" id="settingsToggle" type="button" aria-label="${text.parameterSettings}" aria-expanded="false">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
                 <span class="settings-toggle-label" data-i18n="parameterSettings">${text.parameterSettings}</span>
@@ -2416,12 +2529,12 @@ const exampleHtml = (
               </div>
             </form>
           </aside>
-          <div class="view-stack" id="viewStack">
-            <div class="editor-stage view" id="editorView" role="tabpanel" aria-labelledby="editorTab" hidden>
+          <div class="workspace-stack" id="workspaceStack">
+            <div class="editor-stage view" id="editorView" aria-labelledby="codeEditor">
               <div class="editor-canvas" id="editorCanvas">
                 <div class="editor-window" id="editorWindow">
                   <div class="editor-body" id="editorBody">
-                    <textarea class="code-input" id="code" name="code" spellcheck="false" placeholder="${text.codePlaceholder}"></textarea>
+                    <div class="code-input code-editor" id="codeEditor" aria-label="${text.editor}"></div>
                     <div class="editor-actions">
                       <div class="editor-actions-left">
                         <button class="paste-code-button" id="pasteCode" type="button" aria-label="${text.pasteClipboardCode}">
@@ -2444,15 +2557,34 @@ const exampleHtml = (
                 </div>
               </div>
             </div>
-            <div class="image-stage view" id="imageView" role="tabpanel" aria-labelledby="imageTab">
+            <div class="image-stage view" id="imageView" aria-labelledby="finalImage" hidden>
               <div class="final-image-frame" id="finalImageFrame">
                 <img class="final-image" id="finalImage" alt="Rendered code image" loading="eager" decoding="async" fetchpriority="high" hidden />
-                <button class="edit-image-button" id="editImage" type="button" aria-label="${text.editImage}">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                  <span data-i18n="editImage">${text.editImage}</span>
-                </button>
               </div>
-              <div class="image-size" id="imageSize" aria-live="polite" hidden></div>
+              <div class="image-result-footer">
+                <div class="image-actions">
+                  <button class="edit-image-button" id="editImage" type="button" aria-label="${text.editImage}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                    <span data-i18n="editImage">${text.editImage}</span>
+                  </button>
+                  <button class="copy-button" id="copy" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span data-i18n="copy">${text.copy}</span>
+                  </button>
+                  <button class="download-button" id="download" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+                    <span data-i18n="download">${text.download}</span>
+                  </button>
+                </div>
+                <div class="image-size" id="imageSize" aria-live="polite" hidden>
+                  <span class="image-size-label" data-i18n="imageSize">${text.imageSize}:</span>
+                  <number-flow class="image-size-value" id="imageWidthFlow" value="0">0</number-flow>
+                  <span>x</span>
+                  <number-flow class="image-size-value" id="imageHeightFlow" value="0">0</number-flow>
+                  <span>·</span>
+                  <number-flow class="image-size-value" id="imageFileSizeFlow" value="0">0</number-flow>
+                </div>
+              </div>
               <div class="image-empty" id="imageEmpty" data-i18n="imageEmpty" hidden>${text.imageEmpty}</div>
             </div>
           </div>
@@ -2465,10 +2597,13 @@ const exampleHtml = (
 
     ${options.codeInspectorScript ? `<script>${options.codeInspectorScript}</script>` : ""}
     <script type="module">
+      import "https://esm.sh/number-flow";
       import React from "https://esm.sh/react@18.3.1";
       import { flushSync } from "https://esm.sh/react-dom@18.3.1";
       import { createRoot } from "https://esm.sh/react-dom@18.3.1/client";
       import { toast } from "https://esm.sh/vanilla-sonner@0.5.2";
+      import { Yace } from "https://esm.sh/yace@1.1.0";
+      import { autoClose, history, preserveIndent, tab } from "https://esm.sh/yace@1.1.0/plugins";
       import { codeToTokens, bundledLanguages } from "https://esm.sh/shiki@3.23.0";
       import initTakumiWasm, { Renderer as TakumiRenderer } from "https://esm.sh/@takumi-rs/wasm@2.1.1?target=es2022&conditions=browser";
       import { container, image as takumiImage, text as takumiText } from "https://esm.sh/@takumi-rs/helpers@2.1.1?target=es2022&conditions=browser";
@@ -2520,15 +2655,6 @@ const exampleHtml = (
 
       const appTemplate = document.getElementById("appTemplate");
       const rootElement = document.getElementById("root");
-      const escapeTemplateText = (value) =>
-        value
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;");
-      appTemplate.innerHTML = appTemplate.innerHTML.replace(
-        '<textarea class="code-input" id="code" name="code" spellcheck="false" placeholder="${text.codePlaceholder}"></textarea>',
-        '<textarea class="code-input" id="code" name="code" spellcheck="false" placeholder="${text.codePlaceholder}">' + escapeTemplateText(defaultCode) + '</textarea>',
-      );
       const ExampleApp = () =>
         React.createElement("div", {
           className: "react-root-shell",
@@ -2550,6 +2676,8 @@ const exampleHtml = (
       const imageFormat = $("#imageFormat");
       const imageFormatGroup = $("#imageFormatGroup");
       const imageFormatOptions = Array.from(document.querySelectorAll("[data-image-format]"));
+      const headingBack = $("#headingBack");
+      const editorHeadingText = $("#editorHeadingText");
       const bgColor = $("#bgColor");
       const backgroundPreview = $("#backgroundPreview");
       const backgroundThumbs = $("#backgroundThumbs");
@@ -2571,18 +2699,19 @@ const exampleHtml = (
       const generateImage = $("#generateImage");
       const clearCode = $("#clearCode");
       const pasteCode = $("#pasteCode");
-      const code = $("#code");
-      code.defaultValue = defaultCode;
-      code.value = defaultCode;
+      const codeEditorRoot = $("#codeEditor");
+      let codeEditor = null;
+      let code = null;
       const editorCanvas = $("#editorCanvas");
       const editorView = $("#editorView");
       const imageView = $("#imageView");
-      const editorTab = $("#editorTab");
-      const imageTab = $("#imageTab");
       const finalImageFrame = $("#finalImageFrame");
       const finalImage = $("#finalImage");
       const editImage = $("#editImage");
       const imageSize = $("#imageSize");
+      const imageWidthFlow = $("#imageWidthFlow");
+      const imageHeightFlow = $("#imageHeightFlow");
+      const imageFileSizeFlow = $("#imageFileSizeFlow");
       const imageEmpty = $("#imageEmpty");
       const editorWindow = $("#editorWindow");
       const editorBody = $("#editorBody");
@@ -2624,7 +2753,7 @@ const exampleHtml = (
       let imageRefreshToken = 0;
       const settingInvalidateTimers = new Map();
       const settingInvalidateLastRun = new Map();
-      let activeView = "image";
+      let activeView = "editor";
       let imageDirty = true;
       const imageRenderDebounceMs = 360;
       const imageRenderThrottleMs = 640;
@@ -2635,6 +2764,9 @@ const exampleHtml = (
       let selectedLanguage = languages[0];
       let selectedCodeTheme = codeThemes.find((item) => item.id === "dracula") ?? codeThemes[0];
       let selectedBackground = backgroundPresets[0];
+      let editorHighlightCache = { key: "", html: "", bg: "#282a36", fg: "#f8f8f2" };
+      let editorHighlightRequestId = 0;
+      let editorHighlightTimer;
       let currentMinContainerWidth = 400;
       let lastValidContainerWidth = "600";
       let currentLocale = initialState.locale;
@@ -2685,6 +2817,14 @@ const exampleHtml = (
         }
         return text;
       };
+
+      const escapeHtml = (value) =>
+        String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
 
       const setStatus = (message, isError = false) => {
         if (!message) return;
@@ -2832,7 +2972,7 @@ const exampleHtml = (
       };
 
       const startImageRefresh = () => {
-        if (activeView === "image" && !finalImage.hidden) {
+        if (!finalImage.hidden) {
           setImageFrameRadius();
           imageRefreshStartedAt = Date.now();
           imageRefreshToken += 1;
@@ -2868,8 +3008,15 @@ const exampleHtml = (
       };
 
       const formatFileSize = (bytes) => {
+        const { value, suffix } = getFileSizeParts(bytes);
+        if (!suffix) return "";
+        const precision = suffix === " B" || value >= 100 ? 0 : 1;
+        return value.toFixed(precision) + suffix;
+      };
+
+      const getFileSizeParts = (bytes) => {
         const size = Number(bytes);
-        if (!Number.isFinite(size) || size <= 0) return "";
+        if (!Number.isFinite(size) || size <= 0) return { value: 0, suffix: "" };
         const units = ["B", "KB", "MB", "GB"];
         let value = size;
         let unitIndex = 0;
@@ -2877,8 +3024,39 @@ const exampleHtml = (
           value /= 1024;
           unitIndex += 1;
         }
-        const precision = unitIndex === 0 || value >= 100 ? 0 : 1;
-        return value.toFixed(precision) + " " + units[unitIndex];
+        return { value, suffix: " " + units[unitIndex] };
+      };
+
+      const localeMap = {
+        zh: "zh-CN",
+        en: "en-US",
+        ja: "ja-JP",
+      };
+
+      const setupImageSizeFlow = (flow, suffix = "") => {
+        if (!flow) return;
+        flow.locales = localeMap[currentLocale] ?? localeMap.en;
+        flow.numberSuffix = suffix;
+        flow.format = {
+          maximumFractionDigits: suffix === " B" || suffix === " px" ? 0 : 1,
+          minimumFractionDigits: 0,
+        };
+        flow.trend = 1;
+        flow.transformTiming = { duration: 720, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
+        flow.spinTiming = { duration: 760, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
+        flow.opacityTiming = { duration: 220, easing: "ease-out" };
+      };
+
+      const updateImageSizeFlow = (flow, value, suffix = "") => {
+        if (!flow) return;
+        setupImageSizeFlow(flow, suffix);
+        if (typeof flow.update === "function") {
+          flow.update(value);
+          return;
+        }
+        flow.textContent = new Intl.NumberFormat(localeMap[currentLocale] ?? localeMap.en, {
+          maximumFractionDigits: suffix === " B" || suffix === " px" ? 0 : 1,
+        }).format(value) + suffix;
       };
 
       const setImageSize = (width, height, fileSize = null) => {
@@ -2887,18 +3065,28 @@ const exampleHtml = (
         if (normalizedWidth <= 0 || normalizedHeight <= 0) {
           currentImageInfo = { width: 0, height: 0, fileSize: null };
           imageSize.hidden = true;
-          imageSize.textContent = "";
+          updateImageSizeFlow(imageWidthFlow, 0, "");
+          updateImageSizeFlow(imageHeightFlow, 0, " px");
+          updateImageSizeFlow(imageFileSizeFlow, 0, "");
           return;
         }
         const normalizedFileSize = Number(fileSize);
         const hasFileSize = Number.isFinite(normalizedFileSize) && normalizedFileSize > 0;
+        const fileSizeParts = getFileSizeParts(normalizedFileSize);
         currentImageInfo = {
           width: normalizedWidth,
           height: normalizedHeight,
           fileSize: hasFileSize ? normalizedFileSize : null,
         };
-        const fileSizeText = hasFileSize ? " · " + formatFileSize(normalizedFileSize) : "";
-        imageSize.textContent = t("imageSize") + ": " + normalizedWidth + " x " + normalizedHeight + " px" + fileSizeText;
+        const imageSizeLabel = imageSize.querySelector(".image-size-label");
+        if (imageSizeLabel) imageSizeLabel.textContent = t("imageSize") + ":";
+        updateImageSizeFlow(imageWidthFlow, normalizedWidth, "");
+        updateImageSizeFlow(imageHeightFlow, normalizedHeight, " px");
+        updateImageSizeFlow(imageFileSizeFlow, hasFileSize ? fileSizeParts.value : 0, hasFileSize ? fileSizeParts.suffix : "");
+        imageFileSizeFlow.hidden = !hasFileSize;
+        if (imageFileSizeFlow.previousElementSibling) {
+          imageFileSizeFlow.previousElementSibling.hidden = !hasFileSize;
+        }
         imageSize.hidden = false;
       };
 
@@ -2907,31 +3095,20 @@ const exampleHtml = (
       };
 
       const setActiveView = (view) => {
-        if (activeView === view) return;
-        activeView = view;
-        const isImage = view === "image";
-        editorTab.setAttribute("aria-selected", String(!isImage));
-        imageTab.setAttribute("aria-selected", String(isImage));
+        activeView = view === "image" ? "image" : "editor";
+        const isImage = activeView === "image";
         editorView.hidden = isImage;
         imageView.hidden = !isImage;
-        updateTabIndicator();
-        animateActiveView(isImage ? imageView : editorView);
-        if (isImage) scheduleImageRender();
-      };
-
-      const updateTabIndicator = () => {
-        const selectedTab = activeView === "image" ? imageTab : editorTab;
-        const tabs = selectedTab.parentElement;
-        const tabsRect = tabs.getBoundingClientRect();
-        const tabRect = selectedTab.getBoundingClientRect();
-        tabs.style.setProperty("--tab-indicator-width", tabRect.width + "px");
-        tabs.style.setProperty("--tab-indicator-x", tabRect.left - tabsRect.left - 2 + "px");
-      };
-
-      const animateActiveView = (view) => {
-        view.classList.remove("is-entering");
-        void view.offsetWidth;
-        view.classList.add("is-entering");
+        headingBack.hidden = !isImage;
+        editorHeadingText.textContent = isImage ? t("previewImage") : t("editor");
+        editorHeadingText.dataset.i18n = isImage ? "previewImage" : "editor";
+        if (isImage) {
+          scheduleImageRender();
+          imageView.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+        editorView.scrollIntoView({ behavior: "smooth", block: "start" });
+        window.setTimeout(() => code?.focus(), 220);
       };
 
       const applyI18n = () => {
@@ -2945,7 +3122,13 @@ const exampleHtml = (
         imageFormatGroup.setAttribute("aria-label", t("imageFormat"));
         imageQualityTrigger.setAttribute("aria-label", t("imageQuality"));
         settingsToggle.setAttribute("aria-label", t("parameterSettings"));
-        code.placeholder = t("codePlaceholder");
+        headingBack.setAttribute("aria-label", t("editImage"));
+        editorHeadingText.textContent = t(activeView === "image" ? "previewImage" : "editor");
+        codeEditorRoot.setAttribute("aria-label", t("editor"));
+        if (code) {
+          code.placeholder = t("codePlaceholder");
+          code.setAttribute("aria-label", t("editor"));
+        }
         pasteCode.setAttribute("aria-label", t("pasteClipboardCode"));
         clearCode.setAttribute("aria-label", t("clear"));
         generateImage.setAttribute("aria-label", t("generateImage"));
@@ -2953,6 +3136,10 @@ const exampleHtml = (
         syncImageQualityOptions();
         if (!imageSize.hidden) {
           setImageSize(currentImageInfo.width, currentImageInfo.height, currentImageInfo.fileSize);
+        } else {
+          setupImageSizeFlow(imageWidthFlow, "");
+          setupImageSizeFlow(imageHeightFlow, " px");
+          setupImageSizeFlow(imageFileSizeFlow, "");
         }
       };
 
@@ -2973,8 +3160,7 @@ const exampleHtml = (
       };
 
       const getInteractionKind = (target) => {
-        if (target.closest(".tab-button")) return "tab";
-        if (target.closest("#copy, #download, #pasteCode, #clearCode, #generateImage")) return "action";
+        if (target.closest("#copy, #download, #editImage, #pasteCode, #clearCode, #generateImage")) return "action";
         if (target.closest("#settingsToggle, .theme-stepper button")) return "toggle";
         if (target.closest(".site-locale-trigger, [data-site-locale], .option")) return "menu";
         if (target.closest("input, textarea, .combobox, .format-option, .quality-trigger, .quality-option")) return "input";
@@ -3087,7 +3273,9 @@ const exampleHtml = (
         languageFilter.value = item.label;
         languagePreviewIcon.innerHTML = '<img src="' + item.icon + '" alt="" />';
         closeOptions(languageOptions, languageFilter);
+        applyEditorThemeStyles();
         if (didChange) {
+          syncEditorHighlight();
           invalidateSettingImage("language");
         }
       };
@@ -3101,6 +3289,7 @@ const exampleHtml = (
         themeFilter.value = item.id;
         closeOptions(themeOptions, themeFilter);
         if (didChange) {
+          syncEditorHighlight();
           invalidateSettingImage("theme");
         }
       };
@@ -3284,6 +3473,7 @@ const exampleHtml = (
       const getEditorMinHeight = () => window.matchMedia("(max-width: 860px)").matches ? 420 : 520;
 
       const updateEditorFrame = () => {
+        if (!code) return;
         borderSize.value = normalizeBorderSize(borderSize.value);
         applyBorderRadius();
         currentMinContainerWidth = estimateMinContainerWidth();
@@ -3292,12 +3482,30 @@ const exampleHtml = (
           containerWidth.value = String(currentMinContainerWidth);
           lastValidContainerWidth = containerWidth.value;
         }
+        const normalizedContainerWidth = Math.min(
+          Math.max(Number(containerWidth.value || 600), currentMinContainerWidth),
+          maxContainerWidth,
+        );
+        const normalizedBorderSize = Number(normalizeBorderSize(borderSize.value));
+        const normalizedBorderRadius = Number(normalizeBorderRadius(borderRadius.value, normalizedBorderSize));
         const lineCount = Math.max(formatCode(code.value).split("\n").length, 1);
         const editorBodyHeight = Math.max(getEditorMinHeight(), lineCount * 24 + 72);
-        editorCanvas.style.padding = "0";
         editorBody.style.height = editorBodyHeight + "px";
-        code.style.height = editorBodyHeight + "px";
+        codeEditorRoot.style.height = editorBodyHeight + "px";
+        editorCanvas.style.width = (normalizedContainerWidth + normalizedBorderSize * 2) + "px";
+        editorCanvas.style.setProperty("--editor-frame-bg", normalizedBorderSize > 0 ? bgColor.value : "transparent");
+        editorCanvas.style.setProperty("--editor-frame-padding", normalizedBorderSize + "px");
+        editorCanvas.style.setProperty(
+          "--editor-frame-radius",
+          calculateOuterBackgroundRadius(
+            normalizedBorderRadius,
+            normalizedBorderSize,
+            normalizedContainerWidth + normalizedBorderSize * 2,
+            editorBodyHeight + normalizedBorderSize * 2,
+          ) + "px",
+        );
         editorWindow.style.width = "100%";
+        updateEditorOptions();
       };
 
       const loadFiraCodeFonts = () => {
@@ -3324,6 +3532,145 @@ const exampleHtml = (
       const normalizeRenderLanguage = (id) => {
         const normalized = id.trim().toLowerCase();
         return normalized in bundledLanguages ? normalized : "text";
+      };
+
+      const getEditorStyleKey = () =>
+        selectedLanguage.id + "::" + selectedCodeTheme.id;
+
+      const getEditorHighlightKey = (value, styleKey = getEditorStyleKey()) =>
+        styleKey + "::" + value;
+
+      const renderEditorToken = (token, fallbackColor = editorHighlightCache.fg) => {
+        const styles = ["color:" + (token.color || fallbackColor)];
+        if (token.fontStyle === 1 || token.fontStyle === 3) styles.push("font-style:italic");
+        if (token.fontStyle === 2 || token.fontStyle === 3) styles.push("font-weight:700");
+        return '<span style="' + styles.join(";") + '">' + escapeHtml(token.content) + "</span>";
+      };
+
+      const renderEditorTokenLines = (tokens) =>
+        (tokens.tokens.length > 0 ? tokens.tokens : [[]])
+          .map((line) => line.map((token) => renderEditorToken(token, tokens.fg || editorHighlightCache.fg)).join(""))
+          .join("\n");
+
+      const editorHighlighter = (value) => {
+        if (!value) return "";
+        if (getEditorHighlightKey(value) === editorHighlightCache.key) {
+          return editorHighlightCache.html;
+        }
+        return editorHighlightCache.html || escapeHtml(value);
+      };
+
+      const applyEditorThemeStyles = () => {
+        if (!codeEditorRoot) return;
+        codeEditorRoot.style.setProperty("--editor-code-bg", editorHighlightCache.bg);
+        codeEditorRoot.style.setProperty("--editor-code-fg", editorHighlightCache.fg);
+        codeEditorRoot.style.setProperty("--editor-language-icon", 'url("' + getLanguageIcon(selectedLanguage.id) + '")');
+      };
+
+      const getEditorStyles = () => ({
+        background: editorHighlightCache.bg,
+        color: editorHighlightCache.fg,
+        fontFamily: '"Fira Code", ui-monospace, "SFMono-Regular", Consolas, monospace',
+        fontSize: codeFontSize + "px",
+        lineHeight: lineHeight + "px",
+        minHeight: getEditorMinHeight() + "px",
+        padding:
+          (headerHeight + codeVerticalPadding) +
+          "px " +
+          codeRightPadding +
+          "px " +
+          codeVerticalPadding +
+          "px " +
+          (showLineNumbers.checked ? lineNumberColumnWidth : codeLeftPadding) +
+          "px",
+        borderRadius: normalizeBorderRadius(borderRadius.value, Number(normalizeBorderSize(borderSize.value))) + "px",
+      });
+
+      const alignEditorLineNumbers = () => {
+        if (!codeEditor || !codeEditorRoot) return;
+        const lineColumnWidth = showLineNumbers.checked ? lineNumberColumnWidth : codeLeftPadding;
+        codeEditorRoot.style.paddingLeft = lineColumnWidth + "px";
+        if (!codeEditor.lines) return;
+        codeEditor.lines.style.paddingLeft = lineColumnWidth + "px";
+        codeEditor.lines.querySelectorAll(".yace-line").forEach((line) => {
+          line.style.left = "0";
+          line.style.width = (lineNumberColumnWidth - 22) + "px";
+          line.style.paddingRight = "22px";
+          line.style.color = "#6272a4";
+          line.style.opacity = "1";
+        });
+      };
+
+      const updateEditorOptions = () => {
+        if (!codeEditor) return;
+        applyEditorThemeStyles();
+        codeEditor.updateOptions({
+          highlighters: [editorHighlighter],
+          lineNumbers: showLineNumbers.checked,
+          styles: getEditorStyles(),
+        });
+        alignEditorLineNumbers();
+      };
+
+      const syncEditorHighlight = async () => {
+        if (!code) return;
+        const value = code.value;
+        const styleKey = getEditorStyleKey();
+        const key = getEditorHighlightKey(value, styleKey);
+        const requestId = ++editorHighlightRequestId;
+        try {
+          const tokens = await codeToTokens(value, {
+            lang: normalizeRenderLanguage(selectedLanguage.id),
+            theme: selectedCodeTheme.id,
+          });
+          if (requestId !== editorHighlightRequestId || key !== getEditorHighlightKey(code.value)) return;
+          editorHighlightCache = {
+            key,
+            html: renderEditorTokenLines(tokens),
+            bg: tokens.bg || editorHighlightCache.bg,
+            fg: tokens.fg || editorHighlightCache.fg,
+          };
+          updateEditorOptions();
+        } catch (error) {
+          if (requestId !== editorHighlightRequestId) return;
+          editorHighlightCache = {
+            key,
+            html: escapeHtml(value),
+            bg: editorHighlightCache.bg,
+            fg: editorHighlightCache.fg,
+          };
+          updateEditorOptions();
+        }
+      };
+
+      const scheduleEditorHighlight = () => {
+        window.clearTimeout(editorHighlightTimer);
+        editorHighlightTimer = window.setTimeout(syncEditorHighlight, 24);
+      };
+
+      const initializeCodeEditor = () => {
+        codeEditor = new Yace(codeEditorRoot, {
+          value: defaultCode,
+          lineNumbers: showLineNumbers.checked,
+          highlighters: [editorHighlighter],
+          plugins: [history(), tab("  "), preserveIndent(), autoClose()],
+          styles: getEditorStyles(),
+        });
+        code = codeEditor.textarea;
+        code.id = "code";
+        code.name = "code";
+        code.classList.add("code-input-textarea");
+        code.defaultValue = defaultCode;
+        code.placeholder = t("codePlaceholder");
+        code.setAttribute("aria-label", t("editor"));
+        codeEditor.onUpdate(() => {
+          scheduleEditorHighlight();
+          invalidateImage();
+          updateEditorFrame();
+        });
+        applyEditorThemeStyles();
+        updateEditorOptions();
+        syncEditorHighlight();
       };
 
       const normalizeRenderFormat = (format) => {
@@ -3609,7 +3956,7 @@ const exampleHtml = (
           }
         } finally {
           renderInFlight = false;
-          if (activeView === "image" && (renderQueued || imageDirty)) {
+          if (renderQueued || imageDirty) {
             renderQueued = false;
             scheduleImageRender();
           } else {
@@ -3627,7 +3974,6 @@ const exampleHtml = (
 
       const generateAndShowImage = () => {
         setActiveView("image");
-        scheduleImageRender();
       };
 
       const submitSatisfaction = async (action) => {
@@ -3767,6 +4113,8 @@ const exampleHtml = (
         localeMenu.hidden = expanded;
       };
 
+      initializeCodeEditor();
+
       localeTrigger?.addEventListener("click", (event) => {
         event.stopPropagation();
         closeHeaderMenu();
@@ -3787,8 +4135,7 @@ const exampleHtml = (
           window.location.reload();
         });
       });
-      editorTab.addEventListener("click", () => setActiveView("editor"));
-      imageTab.addEventListener("click", () => setActiveView("image"));
+      headingBack.addEventListener("click", () => setActiveView("editor"));
       editImage.addEventListener("click", () => setActiveView("editor"));
       backgroundThumbPrev.addEventListener("click", () => slideBackgroundThumbs("prev"));
       backgroundThumbNext.addEventListener("click", () => slideBackgroundThumbs("next"));
@@ -3879,10 +4226,6 @@ const exampleHtml = (
       generateImage.addEventListener("click", generateAndShowImage);
       pasteCode.addEventListener("click", pasteClipboardCode);
       clearCode.addEventListener("click", clearCodeInput);
-      code.addEventListener("input", () => {
-        invalidateImage();
-        updateEditorFrame();
-      });
       borderSize.addEventListener("input", () => {
         applyBorderRadius();
         invalidateSettingImage("borderSize");
@@ -3900,6 +4243,7 @@ const exampleHtml = (
         invalidateSettingImage("borderRadius");
       });
       showLineNumbers.addEventListener("change", () => {
+        updateEditorOptions();
         invalidateSettingImage("showLineNumbers");
       });
       imageQualityTrigger.addEventListener("click", (event) => {
@@ -3967,7 +4311,6 @@ const exampleHtml = (
         }
       });
       window.addEventListener("resize", () => {
-        updateTabIndicator();
         updateEditorFrame();
         setImageFrameRadius();
       });
@@ -3988,11 +4331,7 @@ const exampleHtml = (
       selectCodeTheme(selectedCodeTheme);
       applyImageQuality();
       updateEditorFrame();
-      updateTabIndicator();
-      renderFinalImage().finally(() => {
-        finishInitialLoad();
-        updateTabIndicator();
-      });
+      finishInitialLoad();
     </script>
   </body>
 </html>`;

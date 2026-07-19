@@ -207,7 +207,7 @@ export const siteShellStyles = `
 
   .site-header,
   .site-footer {
-    width: min(1366px, calc(100% - 32px));
+    width: min(1200px, calc(100% - 32px));
     margin: 0 auto;
     display: flex;
     align-items: center;
