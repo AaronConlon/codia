@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.37](https://github.com/AaronConlon/codia/compare/v0.1.36...v0.1.37) (2026-07-19)
+
+
+### Bug Fixes
+
+* align settings toggle border ([046484c](https://github.com/AaronConlon/codia/commit/046484cac792a15d0510ac7690885fed2b4e45e1))
+
 ### [0.1.36](https://github.com/AaronConlon/codia/compare/v0.1.35...v0.1.36) (2026-07-18)
 
 
