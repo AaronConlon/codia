@@ -42,11 +42,15 @@ const exampleTranslations = {
     containerWidth: "容器宽度",
     showLineNumbers: "显示行号",
     imageQuality: "生成质量",
+    codeFont: "代码字体",
     parameterSettings: "参数设置",
     qualityDraft: "轻量",
     qualityStandard: "标准",
     qualityHigh: "高清",
     qualityUltra: "超清",
+    fontLoading: "正在加载 {font}...",
+    fontLoaded: "{font} 已加载",
+    fontFailed: "{font} 加载失败",
     imageSize: "图片大小",
     pasteClipboardCode: "粘贴剪贴板代码",
     generateImage: "生成图片",
@@ -84,11 +88,15 @@ const exampleTranslations = {
     containerWidth: "Container width",
     showLineNumbers: "Line numbers",
     imageQuality: "Image quality",
+    codeFont: "Code font",
     parameterSettings: "Settings",
     qualityDraft: "Draft",
     qualityStandard: "Standard",
     qualityHigh: "High",
     qualityUltra: "Ultra",
+    fontLoading: "Loading {font}...",
+    fontLoaded: "{font} loaded",
+    fontFailed: "Failed to load {font}",
     imageSize: "Image size",
     pasteClipboardCode: "Paste clipboard code",
     generateImage: "Generate Image",
@@ -126,11 +134,15 @@ const exampleTranslations = {
     containerWidth: "コンテナ幅",
     showLineNumbers: "行番号",
     imageQuality: "生成品質",
+    codeFont: "コードフォント",
     parameterSettings: "パラメータ設定",
     qualityDraft: "軽量",
     qualityStandard: "標準",
     qualityHigh: "高画質",
     qualityUltra: "超高画質",
+    fontLoading: "{font} を読み込み中...",
+    fontLoaded: "{font} を読み込みました",
+    fontFailed: "{font} の読み込みに失敗しました",
     imageSize: "画像サイズ",
     pasteClipboardCode: "クリップボードのコードを貼り付け",
     generateImage: "画像を生成",
@@ -210,6 +222,19 @@ console.log(result);`;
 const defaultExampleBackgroundId = "sunset";
 const defaultExampleBackground = backgroundPresets.find((item) => item.id === defaultExampleBackgroundId) ?? backgroundPresets[0];
 
+const codeFonts = [
+  { id: "fira-code", label: "Fira Code", family: "Fira Code", packageName: "fira-code", weights: [400, 600, 700], charWidthRatio: 0.68 },
+  { id: "jetbrains-mono", label: "JetBrains Mono", family: "JetBrains Mono", packageName: "jetbrains-mono", weights: [400, 600, 700], charWidthRatio: 0.62 },
+  { id: "cascadia-code", label: "Cascadia Code", family: "Cascadia Code", packageName: "cascadia-code", weights: [400, 600, 700], charWidthRatio: 0.62 },
+  { id: "source-code-pro", label: "Source Code Pro", family: "Source Code Pro", packageName: "source-code-pro", weights: [400, 600, 700], charWidthRatio: 0.6 },
+  { id: "ibm-plex-mono", label: "IBM Plex Mono", family: "IBM Plex Mono", packageName: "ibm-plex-mono", weights: [400, 600, 700], charWidthRatio: 0.6 },
+  { id: "roboto-mono", label: "Roboto Mono", family: "Roboto Mono", packageName: "roboto-mono", weights: [400, 600, 700], charWidthRatio: 0.6 },
+  { id: "inconsolata", label: "Inconsolata", family: "Inconsolata", packageName: "inconsolata", weights: [400, 600, 700], charWidthRatio: 0.54 },
+  { id: "ubuntu-mono", label: "Ubuntu Mono", family: "Ubuntu Mono", packageName: "ubuntu-mono", weights: [400, 700], charWidthRatio: 0.5 },
+  { id: "space-mono", label: "Space Mono", family: "Space Mono", packageName: "space-mono", weights: [400, 700], charWidthRatio: 0.6 },
+  { id: "anonymous-pro", label: "Anonymous Pro", family: "Anonymous Pro", packageName: "anonymous-pro", weights: [400, 700], charWidthRatio: 0.6 },
+] as const;
+
 const inspectorPath = (line: number, column: number, node: string) =>
   `src/routes/code/get-try-it.route.ts:${line}:${column}:${node}`;
 
@@ -220,6 +245,19 @@ const exampleHtml = (
 ) => {
   const text = exampleTranslations[initialState.locale];
   const defaultBgColor = defaultExampleBackground.bgColor;
+  const optionSelectionIcon =
+    '<span class="option-selection-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>';
+  const codeFontOptionButtons = codeFonts
+    .map(
+      (font, index) => `
+                          <button class="font-option${index === 0 ? " is-active" : ""}" type="button" role="option" aria-selected="${index === 0 ? "true" : "false"}" data-code-font="${font.id}">
+                            <span class="font-option-main">
+                              ${optionSelectionIcon}
+                              <span class="font-option-label">${font.label}</span>
+                            </span>
+                          </button>`,
+    )
+    .join("");
 
   return String.raw`<!doctype html>
 <html lang="${initialState.htmlLang}">
@@ -337,88 +375,6 @@ const exampleHtml = (
       #root {
         width: 100%;
         min-height: 100vh;
-      }
-
-      .render-progress {
-        position: fixed;
-        z-index: 90;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 8px;
-        overflow: hidden;
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(-100%);
-        transition:
-          opacity 140ms ease,
-          transform 140ms ease;
-      }
-
-      .render-progress::before,
-      .render-progress::after {
-        content: "";
-        position: absolute;
-        pointer-events: none;
-      }
-
-      .render-progress::before {
-        top: 2px;
-        left: 0;
-        width: min(48vw, 520px);
-        height: 3px;
-        border-radius: 999px;
-        background: linear-gradient(90deg, transparent 0%, rgb(255 255 255 / 18%) 24%, rgb(255 255 255 / 86%) 72%, #ffffff 100%);
-        filter: drop-shadow(0 0 10px rgb(255 255 255 / 72%));
-        transform: translateX(-110%);
-        animation: render-progress-meteor-tail 860ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
-      }
-
-      .render-progress::after {
-        top: 0;
-        left: 0;
-        width: 7px;
-        height: 7px;
-        border-radius: 999px;
-        background: #ffffff;
-        box-shadow:
-          0 0 10px rgb(255 255 255 / 92%),
-          0 0 22px rgb(255 255 255 / 54%);
-        transform: translateX(-10vw);
-        animation: render-progress-meteor-head 860ms cubic-bezier(0.16, 1, 0.3, 1) infinite;
-      }
-
-      body.is-rendering .render-progress {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      @keyframes render-progress-meteor-tail {
-        0% {
-          opacity: 0;
-          transform: translateX(-110%);
-        }
-        12% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0.72;
-          transform: translateX(calc(100vw + 24px));
-        }
-      }
-
-      @keyframes render-progress-meteor-head {
-        0% {
-          opacity: 0;
-          transform: translateX(-10vw) scale(0.82);
-        }
-        12% {
-          opacity: 1;
-        }
-        100% {
-          opacity: 0.86;
-          transform: translateX(calc(100vw + 24px)) scale(1);
-        }
       }
 
       .react-root-shell {
@@ -1050,12 +1006,14 @@ const exampleHtml = (
         flex: 0 0 auto;
       }
 
-      .quality-select {
+      .quality-select,
+      .font-select {
         position: relative;
         min-width: 0;
       }
 
-      .quality-trigger {
+      .quality-trigger,
+      .font-trigger {
         width: 100%;
         height: 42px;
         display: flex;
@@ -1071,20 +1029,30 @@ const exampleHtml = (
         box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
       }
 
+      .font-trigger {
+        --quality-color: #ffffff;
+        font-size: 12px;
+      }
+
       .quality-trigger[aria-expanded="true"],
-      .quality-trigger:focus-visible {
+      .quality-trigger:focus-visible,
+      .font-trigger[aria-expanded="true"],
+      .font-trigger:focus-visible {
         border-color: color-mix(in srgb, var(--quality-color) 72%, #ffffff 12%);
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--quality-color) 18%, transparent);
       }
 
-      .quality-trigger:hover {
+      .quality-trigger:hover,
+      .font-trigger:hover {
         border-color: var(--field-border);
         background: var(--field);
         box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
       }
 
       .quality-trigger-main,
-      .quality-option-main {
+      .quality-option-main,
+      .font-trigger-main,
+      .font-option-main {
         min-width: 0;
         display: inline-flex;
         align-items: center;
@@ -1092,11 +1060,20 @@ const exampleHtml = (
       }
 
       .quality-trigger-label,
-      .quality-option-label {
+      .quality-option-label,
+      .font-trigger-label,
+      .font-option-label {
         min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+
+      .font-trigger-icon {
+        width: 14px;
+        height: 14px;
+        flex: 0 0 auto;
+        color: var(--muted);
       }
 
       .quality-swatch {
@@ -1127,12 +1104,15 @@ const exampleHtml = (
         box-shadow: 0 0 10px color-mix(in srgb, var(--quality-color) 58%, transparent);
       }
 
-      .quality-menu {
+      .quality-menu,
+      .font-menu {
         position: absolute;
         z-index: 18;
         top: calc(100% + 6px);
         left: 0;
         right: 0;
+        max-height: 252px;
+        overflow: auto;
         padding: 4px;
         border: 1px solid var(--field-border);
         border-radius: 7px;
@@ -1140,7 +1120,8 @@ const exampleHtml = (
         box-shadow: 0 18px 48px var(--shadow);
       }
 
-      .quality-option {
+      .quality-option,
+      .font-option {
         width: 100%;
         height: 36px;
         display: flex;
@@ -1158,17 +1139,22 @@ const exampleHtml = (
 
       .quality-option:hover,
       .quality-option.is-active,
-      .quality-option:focus-visible {
+      .quality-option:focus-visible,
+      .font-option:hover,
+      .font-option.is-active,
+      .font-option:focus-visible {
         background: transparent;
         color: #ffffff;
         box-shadow: none;
       }
 
-      .quality-option .option-selection-icon {
+      .quality-option .option-selection-icon,
+      .font-option .option-selection-icon {
         opacity: 0;
       }
 
-      .quality-option.is-active .option-selection-icon {
+      .quality-option.is-active .option-selection-icon,
+      .font-option.is-active .option-selection-icon {
         opacity: 1;
       }
 
@@ -1521,7 +1507,9 @@ const exampleHtml = (
         box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%);
       }
 
-      .compact-settings .quality-field {
+      .compact-settings .quality-field,
+      .compact-settings .font-field,
+      .compact-settings .format-field {
         grid-column: span 2;
       }
 
@@ -1598,6 +1586,7 @@ const exampleHtml = (
       }
 
       .editor-stage {
+        width: 100%;
         padding: 0;
         display: flex;
         align-items: center;
@@ -1627,7 +1616,7 @@ const exampleHtml = (
         display: inline-flex;
         align-items: stretch;
         justify-content: center;
-        width: auto;
+        width: 100%;
         max-width: 100%;
         box-sizing: border-box;
         background: var(--editor-frame-bg, transparent);
@@ -1833,16 +1822,39 @@ const exampleHtml = (
         border: 1px solid rgb(15 23 42 / 16%);
         border-radius: 10px;
         outline: none;
-        overflow: hidden;
+        overflow: auto;
         background: var(--editor-code-bg, #282a36);
         color: var(--editor-code-fg, #f8f8f2);
         caret-color: currentColor;
         font: inherit;
-        white-space: pre-wrap;
+        white-space: pre;
+        scrollbar-width: thin;
+        scrollbar-color: rgb(248 250 252 / 28%) transparent;
         box-shadow: 0 18px 50px rgb(15 23 42 / 10%);
         transition:
           border-color 150ms ease,
           box-shadow 150ms ease;
+      }
+
+      .code-editor::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      .code-editor::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .code-editor::-webkit-scrollbar-thumb {
+        border: 3px solid transparent;
+        border-radius: 999px;
+        background: rgb(248 250 252 / 26%);
+        background-clip: padding-box;
+      }
+
+      .code-editor::-webkit-scrollbar-thumb:hover {
+        background: rgb(248 250 252 / 40%);
+        background-clip: padding-box;
       }
 
       .code-editor::before {
@@ -1891,15 +1903,17 @@ const exampleHtml = (
         font: inherit;
         letter-spacing: 0;
         tab-size: 2;
+        white-space: pre !important;
+        overflow-wrap: normal;
+        word-break: normal;
       }
 
       .code-editor > textarea {
         caret-color: var(--editor-code-fg, #f8f8f2);
-        scrollbar-width: none;
-      }
-
-      .code-editor > textarea::-webkit-scrollbar {
-        display: none;
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+        scrollbar-width: thin;
+        scrollbar-color: rgb(248 250 252 / 28%) transparent;
       }
 
       .code-editor > textarea::selection {
@@ -2360,7 +2374,6 @@ const exampleHtml = (
     </style>
   </head>
   <body>
-    <div class="render-progress" aria-hidden="true"></div>
     <div class="initial-loader" id="initialLoader" role="status" aria-live="polite">
       <div class="loader-content">
         <span class="loader-dot" aria-hidden="true"></span>
@@ -2369,7 +2382,7 @@ const exampleHtml = (
     </div>
     <ol
       id="sonner-toast-container"
-      position="top-center"
+      position="bottom-right"
       max-toasts="1"
       duration="2200"
       close-button="false"
@@ -2443,20 +2456,6 @@ const exampleHtml = (
                       </div>
                     </div>
                   </div>
-                  <label>
-                    <span data-i18n="imageFormat">${text.imageFormat}</span>
-                    <input id="imageFormat" name="format" type="hidden" value="png" />
-                    <div class="format-options" id="imageFormatGroup" role="group" aria-label="${text.imageFormat}">
-                      <label class="format-option">
-                        <input class="format-checkbox" type="checkbox" value="png" data-image-format checked />
-                        <span>PNG</span>
-                      </label>
-                      <label class="format-option">
-                        <input class="format-checkbox" type="checkbox" value="webp" data-image-format />
-                        <span>WebP</span>
-                      </label>
-                    </div>
-                  </label>
                   <div class="settings-row compact-settings">
                     <label>
                       <span data-i18n="borderSize">${text.borderSize}</span>
@@ -2524,6 +2523,35 @@ const exampleHtml = (
                         </div>
                       </div>
                     </div>
+                    <div class="field font-field">
+                      <span data-i18n="codeFont">${text.codeFont}</span>
+                      <input id="codeFont" name="font" type="hidden" value="fira-code" />
+                      <div class="font-select">
+                        <button class="font-trigger" id="codeFontTrigger" type="button" aria-expanded="false" aria-controls="codeFontOptions" aria-label="${text.codeFont}">
+                          <span class="font-trigger-main">
+                            <span class="font-trigger-label" id="codeFontLabel">Fira Code</span>
+                          </span>
+                          <svg class="font-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                        </button>
+                        <div class="font-menu" id="codeFontOptions" role="listbox" hidden>
+                          ${codeFontOptionButtons}
+                        </div>
+                      </div>
+                    </div>
+                    <label class="format-field">
+                      <span data-i18n="imageFormat">${text.imageFormat}</span>
+                      <input id="imageFormat" name="format" type="hidden" value="png" />
+                      <div class="format-options" id="imageFormatGroup" role="group" aria-label="${text.imageFormat}">
+                        <label class="format-option">
+                          <input class="format-checkbox" type="checkbox" value="png" data-image-format checked />
+                          <span>PNG</span>
+                        </label>
+                        <label class="format-option">
+                          <input class="format-checkbox" type="checkbox" value="webp" data-image-format />
+                          <span>WebP</span>
+                        </label>
+                      </div>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -2609,6 +2637,7 @@ const exampleHtml = (
       import { container, image as takumiImage, text as takumiText } from "https://esm.sh/@takumi-rs/helpers@2.1.1?target=es2022&conditions=browser";
 
       const shikiThemes = ${JSON.stringify(shikiThemes)};
+      const codeFonts = ${JSON.stringify(codeFonts)};
       const initialState = ${JSON.stringify(initialState)};
       const defaultCode = ${JSON.stringify(defaultExampleCode)};
       const defaultExampleBackgroundId = ${JSON.stringify(defaultExampleBackgroundId)};
@@ -2693,6 +2722,11 @@ const exampleHtml = (
       const imageQualityBars = $("#imageQualityBars");
       const imageQualityMenu = $("#imageQualityOptions");
       const imageQualityOptions = Array.from(document.querySelectorAll("[data-image-quality]"));
+      const codeFont = $("#codeFont");
+      const codeFontTrigger = $("#codeFontTrigger");
+      const codeFontLabel = $("#codeFontLabel");
+      const codeFontMenu = $("#codeFontOptions");
+      const codeFontOptions = Array.from(document.querySelectorAll("[data-code-font]"));
       const form = $("#form");
       const copy = $("#copy");
       const download = $("#download");
@@ -2720,29 +2754,24 @@ const exampleHtml = (
       const siteHeader = $(".site-header");
       const menuTrigger = $(".site-menu-trigger");
       const settingsToggle = $("#settingsToggle");
-      const maxLineLength = 84;
       const headerHeight = 48;
       const codeVerticalPadding = 22;
       const codeFontSize = 18;
-      const firaCodeCharWidthRatio = 0.68;
       const lineNumberColumnWidth = 72;
       const codeLeftPadding = 18;
       const codeRightPadding = 30;
       const languageLogoSize = 26;
       const lineHeight = 24;
+      const minContainerWidth = 400;
       const maxContainerWidth = 1920;
-      const firaCodeFontFiles = [
-        { weight: 400, url: "https://cdn.jsdelivr.net/npm/@fontsource/fira-code@5.2.7/files/fira-code-latin-400-normal.woff2" },
-        { weight: 600, url: "https://cdn.jsdelivr.net/npm/@fontsource/fira-code@5.2.7/files/fira-code-latin-600-normal.woff2" },
-        { weight: 700, url: "https://cdn.jsdelivr.net/npm/@fontsource/fira-code@5.2.7/files/fira-code-latin-700-normal.woff2" },
-      ];
       let latestDataUrl = "";
       let latestBlobUrl = "";
       let latestBlob = null;
       let latestImageData = null;
       let latestImageRadiusData = null;
       let currentImageInfo = { width: 0, height: 0, fileSize: null };
-      let firaCodeFontsPromise;
+      const codeFontFileCache = new Map();
+      const editorFontLoadCache = new Map();
       let takumiRendererPromise;
       let renderTimer;
       let renderInFlight = false;
@@ -2761,17 +2790,19 @@ const exampleHtml = (
       const settingInvalidateThrottleMs = 180;
       let activeLanguageIndex = 0;
       let activeThemeIndex = 0;
+      let activeCodeFontIndex = 0;
       let selectedLanguage = languages[0];
       let selectedCodeTheme = codeThemes.find((item) => item.id === "dracula") ?? codeThemes[0];
+      let selectedCodeFont = codeFonts[0];
       let selectedBackground = backgroundPresets[0];
       let editorHighlightCache = { key: "", html: "", bg: "#282a36", fg: "#f8f8f2" };
       let editorHighlightRequestId = 0;
       let editorHighlightTimer;
-      let currentMinContainerWidth = 400;
+      let codeFontRequestId = 0;
+      let currentMinContainerWidth = minContainerWidth;
       let lastValidContainerWidth = "600";
       let currentLocale = initialState.locale;
       let playClickSound = () => {};
-      let activeRenderRequests = 0;
       const soundProfiles = {
         tab: { start: 420, end: 620, gain: 0.055, duration: 0.08 },
         menu: { start: 560, end: 460, gain: 0.045, duration: 0.07 },
@@ -2837,18 +2868,6 @@ const exampleHtml = (
           return;
         }
         toast(message);
-      };
-
-      const startRenderProgress = () => {
-        activeRenderRequests += 1;
-        document.body.classList.add("is-rendering");
-      };
-
-      const finishRenderProgress = () => {
-        activeRenderRequests = Math.max(activeRenderRequests - 1, 0);
-        if (activeRenderRequests === 0) {
-          document.body.classList.remove("is-rendering");
-        }
       };
 
       const finishInitialLoad = () => {
@@ -3121,6 +3140,8 @@ const exampleHtml = (
         imageFormat.setAttribute("aria-label", t("imageFormat"));
         imageFormatGroup.setAttribute("aria-label", t("imageFormat"));
         imageQualityTrigger.setAttribute("aria-label", t("imageQuality"));
+        codeFont.setAttribute("aria-label", t("codeFont"));
+        codeFontTrigger.setAttribute("aria-label", t("codeFont"));
         settingsToggle.setAttribute("aria-label", t("parameterSettings"));
         headingBack.setAttribute("aria-label", t("editImage"));
         editorHeadingText.textContent = t(activeView === "image" ? "previewImage" : "editor");
@@ -3275,6 +3296,7 @@ const exampleHtml = (
         closeOptions(languageOptions, languageFilter);
         applyEditorThemeStyles();
         if (didChange) {
+          updateEditorFrame();
           syncEditorHighlight();
           invalidateSettingImage("language");
         }
@@ -3315,38 +3337,15 @@ const exampleHtml = (
       const formatCode = (value) =>
         value
           .replaceAll("\r\n", "\n")
-          .replaceAll("\r", "\n")
-          .split("\n")
-          .flatMap((line) => wrapCodeLine(line, maxLineLength))
-          .join("\n");
-
-      const wrapCodeLine = (line, maxLength) => {
-        if (line.length <= maxLength) return [line];
-        const wrapped = [];
-        let remaining = line;
-        while (remaining.length > maxLength) {
-          const wrapAt = findWrapPosition(remaining, maxLength);
-          wrapped.push(remaining.slice(0, wrapAt).trimEnd());
-          remaining = remaining.slice(wrapAt).trimStart();
-        }
-        wrapped.push(remaining);
-        return wrapped;
-      };
-
-      const findWrapPosition = (line, maxLength) => {
-        for (let index = maxLength; index > 0; index -= 1) {
-          if (/\s/.test(line[index] || "")) return index;
-        }
-        return maxLength;
-      };
+          .replaceAll("\r", "\n");
 
       const countColumns = (line) => [...line].reduce((sum, char) => sum + (char === "\t" ? 4 : 1), 0);
 
       const estimateMinContainerWidth = () => {
         const maxLineColumns = Math.max(...formatCode(code.value).split("\n").map(countColumns), 0);
         const headerWidth = 36 + 49 + Math.ceil(selectedLanguage.id.length * 11) + 18;
-        const codeWidth = (showLineNumbers.checked ? 72 : 18) + Math.ceil(maxLineColumns * 18 * 0.68) + 30;
-        return Math.min(Math.max(Math.max(headerWidth, codeWidth), 400), 1920);
+        const codeWidth = (showLineNumbers.checked ? 72 : 18) + Math.ceil(maxLineColumns * codeFontSize * selectedCodeFont.charWidthRatio) + 30;
+        return Math.min(Math.max(Math.max(headerWidth, codeWidth), minContainerWidth), maxContainerWidth);
       };
 
       const normalizeBorderSize = (value) => {
@@ -3375,8 +3374,15 @@ const exampleHtml = (
 
       const normalizeContainerWidth = (value) => {
         const parsed = Number(value);
-        if (!Number.isFinite(parsed) || parsed < currentMinContainerWidth || parsed > 1920) return null;
+        if (!Number.isFinite(parsed) || parsed < currentMinContainerWidth || parsed > maxContainerWidth) return null;
         return String(Math.trunc(parsed));
+      };
+
+      const getClampedContainerWidth = (value = containerWidth.value) => {
+        const parsed = Number(value);
+        const fallback = Number(lastValidContainerWidth || 600);
+        const nextValue = Number.isFinite(parsed) ? parsed : fallback;
+        return Math.min(Math.max(Math.trunc(nextValue), currentMinContainerWidth), maxContainerWidth);
       };
 
       const normalizeImageQuality = (value) => {
@@ -3455,44 +3461,119 @@ const exampleHtml = (
         imageQualityOptions[nextIndex].focus();
       };
 
+      const getCodeFontOption = (fontId) =>
+        codeFontOptions.find((option) => option.dataset.codeFont === fontId) ?? codeFontOptions[0];
+
+      const syncCodeFontOptions = () => {
+        codeFont.value = selectedCodeFont.id;
+        codeFontLabel.textContent = selectedCodeFont.label;
+        activeCodeFontIndex = Math.max(codeFonts.findIndex((font) => font.id === selectedCodeFont.id), 0);
+        codeFontOptions.forEach((option) => {
+          const isSelected = option.dataset.codeFont === selectedCodeFont.id;
+          option.classList.toggle("is-active", isSelected);
+          option.setAttribute("aria-selected", String(isSelected));
+          option.tabIndex = isSelected ? 0 : -1;
+        });
+      };
+
+      const closeCodeFontMenu = () => {
+        codeFontMenu.hidden = true;
+        codeFontTrigger.setAttribute("aria-expanded", "false");
+      };
+
+      const openCodeFontMenu = () => {
+        codeFontMenu.hidden = false;
+        codeFontTrigger.setAttribute("aria-expanded", "true");
+        getCodeFontOption(selectedCodeFont.id)?.focus();
+      };
+
+      const toggleCodeFontMenu = () => {
+        if (codeFontMenu.hidden) {
+          openCodeFontMenu();
+          return;
+        }
+        closeCodeFontMenu();
+      };
+
+      const selectCodeFont = async (item, options = {}) => {
+        if (!item) return;
+        const didChange = selectedCodeFont.id !== item.id || codeFont.value !== item.id;
+        const previousFont = selectedCodeFont;
+        const requestId = ++codeFontRequestId;
+        selectedCodeFont = item;
+        syncCodeFontOptions();
+        if (options.closeMenu !== false) closeCodeFontMenu();
+        if (!didChange) return;
+        const loadingPromise = loadSelectedCodeFont(item);
+        if (options.toast !== false) showFontLoadingToast(loadingPromise, item);
+        try {
+          await loadingPromise;
+          if (requestId !== codeFontRequestId) return;
+          updateEditorFrame();
+          invalidateSettingImage("codeFont");
+        } catch (error) {
+          if (requestId !== codeFontRequestId) return;
+          selectedCodeFont = previousFont;
+          syncCodeFontOptions();
+          updateEditorFrame();
+        }
+      };
+
+      const stepCodeFont = (delta) => {
+        const currentIndex = Math.max(codeFonts.findIndex((font) => font.id === selectedCodeFont.id), 0);
+        const nextIndex = (currentIndex + delta + codeFonts.length) % codeFonts.length;
+        selectCodeFont(codeFonts[nextIndex], { closeMenu: false });
+        codeFontOptions[nextIndex].focus();
+      };
+
       const applyContainerWidth = (shouldUpdate = true) => {
         currentMinContainerWidth = estimateMinContainerWidth();
         containerWidth.min = String(currentMinContainerWidth);
         const nextContainerWidth = normalizeContainerWidth(containerWidth.value);
         if (!nextContainerWidth) {
-          containerWidth.value = lastValidContainerWidth;
+          containerWidth.value = String(currentMinContainerWidth);
+          lastValidContainerWidth = containerWidth.value;
           setStatus(t("containerRange", { min: currentMinContainerWidth }), true);
           return false;
         }
         lastValidContainerWidth = nextContainerWidth;
         containerWidth.value = nextContainerWidth;
-        if (shouldUpdate) updateEditorFrame();
+        if (shouldUpdate) updateEditorFrame({ syncInputValue: true });
         return true;
       };
 
       const getEditorMinHeight = () => window.matchMedia("(max-width: 860px)").matches ? 420 : 520;
 
-      const updateEditorFrame = () => {
+      const updateEditorFrame = (options = {}) => {
         if (!code) return;
         borderSize.value = normalizeBorderSize(borderSize.value);
         applyBorderRadius();
         currentMinContainerWidth = estimateMinContainerWidth();
         containerWidth.min = String(currentMinContainerWidth);
-        if (Number(containerWidth.value || 600) < currentMinContainerWidth) {
-          containerWidth.value = String(currentMinContainerWidth);
-          lastValidContainerWidth = containerWidth.value;
+        const normalizedContainerWidth = getClampedContainerWidth();
+        const parsedContainerWidth = Number(containerWidth.value);
+        if (options.syncInputValue) {
+          containerWidth.value = String(normalizedContainerWidth);
+          lastValidContainerWidth = String(normalizedContainerWidth);
+        } else if (
+          Number.isFinite(parsedContainerWidth) &&
+          parsedContainerWidth >= currentMinContainerWidth &&
+          parsedContainerWidth <= maxContainerWidth
+        ) {
+          lastValidContainerWidth = String(Math.trunc(parsedContainerWidth));
         }
-        const normalizedContainerWidth = Math.min(
-          Math.max(Number(containerWidth.value || 600), currentMinContainerWidth),
-          maxContainerWidth,
-        );
         const normalizedBorderSize = Number(normalizeBorderSize(borderSize.value));
         const normalizedBorderRadius = Number(normalizeBorderRadius(borderRadius.value, normalizedBorderSize));
         const lineCount = Math.max(formatCode(code.value).split("\n").length, 1);
         const editorBodyHeight = Math.max(getEditorMinHeight(), lineCount * 24 + 72);
         editorBody.style.height = editorBodyHeight + "px";
         codeEditorRoot.style.height = editorBodyHeight + "px";
-        editorCanvas.style.width = (normalizedContainerWidth + normalizedBorderSize * 2) + "px";
+        editorCanvas.style.width = "100%";
+        editorWindow.style.width = "100%";
+        const editorFrameWidth =
+          editorCanvas.getBoundingClientRect().width ||
+          editorCanvas.parentElement?.getBoundingClientRect().width ||
+          normalizedContainerWidth + normalizedBorderSize * 2;
         editorCanvas.style.setProperty("--editor-frame-bg", normalizedBorderSize > 0 ? bgColor.value : "transparent");
         editorCanvas.style.setProperty("--editor-frame-padding", normalizedBorderSize + "px");
         editorCanvas.style.setProperty(
@@ -3500,26 +3581,84 @@ const exampleHtml = (
           calculateOuterBackgroundRadius(
             normalizedBorderRadius,
             normalizedBorderSize,
-            normalizedContainerWidth + normalizedBorderSize * 2,
+            editorFrameWidth,
             editorBodyHeight + normalizedBorderSize * 2,
           ) + "px",
         );
-        editorWindow.style.width = "100%";
         updateEditorOptions();
       };
 
-      const loadFiraCodeFonts = () => {
-        firaCodeFontsPromise ??= Promise.all(firaCodeFontFiles.map(async (font) => {
-          const response = await fetch(font.url);
-          if (!response.ok) throw new Error("Failed to load font");
-          return {
-            name: "Fira Code",
-            data: new Uint8Array(await response.arrayBuffer()),
-            weight: font.weight,
-            style: "normal",
-          };
-        }));
-        return firaCodeFontsPromise;
+      const getCodeFontStack = (font = selectedCodeFont) =>
+        '"' + font.family.replaceAll('"', '\\"') + '", ui-monospace, "SFMono-Regular", Consolas, monospace';
+
+      const getCodeFontFileUrl = (font, weight) =>
+        "https://cdn.jsdelivr.net/npm/@fontsource/" +
+        font.packageName +
+        "/files/" +
+        font.packageName +
+        "-latin-" +
+        weight +
+        "-normal.woff2";
+
+      const loadCodeFontFiles = (font = selectedCodeFont) => {
+        if (!codeFontFileCache.has(font.id)) {
+          codeFontFileCache.set(
+            font.id,
+            Promise.all(font.weights.map(async (weight) => {
+              const response = await fetch(getCodeFontFileUrl(font, weight));
+              if (!response.ok) throw new Error("Failed to load font");
+              return {
+                name: font.family,
+                data: new Uint8Array(await response.arrayBuffer()),
+                weight,
+                style: "normal",
+              };
+            })),
+          );
+        }
+        return codeFontFileCache.get(font.id);
+      };
+
+      const loadEditorCodeFont = (font = selectedCodeFont) => {
+        if (!("FontFace" in window) || !document.fonts) return Promise.resolve();
+        if (!editorFontLoadCache.has(font.id)) {
+          editorFontLoadCache.set(
+            font.id,
+            Promise.all(font.weights.map(async (weight) => {
+              const face = new FontFace(font.family, 'url("' + getCodeFontFileUrl(font, weight) + '")', {
+                weight: String(weight),
+                style: "normal",
+                display: "swap",
+              });
+              await face.load();
+              document.fonts.add(face);
+            })).then(() => undefined),
+          );
+        }
+        return editorFontLoadCache.get(font.id);
+      };
+
+      const loadSelectedCodeFont = (font = selectedCodeFont) =>
+        Promise.all([loadEditorCodeFont(font), loadCodeFontFiles(font)]).then(() => font);
+
+      const showFontLoadingToast = (promise, font) => {
+        const messages = {
+          loading: t("fontLoading", { font: font.label }),
+          success: t("fontLoaded", { font: font.label }),
+          error: t("fontFailed", { font: font.label }),
+        };
+        if (typeof toast.promise === "function") {
+          toast.promise(promise, messages);
+          return promise;
+        }
+        const toastId = typeof toast.loading === "function" ? toast.loading(messages.loading) : toast(messages.loading);
+        promise
+          .then(() => toast.success(messages.success))
+          .catch(() => toast.error(messages.error))
+          .finally(() => {
+            if (toastId && typeof toast.dismiss === "function") toast.dismiss(toastId);
+          });
+        return promise;
       };
 
       const loadTakumiRenderer = () => {
@@ -3570,10 +3709,13 @@ const exampleHtml = (
       const getEditorStyles = () => ({
         background: editorHighlightCache.bg,
         color: editorHighlightCache.fg,
-        fontFamily: '"Fira Code", ui-monospace, "SFMono-Regular", Consolas, monospace',
+        fontFamily: getCodeFontStack(),
         fontSize: codeFontSize + "px",
         lineHeight: lineHeight + "px",
         minHeight: getEditorMinHeight() + "px",
+        overflowX: "auto",
+        overflowY: "auto",
+        whiteSpace: "pre",
         padding:
           (headerHeight + codeVerticalPadding) +
           "px " +
@@ -3693,10 +3835,10 @@ const exampleHtml = (
         const maxLineColumns = Math.max(...formattedCode.split("\n").map(countColumns), 0);
         const codeWidth =
           (shouldShowLineNumbers ? lineNumberColumnWidth : 18) +
-          Math.ceil(maxLineColumns * codeFontSize * firaCodeCharWidthRatio) +
+          Math.ceil(maxLineColumns * codeFontSize * selectedCodeFont.charWidthRatio) +
           codeRightPadding;
         const headerWidth = 36 + 49 + languageLogoSize + codeLeftPadding;
-        return Math.min(Math.max(Math.max(codeWidth, headerWidth), 400), maxContainerWidth);
+        return Math.min(Math.max(Math.max(codeWidth, headerWidth), minContainerWidth), maxContainerWidth);
       };
 
       const preserveCodeWhitespace = (content) =>
@@ -3717,7 +3859,7 @@ const exampleHtml = (
             background: tokens.bg,
             borderRadius: borderRadius + "px",
             overflow: "hidden",
-            fontFamily: "Fira Code, Consolas, monospace",
+            fontFamily: getCodeFontStack(),
           },
           children: [
             container({
@@ -3831,10 +3973,9 @@ const exampleHtml = (
           renderLanguage,
           showLineNumbers.checked,
         );
-        const normalizedContainerWidth = Math.min(
-          Math.max(Number(containerWidth.value || 600), minRequiredContainerWidth),
-          maxContainerWidth,
-        );
+        currentMinContainerWidth = minRequiredContainerWidth;
+        containerWidth.min = String(minRequiredContainerWidth);
+        const normalizedContainerWidth = getClampedContainerWidth();
         const normalizedBorderSize = Number(normalizeBorderSize(borderSize.value));
         const normalizedBorderRadius = Number(normalizeBorderRadius(borderRadius.value, normalizedBorderSize));
         const previewQuality = getPreviewQuality();
@@ -3863,7 +4004,7 @@ const exampleHtml = (
           borderRadius: normalizedBorderRadius,
           bgColor: bgColor.value,
         });
-        const [fonts, renderer] = await Promise.all([loadFiraCodeFonts(), loadTakumiRenderer()]);
+        const [fonts, renderer] = await Promise.all([loadCodeFontFiles(selectedCodeFont), loadTakumiRenderer()]);
         const bytes = await renderer.render(node, {
           width: imageWidth * previewQuality,
           height: imageHeight * previewQuality,
@@ -3897,7 +4038,6 @@ const exampleHtml = (
       const requestImage = async ({ silent = false, source = "try-it-preview", format, updatePreview = true, previewVersion } = {}) => {
         const shouldUpdatePreview = updatePreview !== false;
         const refreshToken = shouldUpdatePreview && !silent ? startImageRefresh() : imageRefreshToken;
-        if (shouldUpdatePreview && !silent) startRenderProgress();
         try {
           const data = await renderClientImage({ format, source });
           if (!shouldUpdatePreview) return data;
@@ -3923,13 +4063,10 @@ const exampleHtml = (
           imageDirty = previewVersion === undefined || previewVersion === renderStateVersion ? false : true;
           currentMinContainerWidth = data.minContainerWidth;
           containerWidth.min = String(data.minContainerWidth);
-          containerWidth.value = String(data.containerWidth);
-          lastValidContainerWidth = String(data.containerWidth);
           return data;
         } finally {
           if (shouldUpdatePreview) {
             if (!silent) await finishImageRefresh(refreshToken);
-            if (!silent) finishRenderProgress();
           }
         }
       };
@@ -4150,6 +4287,9 @@ const exampleHtml = (
         if (!imageQualityMenu.contains(event.target) && !imageQualityTrigger.contains(event.target)) {
           closeImageQualityMenu();
         }
+        if (!codeFontMenu.contains(event.target) && !codeFontTrigger.contains(event.target)) {
+          closeCodeFontMenu();
+        }
         if (siteHeader && !siteHeader.contains(event.target)) {
           closeHeaderMenu();
         }
@@ -4158,6 +4298,7 @@ const exampleHtml = (
         if (event.key === "Escape") {
           closeLocaleMenu();
           closeImageQualityMenu();
+          closeCodeFontMenu();
           closeHeaderMenu();
         }
       });
@@ -4228,22 +4369,26 @@ const exampleHtml = (
       clearCode.addEventListener("click", clearCodeInput);
       borderSize.addEventListener("input", () => {
         applyBorderRadius();
+        updateEditorFrame();
         invalidateSettingImage("borderSize");
       });
       borderRadius.addEventListener("blur", () => {
         applyBorderRadius(true);
+        updateEditorFrame();
         invalidateSettingImage("borderRadius");
       });
       borderRadius.addEventListener("input", () => {
         applyBorderRadius();
+        updateEditorFrame();
         invalidateSettingImage("borderRadius");
       });
       borderRadius.addEventListener("change", () => {
         applyBorderRadius(true);
+        updateEditorFrame();
         invalidateSettingImage("borderRadius");
       });
       showLineNumbers.addEventListener("change", () => {
-        updateEditorOptions();
+        updateEditorFrame();
         invalidateSettingImage("showLineNumbers");
       });
       imageQualityTrigger.addEventListener("click", (event) => {
@@ -4293,11 +4438,58 @@ const exampleHtml = (
           }
         });
       });
+      codeFontTrigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleCodeFontMenu();
+      });
+      codeFontTrigger.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowDown" || event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openCodeFontMenu();
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          openCodeFontMenu();
+          stepCodeFont(-1);
+        }
+      });
+      codeFontOptions.forEach((option) => {
+        option.addEventListener("mousedown", (event) => event.preventDefault());
+        option.addEventListener("click", () => {
+          selectCodeFont(codeFonts.find((font) => font.id === option.dataset.codeFont));
+          codeFontTrigger.focus();
+        });
+        option.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+            event.preventDefault();
+            stepCodeFont(1);
+          } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+            event.preventDefault();
+            stepCodeFont(-1);
+          } else if (event.key === "Home") {
+            event.preventDefault();
+            selectCodeFont(codeFonts[0], { closeMenu: false });
+            codeFontOptions[0].focus();
+          } else if (event.key === "End") {
+            event.preventDefault();
+            const lastIndex = codeFonts.length - 1;
+            selectCodeFont(codeFonts[lastIndex], { closeMenu: false });
+            codeFontOptions[lastIndex].focus();
+          } else if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectCodeFont(codeFonts.find((font) => font.id === option.dataset.codeFont));
+            codeFontTrigger.focus();
+          } else if (event.key === "Escape") {
+            event.preventDefault();
+            closeCodeFontMenu();
+            codeFontTrigger.focus();
+          }
+        });
+      });
       containerWidth.addEventListener("blur", () => {
         if (applyContainerWidth()) invalidateSettingImage("containerWidth");
       });
       containerWidth.addEventListener("input", () => {
-        updateEditorFrame();
+        updateEditorFrame({ syncInputValue: false });
         invalidateSettingImage("containerWidth");
       });
       containerWidth.addEventListener("change", () => {
@@ -4306,7 +4498,7 @@ const exampleHtml = (
       form.addEventListener("submit", (event) => {
         event.preventDefault();
         if (applyContainerWidth(false)) {
-          updateEditorFrame();
+          updateEditorFrame({ syncInputValue: true });
           invalidateSettingImage("containerWidth");
         }
       });
@@ -4323,6 +4515,7 @@ const exampleHtml = (
       setupAudio();
       applyI18n();
       syncImageFormatOptions();
+      syncCodeFontOptions();
       selectedBackground = getStoredBackground();
       renderBackgroundPresets();
       initializeBackgroundSwiper();
@@ -4331,6 +4524,7 @@ const exampleHtml = (
       selectCodeTheme(selectedCodeTheme);
       applyImageQuality();
       updateEditorFrame();
+      loadSelectedCodeFont(selectedCodeFont).then(() => updateEditorFrame()).catch(() => {});
       finishInitialLoad();
     </script>
   </body>
