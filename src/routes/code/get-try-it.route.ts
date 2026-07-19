@@ -714,7 +714,7 @@ const exampleHtml = (
 
       .preview-tools .settings-toggle-button[aria-expanded="true"] {
         background: #000000;
-        border-color: #000000;
+        border-color: rgb(15 23 42 / 12%);
         color: #ffffff;
         box-shadow: 0 10px 24px rgb(0 0 0 / 22%);
       }
@@ -2012,7 +2012,7 @@ const exampleHtml = (
 
       .preview-tools .settings-toggle-button[aria-expanded="true"] {
         background: #000000;
-        border-color: #000000;
+        border-color: rgb(255 255 255 / 12%);
         color: #ffffff;
         box-shadow: 0 10px 24px rgb(0 0 0 / 32%);
       }
